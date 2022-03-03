@@ -1,0 +1,14 @@
+services:
+  database:
+    container_name: database
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: Epitech42Workee
+      MYSQL_DATABASE: workee_db
+      MYSQL_USER: workee_user
+      MYSQL_PASSWORD: Epitech42Workee
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql:/var/lib/mysql
