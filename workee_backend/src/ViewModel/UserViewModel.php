@@ -7,40 +7,39 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class UserViewModel
 {
-    public function __construct(
-        private User $user,
-    ) {
+    private string $email;
+
+    private string $firstname;
+
+    private string $lastname;
+
+    private string $team;
+
+    public function __construct(private User $user)
+    {
+        $this->email = $user->getEmail();
+        $this->firstname = $user->getFirstname();
+        $this->lastname = $user->getLastname();
+        $this->team = $user->getTeam();
     }
 
     public function getEmail(): string
     {
-        return $this->user->getEmail();
+        return $this->email;
     }
 
     public function getFirstname(): string
     {
-        return $this->user->getFirstname();
+        return $this->firstname;
     }
 
     public function getLastname(): string
     {
-        return $this->user->getLastname();
+        return $this->lastname;
     }
 
     public function getTeam(): string
     {
-        return $this->user->getTeam();
-    }
-
-    public function createJsonResponse(): JsonResponse
-    {
-        $user = array(
-            "email" => $this->getEmail(),
-            "firstname" => $this->getFirstname(),
-            "lastname" => $this->getLastname(),
-            "team" => $this->getTeam(),
-        );
-
-        return new JsonResponse(array('status' => "201", 'user' => $user), 201);
+        return $this->team;
     }
 }

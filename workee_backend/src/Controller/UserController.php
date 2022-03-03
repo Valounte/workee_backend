@@ -3,33 +3,43 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\ViewModel\UserViewModel;
+use App\Repository\UserRepository;
+use App\Services\JsonResponseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
+
+    public function __construct(
+        private SerializerInterface $serializer,
+        private UserRepository $userRepository,
+        private JsonResponseService $jsonResponseService,
+    ){
+    }
+
     /**
      * @Route("/user/{id}", name="getUserById"),
      * methods("GET")
      */
-    public function getUserById(int $id, UserRepository $userRepository): JsonResponse
+    public function getUserById(int $id): JsonResponse
     { 
-        $user = $userRepository->findUserById($id);
+        $user = $this->userRepository->findUserById($id);
         $userViewModel = new UserViewModel($user);
         
-        return $userViewModel->createJsonResponse();
+        return $this->jsonResponseService->userViewModelJsonResponse($userViewModel);
     }
 
     /**
      * @Route("/user", name="createUser"),
      * methods("POST")
      */
-    public function createUser(Request $request, UserRepository $userRepository): Response
+    public function createUser(Request $request): Response
     { 
         $userData = json_decode($request->getContent(), true);
         $user = new User(
