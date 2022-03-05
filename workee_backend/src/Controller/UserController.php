@@ -80,7 +80,7 @@ class UserController extends AbstractController
         return true;
     }
 
-    private function checkPasswordFormat($password): bool
+    private function checkPasswordFormat(string $password): bool
     {
         $pattern = '/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/';
 
