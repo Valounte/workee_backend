@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
@@ -20,6 +21,7 @@ class UserController extends AbstractController
         private SerializerInterface $serializer,
         private UserRepository $userRepository,
         private JsonResponseService $jsonResponseService,
+        private UserPasswordHasherInterface $passwordHasher,
     ){
     }
 
@@ -46,9 +48,11 @@ class UserController extends AbstractController
             $userData["email"],
             $userData["firstname"], 
             $userData["lastname"], 
-            $userData["team"]
+            $userData["team"],
         );
-        $userRepository->save($user);       
+        $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
+
+        $this->userRepository->save($user);       
         return new Response('User created');
     }
 }

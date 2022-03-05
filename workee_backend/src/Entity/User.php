@@ -2,14 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 use App\Entity\Team;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -28,17 +30,25 @@ class User
     #[ORM\Column(type: 'string', length: 255)]
     private $team;
 
+    #[ORM\Column(type: 'datetime')]
+    private $created_at;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $password;
+
     public function __construct(
         string $email,
         string $firstname,
         string $lastname,
         string $team,
+        DateTime $created_at = new DateTime('now'),
     )
     {
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->team = $team;
+        $this->created_at = $created_at;
     }
 
     public function getId(): ?int
@@ -85,5 +95,29 @@ class User
     public function getTeam(): string
     {
         return $this->team;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 }
