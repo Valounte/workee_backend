@@ -32,9 +32,8 @@ class UserController extends AbstractController
     public function getUserById(int $id): JsonResponse
     {
         $user = $this->userRepository->findUserById($id);
-        $userViewModel = new UserViewModel($user);
-
-        return $this->jsonResponseService->userViewModelJsonResponse($userViewModel);
+        
+        return $this->jsonResponseService->userViewModelJsonResponse(new UserViewModel($user));
     }
 
     /**
