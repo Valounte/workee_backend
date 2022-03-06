@@ -69,6 +69,23 @@ class UserController extends AbstractController
         return new Response('User created');
     }
 
+    /**
+     * @Route("api/users/{teamId}", name="get_users_by_team"),
+     * methods("GET")
+     */
+    public function getUsersByTeam(int $teamId): JsonResponse
+    {
+        $users = $this->userRepository->findByTeamId($teamId);
+
+        $usersViewModel = array_map(
+            static fn ($i): UserViewModel =>
+            new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"])),
+            $users,
+        );
+
+        return $this->jsonResponseService->usersViewModelJsonResponse($usersViewModel);
+    }
+
 
     private function createResponseIfDataAreNotValid(array $userData): bool|Response|Team
     {

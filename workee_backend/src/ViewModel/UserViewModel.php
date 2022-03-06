@@ -3,7 +3,6 @@
 namespace App\ViewModel;
 
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class UserViewModel
 {
@@ -13,7 +12,7 @@ final class UserViewModel
 
     private string $lastname;
 
-    private string $team;
+    private ?string $team = null;
 
     public function __construct(private User $user)
     {
@@ -38,7 +37,7 @@ final class UserViewModel
         return $this->lastname;
     }
 
-    public function getTeam(): string
+    public function getTeam(): ?int
     {
         return $this->team;
     }

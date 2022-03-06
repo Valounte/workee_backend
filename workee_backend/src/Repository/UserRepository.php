@@ -8,12 +8,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findUserById(int $id)
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class UserRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -61,6 +55,17 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findByTeamId(int $team): ?array
+    {
+        $query = $this->createQueryBuilder('u')
+        ->andWhere('u.team = :team')
+        ->setParameter('team', $team)
+        ->getQuery()
+        ;
+
+        return $query->getArrayResult();
+    }
 
     public function findUserByEmail(string $email): ?User
     {
