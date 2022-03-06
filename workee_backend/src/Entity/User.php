@@ -27,20 +27,20 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     private $lastname;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $team;
-
     #[ORM\Column(type: 'datetime')]
     private $created_at;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $password;
 
+    #[ORM\ManyToOne(targetEntity: Team::class)]
+    private $team;
+
     public function __construct(
         string $email,
         string $firstname,
         string $lastname,
-        string $team,
+        ?Team $team = null,
         DateTime $created_at = new DateTime('now'),
     )
     {
@@ -92,11 +92,6 @@ class User implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTeam(): string
-    {
-        return $this->team;
-    }
-
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -117,6 +112,18 @@ class User implements PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
 
         return $this;
     }

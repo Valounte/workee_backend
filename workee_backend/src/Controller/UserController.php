@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Team;
 use App\Entity\User;
 use App\ViewModel\UserViewModel;
+use App\Repository\TeamRepository;
 use App\Repository\UserRepository;
 use App\Services\JsonResponseService;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,11 +24,13 @@ class UserController extends AbstractController
         private UserRepository $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
+        private TeamRepository $teamRepository,
     ) {
     }
 
+
     /**
-     * @Route("api/user/{id}", name="getUserById"),
+     * @Route("api/user/{id}", name="get_user_by_id"),
      * methods("GET")
      */
     public function getUserById(int $id): JsonResponse
@@ -36,6 +40,7 @@ class UserController extends AbstractController
         );
     }
 
+
     /**
      * @Route("api/user", name="create_user"),
      * methods("POST")
@@ -44,17 +49,19 @@ class UserController extends AbstractController
     {
 
         $userData = json_decode($request->getContent(), true);
-        $errorResponse = $this->createResponseIfDataAreNotValid($userData);
+        $returnValue = $this->createResponseIfDataAreNotValid($userData);
 
-        if ($errorResponse instanceof Response) {
-            return $errorResponse;
+        if ($returnValue instanceof Response) {
+            return $returnValue;
         }
+
+        $team = $returnValue instanceof Team ? $returnValue : null;
 
         $user = new User(
             $userData["email"],
             $userData["firstname"],
             $userData["lastname"],
-            $userData["team"],
+            $team,
         );
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
 
@@ -62,7 +69,8 @@ class UserController extends AbstractController
         return new Response('User created');
     }
 
-    private function createResponseIfDataAreNotValid(array $userData): bool|Response
+
+    private function createResponseIfDataAreNotValid(array $userData): bool|Response|Team
     {
         if ($this->userRepository->findUserByEmail($userData["email"]) != null) {
             return new Response('Email already used', 409);
@@ -74,6 +82,15 @@ class UserController extends AbstractController
 
         if (!$this->checkPasswordFormat($userData["password"])) {
             return new Response('Password format not valid', 400);
+        }
+
+        if (isset($userData["team"])) {
+            $team = $this->teamRepository->findOneById($userData["team"]);
+
+            if ($team == null)
+                return new Response("Team does not exist", 400);
+            else
+                return $team;
         }
 
         return true;
