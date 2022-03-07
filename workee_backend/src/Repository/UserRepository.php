@@ -61,8 +61,7 @@ class UserRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('u')
         ->andWhere('u.team = :team')
         ->setParameter('team', $team)
-        ->getQuery()
-        ;
+        ->getQuery();
 
         return $query->getArrayResult();
     }
@@ -73,8 +72,7 @@ class UserRepository extends ServiceEntityRepository
             ->andWhere('u.email = :email')
             ->setParameter('email', $email)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
     public function findUserById(int $id): ?User
@@ -83,7 +81,6 @@ class UserRepository extends ServiceEntityRepository
             ->andWhere('u.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 }

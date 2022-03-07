@@ -83,7 +83,7 @@ class UserController extends AbstractController
             $users,
         );
 
-        return $this->jsonResponseService->usersViewModelJsonResponse($usersViewModel);
+        return $this->jsonResponseService->usersViewModelJsonResponse($usersViewModel, $teamId);
     }
 
 
