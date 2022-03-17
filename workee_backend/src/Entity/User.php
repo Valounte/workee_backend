@@ -9,8 +9,16 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:list']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:item']]],
+    order: ['year' => 'DESC', 'city' => 'ASC'],
+    paginationEnabled: false,
+)]
 class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
