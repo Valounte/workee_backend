@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Team;
 use App\Entity\User;
+use App\Repository\CompanyRepository;
 use App\ViewModel\UserViewModel;
 use App\Repository\TeamRepository;
 use App\Repository\UserRepository;
@@ -25,6 +26,7 @@ class UserController extends AbstractController
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
         private TeamRepository $teamRepository,
+        private CompanyRepository $companyRepository,
     ) {
     }
 
@@ -61,6 +63,7 @@ class UserController extends AbstractController
             $userData["email"],
             $userData["firstname"],
             $userData["lastname"],
+            $this->companyRepository->findOneById($userData["company"]),
             $team,
         );
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
@@ -79,7 +82,7 @@ class UserController extends AbstractController
 
         $usersViewModel = array_map(
             static fn ($i): UserViewModel =>
-            new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"])),
+            new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"], $i["company"])),
             $users,
         );
 
@@ -99,6 +102,10 @@ class UserController extends AbstractController
 
         if (!$this->checkPasswordFormat($userData["password"])) {
             return new Response('Password format not valid', 400);
+        }
+
+        if ($this->companyRepository->findOneById($userData["company"] == null)) {
+            return new Response('Company does not exist', 400);
         }
 
         if (isset($userData["team"])) {

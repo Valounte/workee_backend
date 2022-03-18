@@ -20,6 +20,7 @@ final class JsonResponseService
             "firstname" => $user->getFirstname(),
             "lastname" => $user->getLastname(),
             "team" => $user->getTeam(),
+            "company" => $user->getCompany(),
         );
 
         return new JsonResponse(array('status' => "201", 'user' => $user), 201);
