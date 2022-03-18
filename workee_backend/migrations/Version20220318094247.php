@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220306104741 extends AbstractMigration
+final class Version20220318094247 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,9 +21,9 @@ final class Version20220306104741 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE team (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE user ADD team_id INT DEFAULT NULL');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, team_id INT DEFAULT NULL, company_id INT NOT NULL, email VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, lastname VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL, password VARCHAR(255) NOT NULL, INDEX IDX_8D93D649296CD8AE (team_id), INDEX IDX_8D93D649979B1AD6 (company_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649296CD8AE FOREIGN KEY (team_id) REFERENCES team (id)');
-        $this->addSql('CREATE INDEX IDX_8D93D649296CD8AE ON user (team_id)');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id)');
     }
 
     public function down(Schema $schema): void
@@ -31,7 +31,6 @@ final class Version20220306104741 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649296CD8AE');
         $this->addSql('DROP TABLE team');
-        $this->addSql('DROP INDEX IDX_8D93D649296CD8AE ON user');
-        $this->addSql('ALTER TABLE user DROP team_id');
+        $this->addSql('DROP TABLE user');
     }
 }

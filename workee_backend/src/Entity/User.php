@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use DateTime;
 use App\Entity\Team;
+use App\Repository\CompanyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
@@ -36,10 +37,15 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: Team::class)]
     private $team;
 
+    #[ORM\ManyToOne(targetEntity: Company::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $company;
+
     public function __construct(
         string $email,
         string $firstname,
         string $lastname,
+        Company $company,
         ?Team $team = null,
         DateTime $created_at = new DateTime('now'),
     )
@@ -49,6 +55,7 @@ class User implements PasswordAuthenticatedUserInterface
         $this->lastname = $lastname;
         $this->team = $team;
         $this->created_at = $created_at;
+        $this->company = $company;
     }
 
     public function getId(): ?int
@@ -124,6 +131,18 @@ class User implements PasswordAuthenticatedUserInterface
     public function setTeam(?Team $team): self
     {
         $this->team = $team;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }
