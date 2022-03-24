@@ -1,6 +1,6 @@
 name: Symfony
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   symfony-tests:
