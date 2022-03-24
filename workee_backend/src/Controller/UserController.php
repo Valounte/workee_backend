@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controller;
-
 use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\CompanyRepository;
@@ -47,7 +46,7 @@ class UserController extends AbstractController
      * @Route("api/user", name="create_user"),
      * methods("POST")
      */
-    public function createUser(Request $request): Response
+    public function createUserTest2(Request $request): Response
     {
 
         $userData = json_decode($request->getContent(), true);
