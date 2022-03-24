@@ -46,7 +46,7 @@ class UserController extends AbstractController
      * @Route("api/user", name="create_user"),
      * methods("POST")
      */
-    public function createUserTest5(Request $request): Response
+    public function createUserTest6(Request $request): Response
     {
 
         $userData = json_decode($request->getContent(), true);
