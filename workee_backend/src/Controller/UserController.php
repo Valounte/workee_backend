@@ -47,7 +47,7 @@ class UserController extends AbstractController
      * @Route("api/user", name="create_user"),
      * methods("POST")
      */
-    public function createUser(Request $request): Response
+    public function createUser2(Request $request): Response
     {
 
         $userData = json_decode($request->getContent(), true);
