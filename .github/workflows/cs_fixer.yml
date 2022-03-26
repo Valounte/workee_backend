@@ -5,13 +5,13 @@ on: [pull_request]
 jobs:
     php-cs-fixer:
         runs-on: ubuntu-latest
-        env:
-            working-directory: ./workee_backend/
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
               with:
                   ref: ${{ github.head_ref }}
+            - name: change directory
+              run: cd ./workee_backend/
 
             - name: Run PHP CS Fixer
               uses: docker://oskarstark/php-cs-fixer-ga
