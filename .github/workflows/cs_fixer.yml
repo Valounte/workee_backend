@@ -8,6 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: PHP-CS-Fixer
-      uses: docker://oskarstark/php-cs-fixer-ga
-+     with:
-+       args: --config=.project.php_cs --diff --dry-run
+      run : cd workee_backend || docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:latest
