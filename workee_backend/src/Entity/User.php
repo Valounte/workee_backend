@@ -45,8 +45,7 @@ class User implements PasswordAuthenticatedUserInterface
         Company $company,
         ?Team $team = null,
         DateTime $created_at = new DateTime('now'),
-    )
-    {
+    ) {
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;

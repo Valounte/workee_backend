@@ -10,7 +10,7 @@ final class JsonResponseService
 {
     public function __construct(
         private TeamRepository $teamRepository,
-    ){   
+    ) {
     }
 
     public function userViewModelJsonResponse(UserViewModel $user): JsonResponse
@@ -28,10 +28,10 @@ final class JsonResponseService
 
     public function usersViewModelJsonResponse(array $users, ?int $teamId = null): JsonResponse
     {
-        $team = isset($teamId) ? $this->teamRepository->findOneById($teamId) : null; 
+        $team = isset($teamId) ? $this->teamRepository->findOneById($teamId) : null;
         $mappedUsers = array();
 
-        foreach($users as $key => $value) {
+        foreach ($users as $key => $value) {
             $mappedUsers[$key] = array(
                 "email" => $value->getEmail(),
                 "firstname" => $value->getFirstname(),
