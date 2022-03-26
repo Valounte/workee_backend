@@ -11,3 +11,5 @@ jobs:
       run: cd ./workee_backend/
     - name: PHP-CS-Fixer
       uses: docker://oskarstark/php-cs-fixer-ga
+      with:
+       args: --config=.project.php_cs --diff --dry-run
