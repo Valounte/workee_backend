@@ -5,11 +5,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      working-directory: workee_backend/
+      working-directory: ./workee_backend
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run:  composer install
+        run:  pwd || composer install
       - name: Run phpstan
         uses: actions-x/phpstan@v1
         with:
