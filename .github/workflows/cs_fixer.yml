@@ -10,13 +10,11 @@ jobs:
               uses: actions/checkout@v2
               with:
                   ref: ${{ github.head_ref }}
-            - name: change directory
-              run: cd ./workee_backend/
 
             - name: Run PHP CS Fixer
               uses: docker://oskarstark/php-cs-fixer-ga
               with:
-                  args: --config=.php_cs.dist.php --allow-risky=yes
+                  args: --config=./workee_backend/.php_cs.dist.php --allow-risky=yes
 
             - name: Commit changes
               uses: stefanzweifel/git-auto-commit-action@v4
