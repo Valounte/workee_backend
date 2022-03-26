@@ -1,9 +1,10 @@
-name: Create production promotion pull request
-on: [push]
-
+on:
+  push:
+  create:
 jobs:
-  productionPromotion:
+  example:
     runs-on: ubuntu-latest
     steps:
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+      - uses: peter-evans/create-pull-request@v4
+        with:
+          base: master
