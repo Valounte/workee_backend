@@ -7,9 +7,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: cd workee_backend || composer install --prefer-dist --no-progress --no-suggest
+        run: cd workee_backend || composer install
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
+          working-directory: workee_backend
           # Arguments to add to PHPStan
-          arguments: 'workee_backend/src/ --level=3'
+          arguments: 'src/ --level=3'
