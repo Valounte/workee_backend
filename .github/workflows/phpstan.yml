@@ -1,6 +1,9 @@
 name: phpstan
 on: [pull_request]
 
+env:
+  working-directory: workee_backend
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +15,5 @@ jobs:
         uses: chindit/actions-phpstan@master
         with:
           # Arguments to add to PHPStan
-          arguments: 'src/ --level=3'
-          working-directory: workee_backend
+          path: workee_backend/src/
 
