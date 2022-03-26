@@ -4,6 +4,8 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      working-directory: workee_backend/
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -11,7 +13,7 @@ jobs:
       - name: Run phpstan
         uses: actions-x/phpstan@v1
         with:
-          paths: workee_backend/src
+          paths: workee_backend/src/
           level: 3 # min : 0 - max : 8
           phpstanVersion: ^0.12.30
           arguments: --autoload-file workee_backend/vendor/autoload.php
