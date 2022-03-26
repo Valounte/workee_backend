@@ -8,5 +8,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: cd workee_backend || composer install
-      - name: PHPStan
-        run: cd workee_backend || vendor/bin/phpstan analyse src --level 4
+      - name: Run phpstan
+        uses: actions-x/phpstan@v1
+        with:
+          paths: workee_backend/src
+          level: 3 # min : 0 - max : 8
+          phpstanVersion: ^0.12.30
+          arguments: --autoload-file workee_backend/vendor/autoload.php
