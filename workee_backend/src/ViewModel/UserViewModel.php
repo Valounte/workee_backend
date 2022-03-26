@@ -3,6 +3,7 @@
 namespace App\ViewModel;
 
 use App\Entity\Company;
+use App\Entity\Team;
 use App\Entity\User;
 
 final class UserViewModel
@@ -13,7 +14,7 @@ final class UserViewModel
 
     private string $lastname;
 
-    private ?string $team = null;
+    private ?Team $team = null;
 
     private Company $company;
 
@@ -41,7 +42,7 @@ final class UserViewModel
         return $this->lastname;
     }
 
-    public function getTeam(): ?int
+    public function getTeam(): ?Team
     {
         return $this->team;
     }

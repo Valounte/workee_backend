@@ -21,7 +21,6 @@ class UserController extends AbstractController
 {
 
     public function __construct(
-        private SerializerInterface $serializer,
         private UserRepository $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,

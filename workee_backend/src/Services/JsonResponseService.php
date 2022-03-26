@@ -29,6 +29,7 @@ final class JsonResponseService
     public function usersViewModelJsonResponse(array $users, ?int $teamId = null): JsonResponse
     {
         $team = isset($teamId) ? $this->teamRepository->findOneById($teamId) : null; 
+        $mappedUsers = array();
 
         foreach($users as $key => $value) {
             $mappedUsers[$key] = array(
