@@ -1,16 +1,18 @@
-name: Create pull request
+name: Create production promotion pull request
 on: [push]
 
 jobs:
-  prForMasterBranch:
+  productionPromotion:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
         with:
-          ref: master
+          ref: production
+      - name: Reset promotion branch
+        run: |
+          git fetch origin master:master
+          git reset --hard master
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: update master branch
-          title: Update master branch
-          branch: temp
+          branch: production-promotion
