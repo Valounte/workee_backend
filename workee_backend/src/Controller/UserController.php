@@ -51,6 +51,12 @@ class UserController extends AbstractController
         $returnValue = $this->createResponseIfDataAreNotValid($userData);
 
         if ($returnValue instanceof Response) {
+
+
+
+
+
+
             return $returnValue;
         }
 
