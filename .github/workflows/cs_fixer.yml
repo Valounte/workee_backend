@@ -4,6 +4,8 @@ name: Main
 jobs:
   php-cs-fixer:
     name: PHP-CS-Fixer
+    env:
+      working-directory: ./workee_backend
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
