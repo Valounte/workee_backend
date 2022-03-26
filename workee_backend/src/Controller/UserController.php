@@ -5,17 +5,16 @@ namespace App\Controller;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\CompanyRepository;
-use App\ViewModel\UserViewModel;
 use App\Repository\TeamRepository;
 use App\Repository\UserRepository;
 use App\Services\JsonResponseService;
+use App\ViewModel\UserViewModel;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
@@ -28,7 +27,6 @@ class UserController extends AbstractController
     ) {
     }
 
-
     /**
      * @Route("api/user/{id}", name="get_user_by_id"),
      * methods("GET")
@@ -39,7 +37,6 @@ class UserController extends AbstractController
             new UserViewModel($this->userRepository->findUserById($id))
         );
     }
-
 
     /**
      * @Route("api/user", name="create_user"),
@@ -66,6 +63,7 @@ class UserController extends AbstractController
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
 
         $this->userRepository->save($user);
+
         return new Response('User created');
     }
 
@@ -85,7 +83,6 @@ class UserController extends AbstractController
 
         return $this->jsonResponseService->usersViewModelJsonResponse($usersViewModel, $teamId);
     }
-
 
     private function createResponseIfDataAreNotValid(array $userData): bool|Response|Team
     {
