@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   symfony-tests:
     env:
-      working-directory: workee_backend
+      working-directory: workee_backend/
     runs-on: ubuntu-latest
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
