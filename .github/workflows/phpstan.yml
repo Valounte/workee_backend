@@ -3,8 +3,6 @@ on: [pull_request]
 
 jobs:
   build:
-    env:
-      working-directory: workee_backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,5 +11,6 @@ jobs:
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
+          working-directory: workee_backend
           # Arguments to add to PHPStan
           arguments: 'src/ --level=4'
