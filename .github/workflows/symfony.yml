@@ -1,6 +1,7 @@
 name: Symfony
 
-on: [push, pull_request]
+on: [pull_request]
+
 
 jobs:
   symfony-tests:
@@ -19,14 +20,11 @@ jobs:
       id: composer-cache
       uses: actions/cache@v2
       with:
-        working-directory: workee_backend/
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
     - name: Install Dependencies
       run: cd workee_backend || composer install 
-    - name: Run static analysis 
-      run: cd workee_backend || vendor/bin/phpstan analyse src --level 3
     - name: Run cs php fix
-      run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
+      run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
