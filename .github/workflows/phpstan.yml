@@ -9,11 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: cd workee_backend || composer install
+        run:  composer install
       - name: Run phpstan
         uses: actions-x/phpstan@v1
         with:
-          paths: workee_backend/src/
+          paths: src/
           level: 3 # min : 0 - max : 8
           phpstanVersion: ^0.12.30
-          arguments: --autoload-file workee_backend/vendor/autoload.php
+          arguments: --autoload-file vendor/autoload.php
