@@ -29,9 +29,10 @@ jobs:
           ${{ runner.os }}-php-
     - name: Install Dependencies
       run: cd workee_backend || composer install 
-    - name: Run static analysis
-      uses: docker://oskarstark/phpstan-ga
+    - uses: actions/checkout@v2
+    - uses: php-actions/composer@v6
+    - uses: php-actions/phpstan@v3
       with:
-        args: analyse workee_backend/src/
+        path: src/
     - name: Run cs php fix
       run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
