@@ -2,15 +2,15 @@
 
 namespace App\Controller;
 
-use Firebase\JWT\JWT;
 use App\Repository\UserRepository;
 use App\Services\JsonResponseService;
 use App\ViewModel\UserViewModel;
+use Firebase\JWT\JWT;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class AuthController extends AbstractController
 {
@@ -29,7 +29,7 @@ class AuthController extends AbstractController
         $userData = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserByEmail($userData['email']);
 
-        if (!$user || !$this->encoder->isPasswordValid($user, $userData['password'])) {
+        if (! $user || ! $this->encoder->isPasswordValid($user, $userData['password'])) {
             return $this->json(
                 ['message' => 'email or password is wrong.'],
                 400,

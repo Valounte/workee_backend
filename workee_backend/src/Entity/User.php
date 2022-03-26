@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use DateTime;
-use App\Entity\Team;
-use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
