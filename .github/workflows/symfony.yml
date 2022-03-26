@@ -2,10 +2,12 @@ name: Symfony
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    working-directory: workee_backend
+
 jobs:
   symfony-tests:
-    env:
-      working-directory: workee_backend/
     runs-on: ubuntu-latest
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
