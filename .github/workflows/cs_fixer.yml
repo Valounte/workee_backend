@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: change directory
-      run: cd workee_backend
+      run: cd ./workee_backend/workee_backend
     - uses: actions/checkout@v2
     - name: PHP-CS-Fixer
       run: docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:latest
