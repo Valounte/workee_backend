@@ -11,6 +11,7 @@ jobs:
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
-          working-directory: workee_backend
           # Arguments to add to PHPStan
           arguments: 'src/ --level=3'
+          working-directory: workee_backend
+
