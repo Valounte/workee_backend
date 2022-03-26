@@ -47,7 +47,6 @@ final class UserViewModel
         return $this->team;
     }
 
-
     public function getCompany(): string
     {
         return $this->company->getCompanyName();
