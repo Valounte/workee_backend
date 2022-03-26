@@ -5,7 +5,8 @@ on: [pull_request]
 jobs:
     php-cs-fixer:
         runs-on: ubuntu-latest
-
+        env:
+            working-directory: ./workee_backend/
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
