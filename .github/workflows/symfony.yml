@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   symfony-tests:
+    env:
+      working-directory: workee_backend/
     runs-on: ubuntu-latest
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
@@ -19,7 +21,6 @@ jobs:
       id: composer-cache
       uses: actions/cache@v2
       with:
-        working-directory: workee_backend/
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
@@ -29,7 +30,6 @@ jobs:
     - name: Run static analysis
       uses: docker://oskarstark/phpstan-ga
       with:
-        working-directory: workee_backend/
-        args: analyse src/
+        args: analyse workee_backend/src/
     - name: Run cs php fix
       run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
