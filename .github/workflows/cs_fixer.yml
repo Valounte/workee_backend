@@ -10,4 +10,4 @@ jobs:
     - name: change directory
       run: cd ./workee_backend/
     - name: PHP-CS-Fixer
-      run: docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:latest
+      uses: docker://oskarstark/php-cs-fixer-ga
