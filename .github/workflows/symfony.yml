@@ -29,6 +29,7 @@ jobs:
     - name: Run static analysis
       uses: docker://oskarstark/phpstan-ga
       with:
-        args: analyse workee_backend/src/
+        working-directory: workee_backend/
+        args: analyse src/
     - name: Run cs php fix
       run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
