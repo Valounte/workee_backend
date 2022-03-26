@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: temp
+          ref: master
       - name: Reset promotion branch
         run: |
           git fetch origin master:master
