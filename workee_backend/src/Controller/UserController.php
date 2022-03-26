@@ -90,11 +90,11 @@ class UserController extends AbstractController
             return new Response('Email already used', 409);
         }
 
-        if (! filter_var($userData["email"], FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($userData["email"], FILTER_VALIDATE_EMAIL)) {
             return new Response('Bad email', 400);
         }
 
-        if (! $this->checkPasswordFormat($userData["password"])) {
+        if (!$this->checkPasswordFormat($userData["password"])) {
             return new Response('Password format not valid', 400);
         }
 
@@ -119,7 +119,7 @@ class UserController extends AbstractController
     {
         $pattern = '/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/';
 
-        if (! preg_match($pattern, $password)) {
+        if (!preg_match($pattern, $password)) {
             return false;
         }
 
