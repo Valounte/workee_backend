@@ -19,9 +19,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
-
     public function __construct(
-        private SerializerInterface $serializer,
         private UserRepository $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
@@ -49,7 +47,6 @@ class UserController extends AbstractController
      */
     public function createUser(Request $request): Response
     {
-
         $userData = json_decode($request->getContent(), true);
         $returnValue = $this->createResponseIfDataAreNotValid($userData);
 
@@ -111,10 +108,11 @@ class UserController extends AbstractController
         if (isset($userData["team"])) {
             $team = $this->teamRepository->findOneById($userData["team"]);
 
-            if ($team == null)
+            if ($team == null) {
                 return new Response("Team does not exist", 400);
-            else
+            } else {
                 return $team;
+            }
         }
 
         return true;

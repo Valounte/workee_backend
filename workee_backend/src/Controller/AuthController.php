@@ -14,12 +14,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthController extends AbstractController
 {
-
     public function __construct(
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $encoder,
         private JsonResponseService $jsonResponseService,
-    ){   
+    ) {
     }
 
     /**
@@ -29,7 +28,7 @@ class AuthController extends AbstractController
     {
         $userData = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserByEmail($userData['email']);
-        
+
         if (!$user || !$this->encoder->isPasswordValid($user, $userData['password'])) {
             return $this->json(
                 ['message' => 'email or password is wrong.'],
@@ -38,8 +37,9 @@ class AuthController extends AbstractController
         }
 
         $jwt = JWT::encode(
-            $this->jsonResponseService->userViewModelJsonResponse(new UserViewModel($user)), 
-            $this->getParameter('jwt_secret'), 'HS256'
+            $this->jsonResponseService->userViewModelJsonResponse(new UserViewModel($user)),
+            $this->getParameter('jwt_secret'),
+            'HS256'
         );
 
         return $this->json([

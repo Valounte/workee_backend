@@ -1,6 +1,7 @@
 name: Symfony
 
-on: [push, pull_request]
+on: [pull_request]
+
 
 jobs:
   symfony-tests:
@@ -25,3 +26,5 @@ jobs:
           ${{ runner.os }}-php-
     - name: Install Dependencies
       run: cd workee_backend || composer install 
+    - name: Run cs php fix
+      run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
