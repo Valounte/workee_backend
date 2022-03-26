@@ -12,6 +12,8 @@ jobs:
         run:  pwd || composer install
       - name: Run phpstan
         uses: actions-x/phpstan@v1
+        env:
+          working-directory: ./workee_backend
         with:
           paths: src/
           level: 3 # min : 0 - max : 8
