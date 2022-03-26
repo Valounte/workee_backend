@@ -16,6 +16,6 @@ jobs:
           working-directory: ./workee_backend
         with:
           paths: src/
-          level: 3 # min : 0 - max : 8
+          level: 0 # min : 0 - max : 8
           phpstanVersion: ^0.12.30
           arguments: --autoload-file vendor/autoload.php
