@@ -26,3 +26,7 @@ jobs:
           ${{ runner.os }}-php-
     - name: Install Dependencies
       run: cd workee_backend || composer install 
+    - name: Run static analysis 
+      run: cd workee_backend || vendor/bin/phpstan analyse src --level 3
+    - name: Run cs php fix
+      run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
