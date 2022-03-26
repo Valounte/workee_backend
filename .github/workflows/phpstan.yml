@@ -1,12 +1,11 @@
 name: phpstan
 on: [pull_request]
 
-env:
-  working-directory: workee_backend
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      working-directory: workee_backend
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -15,5 +14,4 @@ jobs:
         uses: chindit/actions-phpstan@master
         with:
           # Arguments to add to PHPStan
-          path: workee_backend/src/
-
+          arguments: 'src/ --level=3'
