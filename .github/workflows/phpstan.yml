@@ -4,14 +4,9 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      working-directory: workee_backend
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: cd workee_backend || composer install
       - name: PHPStan
-        uses: chindit/actions-phpstan@master
-        with:
-          # Arguments to add to PHPStan
-          arguments: 'src/ --level=3'
+        run: cd workee_backend || vendor/bin/phpstan analyse src --level 3
