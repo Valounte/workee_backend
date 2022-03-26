@@ -80,6 +80,9 @@ class UserController extends AbstractController
         $usersViewModel = array_map(
             static fn ($i): UserViewModel =>
             new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"], $i["company"])),
+
+
+            
             $users,
         );
 
