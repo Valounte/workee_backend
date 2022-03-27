@@ -8,10 +8,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      uses: php-actions/composer@v6
-      with:
-        working_dir: workee_backend/composer.json
+      run: cd workee_backend && composer install
     - uses: php-actions/phpstan@v3
       with:
-        path: ./workee_backend/src/
+        path: /src/
         autoload_file: vendor/autoload.php
