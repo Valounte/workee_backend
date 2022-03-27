@@ -5,11 +5,15 @@ on: [pull_request]
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./workee_backend/
 
     steps:
     - uses: actions/checkout@v2
-    - name: install dependencies
-      run: cd workee_backend || composer install || pwd || ls vendor/
+    - name: Install dependencies
+      uses: php-actions/composer@v6
+      with:
+        command: your-command-here
     - uses: php-actions/phpstan@v3
       with:
         path: ./workee_backend/src/
