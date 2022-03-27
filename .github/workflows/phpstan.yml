@@ -9,7 +9,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: cd workee_backend && composer install
-    - uses: php-actions/phpstan@v3
-      with:
-        path: /src/
-        autoload_file: vendor/autoload.php
+    - name: Run PhpStan
+      run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
