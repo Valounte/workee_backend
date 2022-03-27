@@ -74,8 +74,6 @@ class UserController extends AbstractController
     public function getUsersByTeam(int $teamId): JsonResponse
     {
         $users = $this->userRepository->findByTeamId($teamId);
-
-        dump($coucou);
         
         $usersViewModel = array_map(
             static fn ($i): UserViewModel =>
