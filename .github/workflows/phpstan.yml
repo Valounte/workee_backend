@@ -10,4 +10,4 @@ jobs:
     - name: Install dependencies
       run: cd workee_backend && composer install
     - name: Run PhpStan
-      run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
+      run: cd workee_backend && vendor/bin/phpstan analyse src --level 4
