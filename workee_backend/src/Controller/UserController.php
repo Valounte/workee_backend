@@ -75,6 +75,8 @@ class UserController extends AbstractController
     {
         $users = $this->userRepository->findByTeamId($teamId);
 
+        dump($coucou);
+        
         $usersViewModel = array_map(
             static fn ($i): UserViewModel =>
             new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"], $i["company"])),
