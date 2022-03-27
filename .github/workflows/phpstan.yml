@@ -13,4 +13,4 @@ jobs:
     - uses: php-actions/phpstan@v3
       with:
         path: ./workee_backend/src/
-        autoload_file: ./workee_backend/vendor/autoload.php
+        autoload_file: workee_backend/vendor/autoload.php
