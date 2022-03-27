@@ -13,7 +13,7 @@ jobs:
     - name: Install dependencies
       uses: php-actions/composer@v6
       with:
-        working_dir: ./workee_backend/composer.json
+        working_dir: ./workee_backend/workee_backend/composer.json
     - uses: php-actions/phpstan@v3
       with:
         path: ./workee_backend/src/
