@@ -12,8 +12,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       uses: php-actions/composer@v6
-      with:
-        command: your-command-here
     - uses: php-actions/phpstan@v3
       with:
         path: ./workee_backend/src/
