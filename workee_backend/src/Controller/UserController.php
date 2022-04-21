@@ -55,8 +55,8 @@ class UserController extends AbstractController
 
         $user = new User(
             $userData["email"],
-            $userData["firstName"],
-            $userData["lastName"],
+            $userData["firstname"],
+            $userData["lastname"],
             $this->companyRepository->findOneById($userData["company"]),
             $team,
         );
