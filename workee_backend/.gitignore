@@ -9,5 +9,6 @@
 /vendor/
 /tools/php-cs-fixer/vendor/
 ###< symfony/framework-bundle ###
-
+.php-cs-fixer.cache
+workee_backend/.php-cs-fixer.cache
 /mysql/
