@@ -1,12 +1,12 @@
 <?php
+namespace App\Infrastructure\Repository;
 
-namespace App\Repository;
 
-use App\Entity\Company;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
+use App\Core\Entity\Company;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Company|null find($id, $lockMode = null, $lockVersion = null)

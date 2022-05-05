@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Controller;
+namespace App\Client\Controller;
 
-use App\Repository\UserRepository;
-use App\Services\JsonResponseService;
-use App\ViewModel\UserViewModel;
+
+
 use Firebase\JWT\JWT;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Client\ViewModel\UserViewModel;
+use App\Core\Services\JsonResponseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Infrastructure\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthController extends AbstractController
 {

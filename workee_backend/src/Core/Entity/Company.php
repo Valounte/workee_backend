@@ -1,9 +1,9 @@
 <?php
+namespace App\Core\Entity;
 
-namespace App\Entity;
 
-use App\Repository\CompanyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Infrastructure\Repository\CompanyRepository;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
