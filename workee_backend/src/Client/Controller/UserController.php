@@ -1,14 +1,11 @@
 <?php
+namespace App\Client\Controller;
 
-namespace App\Controller;
-
-use App\Entity\Team;
-use App\Entity\User;
-use App\Repository\CompanyRepository;
-use App\Repository\TeamRepository;
-use App\Repository\UserRepository;
-use App\Services\JsonResponseService;
-use App\ViewModel\UserViewModel;
+use App\Client\ViewModel\UserViewModel;
+use App\Core\Entity\User;
+use App\Core\Services\JsonResponseService;
+use App\Infrastructure\Repository\CompanyRepository;
+use App\Infrastructure\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +19,6 @@ class UserController extends AbstractController
         private UserRepository $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
-        private TeamRepository $teamRepository,
         private CompanyRepository $companyRepository,
     ) {
     }
@@ -51,14 +47,11 @@ class UserController extends AbstractController
             return $returnValue;
         }
 
-        $team = $returnValue instanceof Team ? $returnValue : null;
-
         $user = new User(
             $userData["email"],
             $userData["firstname"],
             $userData["lastname"],
             $this->companyRepository->findOneById($userData["company"]),
-            $team,
         );
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
 
@@ -67,24 +60,7 @@ class UserController extends AbstractController
         return new Response('User created');
     }
 
-    /**
-     * @Route("api/users/{teamId}", name="get_users_by_team"),
-     * methods("GET")
-     */
-    public function getUsersByTeam(int $teamId): JsonResponse
-    {
-        $users = $this->userRepository->findByTeamId($teamId);
-        
-        $usersViewModel = array_map(
-            static fn ($i): UserViewModel =>
-            new UserViewModel(new User($i["email"], $i["firstname"], $i["lastname"], $i["company"])),
-            $users,
-        );
-
-        return $this->jsonResponseService->usersViewModelJsonResponse($usersViewModel, $teamId);
-    }
-
-    private function createResponseIfDataAreNotValid(array $userData): bool|Response|Team
+    private function createResponseIfDataAreNotValid(array $userData): bool|Response
     {
         if ($this->userRepository->findUserByEmail($userData["email"]) != null) {
             return new Response('Email already used', 409);
@@ -100,16 +76,6 @@ class UserController extends AbstractController
 
         if ($this->companyRepository->findOneById($userData["company"] == null)) {
             return new Response('Company does not exist', 400);
-        }
-
-        if (isset($userData["team"])) {
-            $team = $this->teamRepository->findOneById($userData["team"]);
-
-            if ($team == null) {
-                return new Response("Team does not exist", 400);
-            } else {
-                return $team;
-            }
         }
 
         return true;

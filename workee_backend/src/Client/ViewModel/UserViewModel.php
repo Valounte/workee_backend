@@ -1,10 +1,8 @@
 <?php
+namespace App\Client\ViewModel;
 
-namespace App\ViewModel;
-
-use App\Entity\Company;
-use App\Entity\Team;
-use App\Entity\User;
+use App\Core\Entity\Company;
+use App\Core\Entity\User;
 
 final class UserViewModel
 {
@@ -14,8 +12,6 @@ final class UserViewModel
 
     private string $lastname;
 
-    private ?Team $team = null;
-
     private Company $company;
 
     public function __construct(private User $user)
@@ -23,7 +19,6 @@ final class UserViewModel
         $this->email = $user->getEmail();
         $this->firstname = $user->getFirstname();
         $this->lastname = $user->getLastname();
-        $this->team = $user->getTeam();
         $this->company = $user->getCompany();
     }
 
@@ -41,12 +36,7 @@ final class UserViewModel
     {
         return $this->lastname;
     }
-
-    public function getTeam(): ?Team
-    {
-        return $this->team;
-    }
-
+    
     public function getCompany(): string
     {
         return $this->company->getCompanyName();

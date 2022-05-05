@@ -1,8 +1,7 @@
 <?php
+namespace App\Core\Entity;
 
-namespace App\Entity;
-
-use App\Repository\UserRepository;
+use App\Infrastructure\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -30,9 +29,6 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     private $password;
 
-    #[ORM\ManyToOne(targetEntity: Team::class)]
-    private $team;
-
     #[ORM\ManyToOne(targetEntity: Company::class)]
     #[ORM\JoinColumn(nullable: false)]
     private $company;
@@ -42,13 +38,11 @@ class User implements PasswordAuthenticatedUserInterface
         string $firstname,
         string $lastname,
         Company $company,
-        ?Team $team = null,
         DateTime $created_at = new DateTime('now'),
     ) {
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
-        $this->team = $team;
         $this->created_at = $created_at;
         $this->company = $company;
     }
@@ -114,18 +108,6 @@ class User implements PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getTeam(): ?Team
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?Team $team): self
-    {
-        $this->team = $team;
 
         return $this;
     }

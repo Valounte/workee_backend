@@ -1,31 +1,30 @@
 <?php
+namespace App\Infrastructure\Repository;
 
-namespace App\Repository;
-
-use App\Entity\Team;
+use App\Core\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Team|null find($id, $lockMode = null, $lockVersion = null)
- * @method Team|null findOneBy(array $criteria, array $orderBy = null)
- * @method Team[]    findAll()
- * @method Team[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Company|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Company|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Company[]    findAll()
+ * @method Company[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TeamRepository extends ServiceEntityRepository
+class CompanyRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Team::class);
+        parent::__construct($registry, Company::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(Team $entity, bool $flush = true): void
+    public function add(Company $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -37,7 +36,7 @@ class TeamRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(Team $entity, bool $flush = true): void
+    public function remove(Company $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -46,15 +45,15 @@ class TeamRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return Team[] Returns an array of Team objects
+    //  * @return Company[] Returns an array of Company objects
     //  */
     /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.exampleField = :val')
             ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
+            ->orderBy('c.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
@@ -62,10 +61,10 @@ class TeamRepository extends ServiceEntityRepository
     }
     */
 
-    public function findOneById($id): ?Team
+    public function findOneById($id): ?Company
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.id = :id')
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()

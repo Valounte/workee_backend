@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Client\Controller;
 
-use App\Repository\UserRepository;
-use App\Services\JsonResponseService;
-use App\ViewModel\UserViewModel;
+use App\Client\ViewModel\UserViewModel;
+use App\Core\Services\JsonResponseService;
+use App\Infrastructure\Repository\UserRepository;
 use Firebase\JWT\JWT;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
