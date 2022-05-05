@@ -1,8 +1,8 @@
 <?php
 namespace App\Client\ViewModel;
 
-use App\Core\Entity\User;
 use App\Core\Entity\Company;
+use App\Core\Entity\User;
 
 final class UserViewModel
 {

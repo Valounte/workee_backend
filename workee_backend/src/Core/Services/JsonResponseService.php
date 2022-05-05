@@ -1,10 +1,7 @@
 <?php
 namespace App\Core\Services;
 
-
-
 use App\Client\ViewModel\UserViewModel;
-use App\Infrastructure\Repository\TeamRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class JsonResponseService

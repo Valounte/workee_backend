@@ -1,17 +1,17 @@
 <?php
 namespace App\Client\Controller;
 
-use App\Core\Entity\User;
 use App\Client\ViewModel\UserViewModel;
+use App\Core\Entity\User;
 use App\Core\Services\JsonResponseService;
+use App\Infrastructure\Repository\CompanyRepository;
+use App\Infrastructure\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use App\Infrastructure\Repository\UserRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Infrastructure\Repository\CompanyRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
