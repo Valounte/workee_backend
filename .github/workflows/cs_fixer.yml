@@ -8,7 +8,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: install dependencies
-              run: cd back && composer install && cd tools/php-cs-fixer && composer install
+              run: cd workee_backend && composer install && cd tools/php-cs-fixer && composer install
 
             - name: Run PHP CS Fixer
-              run: tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests --diff --dry-run
+              run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests --diff --dry-run
