@@ -6,17 +6,9 @@ jobs:
     php-cs-fixer:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-              with:
-                  ref: ${{ github.head_ref }}
+            - uses: actions/checkout@v3
+            - name: install dependencies
+              run: cd back && composer install && cd tools/php-cs-fixer && composer install
 
             - name: Run PHP CS Fixer
-              uses: docker://oskarstark/php-cs-fixer-ga
-              with:
-                  args: --config=./workee_backend/.php_cs.dist.php --allow-risky=yes
-
-            - name: Commit changes
-              uses: stefanzweifel/git-auto-commit-action@v4
-              with:
-                  commit_message: Fix styling
+              run: cd back && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests --diff --dry-run
