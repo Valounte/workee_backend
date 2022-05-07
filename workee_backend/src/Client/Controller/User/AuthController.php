@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\Controller;
+namespace App\Client\Controller\User;
 
 use App\Client\ViewModel\UserViewModel;
 use App\Core\Services\JsonResponseService;

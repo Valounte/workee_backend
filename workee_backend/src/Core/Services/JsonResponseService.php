@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core\Services;
 
 use App\Client\ViewModel\UserViewModel;
@@ -16,5 +17,15 @@ final class JsonResponseService
         ];
 
         return new JsonResponse(['status' => "201", 'user' => $user], 201);
+    }
+
+    public function successJsonResponse(string $message): JsonResponse
+    {
+        return new JsonResponse(['status' => "201", 'message' => $message], 201);
+    }
+
+    public function errorJsonResponse(string $message): JsonResponse
+    {
+        return new JsonResponse(['status' => "400", 'message' => $message], 400);
     }
 }

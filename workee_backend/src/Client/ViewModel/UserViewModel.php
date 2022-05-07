@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Client\ViewModel;
 
-use App\Core\Entity\Company;
 use App\Core\Entity\User;
+use App\Core\Entity\Company;
 
 final class UserViewModel
 {
@@ -36,7 +37,7 @@ final class UserViewModel
     {
         return $this->lastname;
     }
-    
+
     public function getCompany(): string
     {
         return $this->company->getCompanyName();
