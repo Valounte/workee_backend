@@ -11,4 +11,4 @@ jobs:
               run: cd workee_backend && composer install && cd tools/php-cs-fixer && composer install
 
             - name: Run PHP CS Fixer
-              run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests --diff --dry-run
+              run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
