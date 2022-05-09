@@ -1,11 +1,15 @@
 <?php
-namespace App\Client\Controller;
+
+namespace App\Client\Controller\User;
 
 use App\Client\ViewModel\UserViewModel;
 use App\Core\Entity\User;
+use App\Core\Entity\UserTeam;
 use App\Core\Services\JsonResponseService;
 use App\Infrastructure\Repository\CompanyRepository;
+use App\Infrastructure\Repository\TeamRepository;
 use App\Infrastructure\Repository\UserRepository;
+use App\Infrastructure\Repository\UserTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +24,8 @@ class UserController extends AbstractController
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
         private CompanyRepository $companyRepository,
+        private TeamRepository $teamRepository,
+        private UserTeamRepository $userTeamRepository,
     ) {
     }
 
@@ -58,6 +64,26 @@ class UserController extends AbstractController
         $this->userRepository->save($user);
 
         return new Response('User created');
+    }
+
+    /**
+     * @Route("api/userTeam", name="add_to_team"),
+     * methods("POST")
+     */
+    public function addToTeam(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $user = $this->userRepository->findUserById($data["userId"]);
+        $team = $this->teamRepository->findOneById($data["teamId"]);
+
+        $userTeam = new UserTeam(
+            $user,
+            $team,
+        );
+
+        $this->userTeamRepository->add($userTeam);
+
+        return $this->jsonResponseService->successJsonResponse("user added to team");
     }
 
     private function createResponseIfDataAreNotValid(array $userData): bool|Response

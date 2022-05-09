@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core\Entity;
 
 use App\Infrastructure\Repository\UserRepository;

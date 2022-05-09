@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core\Entity;
 
 use App\Infrastructure\Repository\CompanyRepository;
@@ -14,6 +15,12 @@ class Company
 
     #[ORM\Column(type: 'string', length: 255)]
     private $companyName;
+
+    public function __construct(string $companyName)
+    {
+        $this->companyName = $companyName;
+    }
+
 
     public function getId(): ?int
     {

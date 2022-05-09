@@ -2,30 +2,30 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Core\Entity\Company;
+use App\Core\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Company|null find($id, $lockMode = null, $lockVersion = null)
- * @method Company|null findOneBy(array $criteria, array $orderBy = null)
- * @method Company[]    findAll()
- * @method Company[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Team|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Team|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Team[]    findAll()
+ * @method Team[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CompanyRepository extends ServiceEntityRepository
+class TeamRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Company::class);
+        parent::__construct($registry, Team::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(Company $entity, bool $flush = true): void
+    public function add(Team $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -37,7 +37,7 @@ class CompanyRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(Company $entity, bool $flush = true): void
+    public function remove(Team $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -46,7 +46,7 @@ class CompanyRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return Company[] Returns an array of Company objects
+    //  * @return Team[] Returns an array of Team objects
     //  */
     /*
     public function findByExampleField($value)
@@ -62,7 +62,7 @@ class CompanyRepository extends ServiceEntityRepository
     }
     */
 
-    public function findOneById($id): ?Company
+    public function findOneById($id): ?Team
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.id = :id')
