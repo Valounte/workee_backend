@@ -15,8 +15,11 @@ final class UserViewModel
 
     private Company $company;
 
+    private int $id;
+
     public function __construct(private User $user)
     {
+        $this->id = $user->getId();
         $this->email = $user->getEmail();
         $this->firstname = $user->getFirstname();
         $this->lastname = $user->getLastname();
@@ -41,5 +44,13 @@ final class UserViewModel
     public function getCompany(): string
     {
         return $this->company->getCompanyName();
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }

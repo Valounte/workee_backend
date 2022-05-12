@@ -37,8 +37,8 @@ class AuthController extends AbstractController
         }
 
         $jwt = JWT::encode(
-            $this->jsonResponseService->userViewModelJsonResponse(new UserViewModel($user)),
-            $this->getParameter('jwt_secret'),
+            ["id" => $user->getId()],
+            'jwt_secret',
             'HS256'
         );
 

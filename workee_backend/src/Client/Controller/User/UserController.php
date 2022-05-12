@@ -2,20 +2,24 @@
 
 namespace App\Client\Controller\User;
 
-use App\Client\ViewModel\UserViewModel;
+use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use App\Core\Entity\User;
 use App\Core\Entity\UserTeam;
+use App\Client\ViewModel\UserViewModel;
 use App\Core\Services\JsonResponseService;
-use App\Infrastructure\Repository\CompanyRepository;
-use App\Infrastructure\Repository\TeamRepository;
-use App\Infrastructure\Repository\UserRepository;
-use App\Infrastructure\Repository\UserTeamRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Services\TokenService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Infrastructure\Repository\TeamRepository;
+use App\Infrastructure\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Repository\CompanyRepository;
+use App\Infrastructure\Repository\UserTeamRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
@@ -26,6 +30,7 @@ class UserController extends AbstractController
         private CompanyRepository $companyRepository,
         private TeamRepository $teamRepository,
         private UserTeamRepository $userTeamRepository,
+        private TokenService $tokenService,
     ) {
     }
 
@@ -33,12 +38,36 @@ class UserController extends AbstractController
      * @Route("api/user/{id}", name="get_user_by_id"),
      * methods("GET")
      */
-    public function getUserById(int $id): JsonResponse
+    public function getUserById(int $id, Request $request): JsonResponse
     {
+        try {
+            $jwt = $this->tokenService->decode($request);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse('Unautorized');
+        }
+
         return $this->jsonResponseService->userViewModelJsonResponse(
             new UserViewModel($this->userRepository->findUserById($id))
         );
     }
+
+    /**
+     * @Route("api/me", name="get_me"),
+     * methods("GET")
+     */
+    public function me(Request $request): JsonResponse
+    {
+        try {
+            $jwt = $this->tokenService->decode($request);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+        }
+
+        $userViewModel = new UserViewModel($this->userRepository->findUserById($jwt['id']));
+
+        return $this->jsonResponseService->userViewModelJsonResponse($userViewModel);
+    }
+
 
     /**
      * @Route("api/user", name="create_user"),
