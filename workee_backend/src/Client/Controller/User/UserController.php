@@ -52,24 +52,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("api/me", name="get_me"),
-     * methods("GET")
-     */
-    public function me(Request $request): JsonResponse
-    {
-        try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
-        }
-
-        $userViewModel = new UserViewModel($this->userRepository->findUserById($jwt['id']));
-
-        return $this->jsonResponseService->userViewModelJsonResponse($userViewModel);
-    }
-
-
-    /**
      * @Route("api/user", name="create_user"),
      * methods("POST")
      */
