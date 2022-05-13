@@ -13,6 +13,7 @@ final class JsonResponseService
             "email" => $user->getEmail(),
             "firstname" => $user->getFirstname(),
             "lastname" => $user->getLastname(),
+            "teams" => $user->getTeams(),
             "company" => $user->getCompany(),
         ];
 

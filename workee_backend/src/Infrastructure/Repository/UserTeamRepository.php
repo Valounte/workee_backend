@@ -71,4 +71,17 @@ class UserTeamRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    //find team id by user id
+    public function findTeamsByUser($user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('t.id')
+            ->andWhere('c.user = :user')
+            ->leftJoin('c.team', 't')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

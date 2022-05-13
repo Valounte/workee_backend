@@ -41,7 +41,7 @@ class MeController extends AbstractController
             return $this->jsonResponseService->errorJsonResponse('Unauthorized');
         }
 
-        $userViewModel = new UserViewModel($this->userRepository->findUserById($jwt['id']));
+        $userViewModel = new UserViewModel($this->userRepository->findUserById($jwt['id']), $this->userTeamRepository);
 
         return $this->jsonResponseService->userViewModelJsonResponse($userViewModel);
     }

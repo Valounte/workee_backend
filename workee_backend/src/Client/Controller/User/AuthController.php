@@ -2,7 +2,6 @@
 
 namespace App\Client\Controller\User;
 
-use App\Client\ViewModel\UserViewModel;
 use App\Core\Services\JsonResponseService;
 use App\Infrastructure\Repository\UserRepository;
 use Firebase\JWT\JWT;

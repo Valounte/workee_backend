@@ -4,6 +4,7 @@ namespace App\Client\ViewModel;
 
 use App\Core\Entity\User;
 use App\Core\Entity\Company;
+use App\Infrastructure\Repository\UserTeamRepository;
 
 final class UserViewModel
 {
@@ -17,9 +18,12 @@ final class UserViewModel
 
     private int $id;
 
-    public function __construct(private User $user)
+    private array $teams;
+
+    public function __construct(private User $user, private UserTeamRepository $userTeamRepository)
     {
         $this->id = $user->getId();
+        $this->teams = $userTeamRepository->findTeamsByUser($user);
         $this->email = $user->getEmail();
         $this->firstname = $user->getFirstname();
         $this->lastname = $user->getLastname();
@@ -52,5 +56,13 @@ final class UserViewModel
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the value of teams
+     */ 
+    public function getTeams()
+    {
+        return $this->teams;
     }
 }

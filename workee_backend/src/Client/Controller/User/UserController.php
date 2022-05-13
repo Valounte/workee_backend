@@ -47,7 +47,7 @@ class UserController extends AbstractController
         }
 
         return $this->jsonResponseService->userViewModelJsonResponse(
-            new UserViewModel($this->userRepository->findUserById($id))
+            new UserViewModel($this->userRepository->findUserById($id), $this->userTeamRepository)
         );
     }
 
