@@ -83,4 +83,15 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    //find all users by company
+    public function findByCompany(int $company): ?array
+    {
+        $query = $this->createQueryBuilder('u')
+        ->andWhere('u.company = :company')
+        ->setParameter('company', $company)
+        ->getQuery();
+
+        return $query->getArrayResult();
+    }
 }
