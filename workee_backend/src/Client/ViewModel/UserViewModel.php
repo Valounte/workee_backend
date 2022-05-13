@@ -3,31 +3,48 @@
 namespace App\Client\ViewModel;
 
 use App\Core\Entity\User;
-use App\Core\Entity\Company;
 use App\Infrastructure\Repository\UserTeamRepository;
 
 final class UserViewModel
 {
-    private string $email;
+    public string $email;
 
-    private string $firstname;
+    public string $firstname;
 
-    private string $lastname;
+    public string $lastname;
 
-    private Company $company;
+    public int $companyId;
 
-    private int $id;
+    public int $id;
 
-    private array $teams;
+    public ?array $teams;
 
-    public function __construct(private User $user, private UserTeamRepository $userTeamRepository)
+    public function __construct(
+        int $id,
+        string $email,
+        string $firstname,
+        string $lastname,
+        int $companyId,
+        UserTeamRepository $userTeamRepository,
+    ) {
+        $this->email = $email;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->companyId = $companyId;
+        $this->id = $id;
+        $this->teams = $userTeamRepository->findOneTeamByUser($id);
+    }
+
+    public static function createByUser(User $user, UserTeamRepository $userTeamRepository): self
     {
-        $this->id = $user->getId();
-        $this->teams = $userTeamRepository->findTeamsByUser($user);
-        $this->email = $user->getEmail();
-        $this->firstname = $user->getFirstname();
-        $this->lastname = $user->getLastname();
-        $this->company = $user->getCompany();
+        return new self(
+            $user->getId(),
+            $$user->getEmail(),
+            $user->getFirstname(),
+            $user->getLastname(),
+            $user->getCompany()->getId(),
+            $userTeamRepository,
+        );
     }
 
     public function getEmail(): string
@@ -45,23 +62,23 @@ final class UserViewModel
         return $this->lastname;
     }
 
-    public function getCompany(): string
+    public function getCompanyId(): int
     {
-        return $this->company->getCompanyName();
+        return $this->companyId;
     }
 
     /**
      * Get the value of id
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Get the value of teams
-     */ 
-    public function getTeams()
+     */
+    public function getTeams(): ?array
     {
         return $this->teams;
     }

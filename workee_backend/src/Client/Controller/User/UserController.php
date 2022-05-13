@@ -3,8 +3,6 @@
 namespace App\Client\Controller\User;
 
 use Exception;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use App\Core\Entity\User;
 use App\Core\Entity\UserTeam;
 use App\Client\ViewModel\UserViewModel;
@@ -47,7 +45,7 @@ class UserController extends AbstractController
         }
 
         return $this->jsonResponseService->userViewModelJsonResponse(
-            new UserViewModel($this->userRepository->findUserById($id), $this->userTeamRepository)
+            UserViewModel::createByUser($this->userRepository->findUserById($id), $this->userTeamRepository)
         );
     }
 
@@ -78,11 +76,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("api/userTeam", name="add_to_team"),
+     * @Route("api/user/team", name="add_to_team"),
      * methods("POST")
      */
     public function addToTeam(Request $request): Response
     {
+        try {
+            $jwt = $this->tokenService->decode($request);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+        }
+
         $data = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserById($data["userId"]);
         $team = $this->teamRepository->findOneById($data["teamId"]);
@@ -95,6 +99,38 @@ class UserController extends AbstractController
         $this->userTeamRepository->add($userTeam);
 
         return $this->jsonResponseService->successJsonResponse("user added to team");
+    }
+
+    /**
+     * @Route("api/users/company", name="get_user_by_company"),
+     * methods("GET")
+     */
+    public function getUserByCompany(Request $request): JsonResponse
+    {
+        try {
+            $jwt = $this->tokenService->decode($request);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+        }
+
+        $users = $this->userRepository->findByCompany($jwt['company']);
+
+        $company = $this->companyRepository->findOneById($jwt['company']);
+
+        $usersViewModels = [];
+
+        foreach ($users as $user) {
+            $usersViewModels[] = new UserViewModel(
+                $user['id'],
+                $user['email'],
+                $user['firstname'],
+                $user['lastname'],
+                $company->getId(),
+                $this->userTeamRepository,
+            );
+        }
+
+        return new JsonResponse($usersViewModels);
     }
 
     private function createResponseIfDataAreNotValid(array $userData): bool|Response

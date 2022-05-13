@@ -36,7 +36,7 @@ class AuthController extends AbstractController
         }
 
         $jwt = JWT::encode(
-            ["id" => $user->getId()],
+            ["id" => $user->getId(), "company" => $user->getCompany()->getId()],
             'jwt_secret',
             'HS256'
         );

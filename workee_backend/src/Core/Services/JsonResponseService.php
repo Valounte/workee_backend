@@ -14,7 +14,7 @@ final class JsonResponseService
             "firstname" => $user->getFirstname(),
             "lastname" => $user->getLastname(),
             "teams" => $user->getTeams(),
-            "company" => $user->getCompany(),
+            "company" => $user->getCompanyId(),
         ];
 
         return new JsonResponse(['status' => "201", 'user' => $user], 201);
