@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Infrastructure\Repository\TeamRepository;
 use App\Infrastructure\Repository\CompanyRepository;
+use App\Client\ViewModel\TeamViewModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeamController extends AbstractController
 {
@@ -38,5 +40,21 @@ class TeamController extends AbstractController
         return $this->jsonResponseService->successJsonResponse(
             'Team created successfully.'
         );
+    }
+
+    /**
+    * @Route("/api/teams", name="listTeams", methods={"GET"})
+    */
+    public function listTeams()
+    {
+        $teams = $this->teamRepository->findAll();
+
+        $response = array();
+
+        foreach ($teams as $team) {
+            $response = TeamViewModel::createByTeam($team);
+        }
+
+        return new JsonResponse($response);
     }
 }
