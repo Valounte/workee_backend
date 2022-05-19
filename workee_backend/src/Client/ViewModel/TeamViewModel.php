@@ -35,10 +35,4 @@ final class TeamViewModel
     {
         return $this->teamName;
     }
-
-    /* get value of team's company name */
-    public function getCompanyName(): string
-    {
-        return $this->company->getCompanyName();
-    }
 }
