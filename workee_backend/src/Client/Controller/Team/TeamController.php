@@ -65,11 +65,11 @@ class TeamController extends AbstractController
     public function removeTeam(Request $request, $id): Response
     {
         $team = $this->teamRepository->findOneById($id);
-       
+
         if (!$team) {
             $response = new JsonResponseService();
             $response = $response->errorJsonResponse("No Team Found with the selected ID", 404);
-            return $response;          
+            return $response;
         }
 
         $this->teamRepository->remove($team);
@@ -99,7 +99,7 @@ class TeamController extends AbstractController
         $response = TeamViewModel::createByTeam($team);
         return new JsonResponse($response);
     }
-    
+
     /**
     * @Route("/api/team/{id}", name="getTeamById", methods={"get"})
     */

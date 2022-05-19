@@ -25,8 +25,8 @@ final class JsonResponseService
         return new JsonResponse(['status' => "201", 'message' => $message], 201);
     }
 
-    public function errorJsonResponse(string $message): JsonResponse
+    public function errorJsonResponse(string $message, int $code): JsonResponse
     {
-        return new JsonResponse(['status' => "400", 'message' => $message], 400);
+        return new JsonResponse(['message' => $message], $code);
     }
 }
