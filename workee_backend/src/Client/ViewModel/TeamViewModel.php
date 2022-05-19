@@ -10,16 +10,17 @@ final class TeamViewModel
     public function __construct(
         public int $id,
         public string $teamName,
-        public Company $company,
+        public int $companyId,
     ) {
     }
 
     public static function createByTeam(Team $team): self
     {
+        $company = $team->getCompany();
         return new self(
             $team->getId(),
             $team->getTeamName(),
-            $team->getCompany(),
+            $company->getId(),
         );
     }
 
