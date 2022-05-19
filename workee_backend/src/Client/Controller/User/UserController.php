@@ -41,7 +41,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unautorized');
+            return $this->jsonResponseService->errorJsonResponse('Unautorized', 401);
         }
 
         return $this->jsonResponseService->userViewModelJsonResponse(
@@ -84,7 +84,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -110,7 +110,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
         }
 
         $users = $this->userRepository->findByCompany($jwt['company']);
