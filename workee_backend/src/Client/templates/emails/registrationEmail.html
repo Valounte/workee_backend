@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .logoDiv {
+            text-align: center;
+        }
+        .logo {
+            width: 400px;
+        }
+        .divText {
+            text-align: center;
+        }
+        .btn-workee {
+            background-color: #FF7F27;
+            border-radius: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="body">
+    <div class="container">
+        <div class="header text-center">
+        <div class="logoDiv">
+            <img class="logo" src="http://brangers.eu/assets/logo-workee.png" alt="Logo"></div>
+        </div>
+        <div class="content divText">
+            <h1 class="text-center">Registration Link</h1>
+            <p class="block">
+                Hello {{ name }},<br><br>
+                Someone of your organisation create you a account.<br>
+                Click on the link bellow to fill in your password and complete your registration.
+            </p>
+
+            <a class="btn-workee" href="http://workee.fr/missing?hash={{hash}}" class="btn btn-light">Register</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

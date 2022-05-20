@@ -5,16 +5,10 @@ namespace App\Core\Services;
 use App\Core\Entity\User;
 use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Mailer\MailerInterface;
 
-final class EmailService
+final class RegistrationEmailGenerator
 {
-    public function __construct(
-        private MailerInterface $mailer,
-    ) {
-    }
-
-    public function sendRegistrationEmail(User $user, string $token): void
+    public static function generate(User $user, string $token): TemplatedEmail
     {
         $emailTemplate = 'emails/registrationEmail.html.twig';
 
@@ -26,6 +20,6 @@ final class EmailService
         ->context(['name' => $user->getFirstname(), 'token' => $token])
         ->htmlTemplate($emailTemplate);
 
-        $this->mailer->send($email);
+        return $email;
     }
 }

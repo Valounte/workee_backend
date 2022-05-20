@@ -3,10 +3,13 @@
 namespace App\Client\Controller\User;
 
 use Exception;
+use Firebase\JWT\JWT;
 use App\Core\Entity\User;
 use App\Core\Entity\UserTeam;
 use App\Client\ViewModel\UserViewModel;
+use App\Core\Services\CheckUserInformationService;
 use App\Core\Services\JsonResponseService;
+use App\Core\Services\RegistrationEmailGenerator;
 use App\Infrastructure\Services\TokenService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Repository\CompanyRepository;
 use App\Infrastructure\Repository\UserTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
@@ -29,6 +33,8 @@ class UserController extends AbstractController
         private TeamRepository $teamRepository,
         private UserTeamRepository $userTeamRepository,
         private TokenService $tokenService,
+        private MailerInterface $mailer,
+        private CheckUserInformationService $checkUserInformationService,
     ) {
     }
 
@@ -56,7 +62,7 @@ class UserController extends AbstractController
     public function createUser(Request $request): Response
     {
         $userData = json_decode($request->getContent(), true);
-        $returnValue = $this->createResponseIfDataAreNotValid($userData);
+        $returnValue = $this->checkUserInformationService->createResponseIfDataAreNotValid($userData);
 
         if ($returnValue instanceof Response) {
             return $returnValue;
@@ -129,38 +135,6 @@ class UserController extends AbstractController
             );
         }
 
-        return $this->jsonResponseService->successJsonResponse($usersViewModels, 200);
-    }
-
-    private function createResponseIfDataAreNotValid(array $userData): bool|Response
-    {
-        if ($this->userRepository->findUserByEmail($userData["email"]) != null) {
-            $this->jsonResponseService->errorJsonResponse('Email already used', 409);
-        }
-
-        if (!filter_var($userData["email"], FILTER_VALIDATE_EMAIL)) {
-            $this->jsonResponseService->errorJsonResponse('Bad Email', 400);
-        }
-
-        if (!$this->checkPasswordFormat($userData["password"])) {
-            $this->jsonResponseService->errorJsonResponse('Password format not valid', 400);
-        }
-
-        if ($this->companyRepository->findOneById($userData["company"] == null)) {
-            $this->jsonResponseService->errorJsonResponse('Company does not exist', 400);
-        }
-
-        return true;
-    }
-
-    private function checkPasswordFormat(string $password): bool
-    {
-        $pattern = '/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/';
-
-        if (!preg_match($pattern, $password)) {
-            return false;
-        }
-
-        return true;
+        return new JsonResponse($usersViewModels, 200);
     }
 }
