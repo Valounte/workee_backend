@@ -17,7 +17,7 @@ final class JsonResponseService
             "company" => $user->getCompanyId(),
         ];
 
-        return new JsonResponse(['status' => "201", 'user' => $user], 201);
+        return new JsonResponse(['user' => $user], 200);
     }
 
     public function successJsonResponse(string $message, int $code): JsonResponse

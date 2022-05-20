@@ -57,8 +57,8 @@ class TeamController extends AbstractController
             array_push($response, TeamViewModel::createByTeam($team));
         }
 
-        return $this->jsonResponseService->successJsonResponse(
-            $response,
+        return new JsonResponse(
+            ["teams" => $response],
             200
         );
     }
@@ -102,8 +102,8 @@ class TeamController extends AbstractController
 
         $team->setTeamName($teamData["teamName"]);
         $this->teamRepository->add($team);
-        return $this->jsonResponseService->successJsonResponse(
-            TeamViewModel::createByTeam($team),
+        return new JsonResponse(
+            ["team" => TeamViewModel::createByTeam($team)],
             200
         );
     }
@@ -122,8 +122,8 @@ class TeamController extends AbstractController
             );
         }
 
-        return $this->jsonResponseService->successJsonResponse(
-            TeamViewModel::createByTeam($team),
+        return new JsonResponse(
+            ["team" => TeamViewModel::createByTeam($team)],
             200
         );
     }

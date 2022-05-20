@@ -39,7 +39,7 @@ final class UserViewModel
     {
         return new self(
             $user->getId(),
-            $$user->getEmail(),
+            $user->getEmail(),
             $user->getFirstname(),
             $user->getLastname(),
             $user->getCompany()->getId(),
