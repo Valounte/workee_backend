@@ -27,7 +27,7 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime')]
     private $created_at;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $password;
 
     #[ORM\ManyToOne(targetEntity: Company::class)]
