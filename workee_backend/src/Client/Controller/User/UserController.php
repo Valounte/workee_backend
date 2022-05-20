@@ -41,7 +41,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unautorized');
+            return $this->jsonResponseService->errorJsonResponse('Unautorized', 401);
         }
 
         return $this->jsonResponseService->userViewModelJsonResponse(
@@ -68,11 +68,10 @@ class UserController extends AbstractController
             $userData["lastname"],
             $this->companyRepository->findOneById($userData["company"]),
         );
+
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
-
         $this->userRepository->save($user);
-
-        return new Response('User created');
+        return $this->jsonResponseService->successJsonResponse("User successfully created !", 201);
     }
 
     /**
@@ -84,7 +83,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -98,7 +97,7 @@ class UserController extends AbstractController
 
         $this->userTeamRepository->add($userTeam);
 
-        return $this->jsonResponseService->successJsonResponse("user added to team");
+        return $this->jsonResponseService->successJsonResponse("user successfully added to the team !", 200);
     }
 
     /**
@@ -110,7 +109,7 @@ class UserController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
         }
 
         $users = $this->userRepository->findByCompany($jwt['company']);
@@ -130,25 +129,25 @@ class UserController extends AbstractController
             );
         }
 
-        return new JsonResponse($usersViewModels);
+        return $this->jsonResponseService->successJsonResponse($usersViewModels, 200);
     }
 
     private function createResponseIfDataAreNotValid(array $userData): bool|Response
     {
         if ($this->userRepository->findUserByEmail($userData["email"]) != null) {
-            return new Response('Email already used', 409);
+            $this->jsonResponseService->errorJsonResponse('Email already used', 409);
         }
 
         if (!filter_var($userData["email"], FILTER_VALIDATE_EMAIL)) {
-            return new Response('Bad email', 400);
+            $this->jsonResponseService->errorJsonResponse('Bad Email', 400);
         }
 
         if (!$this->checkPasswordFormat($userData["password"])) {
-            return new Response('Password format not valid', 400);
+            $this->jsonResponseService->errorJsonResponse('Password format not valid', 400);
         }
 
         if ($this->companyRepository->findOneById($userData["company"] == null)) {
-            return new Response('Company does not exist', 400);
+            $this->jsonResponseService->errorJsonResponse('Company does not exist', 400);
         }
 
         return true;

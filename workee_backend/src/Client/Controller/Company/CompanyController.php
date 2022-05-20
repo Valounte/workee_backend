@@ -30,7 +30,8 @@ class CompanyController extends AbstractController
         $this->companyRepository->add($company);
 
         return $this->jsonResponseService->successJsonResponse(
-            'Company created successfully.'
+            'Company created successfully.',
+            201
         );
     }
 }

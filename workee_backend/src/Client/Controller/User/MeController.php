@@ -38,7 +38,7 @@ class MeController extends AbstractController
         try {
             $jwt = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
+            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
         }
 
         $userViewModel = UserViewModel::createByUser($this->userRepository->findUserById($jwt['id']), $this->userTeamRepository);
