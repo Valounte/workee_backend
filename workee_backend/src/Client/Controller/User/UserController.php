@@ -72,7 +72,6 @@ class UserController extends AbstractController
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
         $this->userRepository->save($user);
         return $this->jsonResponseService->successJsonResponse("User successfully created !", 201);
-
     }
 
     /**
@@ -129,7 +128,7 @@ class UserController extends AbstractController
                 $this->userTeamRepository,
             );
         }
-        
+
         return $this->jsonResponseService->successJsonResponse($usersViewModels, 200);
     }
 
