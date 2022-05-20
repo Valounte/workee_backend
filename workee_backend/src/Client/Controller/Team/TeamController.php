@@ -39,7 +39,7 @@ class TeamController extends AbstractController
         $this->teamRepository->add($team);
 
         return $this->jsonResponseService->successJsonResponse(
-            'Team created successfully.'
+            'Team created successfully.', 201
         );
     }
 
@@ -56,7 +56,9 @@ class TeamController extends AbstractController
             array_push($response, TeamViewModel::createByTeam($team));
         }
 
-        return new JsonResponse($response);
+        return $this->jsonResponseService->successJsonResponse(
+            $response, 200
+        );
     }
 
     /**
@@ -67,14 +69,16 @@ class TeamController extends AbstractController
         $team = $this->teamRepository->findOneById($id);
 
         if (!$team) {
-            $response = new JsonResponseService();
-            $response = $response->errorJsonResponse("No Team Found with the selected ID", 404);
+            $response = $this->jsonResponse->errorJsonResponse(
+                "No Team Found with the selected ID", 404
+            );
             return $response;
         }
 
         $this->teamRepository->remove($team);
-
-        return new Response('Team successfully erased !');
+        return $this->jsonResponse->successJsonResponse(
+            "Team successfully removed !", 200
+        );    
     }
 
     /**
@@ -83,21 +87,19 @@ class TeamController extends AbstractController
     public function editTeam(Request $request, $id): Response
     {
         $teamData = json_decode($request->getContent(), true);
-
         $team = $this->teamRepository->findOneById($id);
 
         if (!$team) {
-            $response = new JsonResponseService();
-            $response = $response->errorJsonResponse("No Team Found with the selected ID", 404);
-            return $response;
+            return $this->jsonResponse->errorJsonResponse(
+                "No Team Found with the selected ID", 404
+            );
         }
 
         $team->setTeamName($teamData["teamName"]);
-
         $this->teamRepository->add($team);
-
-        $response = TeamViewModel::createByTeam($team);
-        return new JsonResponse($response);
+        return $this->jsonResponse->successJsonResponse(
+            TeamViewModel::createByTeam($team), 200
+        );
     }
 
     /**
@@ -108,12 +110,13 @@ class TeamController extends AbstractController
         $team = $this->teamRepository->findOneById($id);
 
         if (!$team) {
-            $response = new JsonResponseService();
-            $response = $response->errorJsonResponse("No Team Found with the selected ID", 404);
-            return $response;
+            return $this->jsonResponse->errorJsonResponse(
+                "No Team Found with the selected ID", 404
+            );
         }
 
-        $response = TeamViewModel::createByTeam($team);
-        return new JsonResponse($response);
+        return $this->jsonResponse->successJsonResponse(
+            TeamViewModel::createByTeam($team), 200
+        );
     }
 }
