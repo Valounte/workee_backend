@@ -18,8 +18,9 @@ use App\Infrastructure\Repository\CompanyRepository;
 use App\Infrastructure\Repository\UserTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Filters\Authentification\ITokenAuthenticatedController;
 
-class UserController extends AbstractController
+class UserController extends AbstractController implements ITokenAuthenticatedController
 {
     public function __construct(
         private UserRepository $userRepository,
@@ -38,11 +39,6 @@ class UserController extends AbstractController
      */
     public function getUserById(int $id, Request $request): JsonResponse
     {
-        try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unautorized');
-        }
 
         return $this->jsonResponseService->userViewModelJsonResponse(
             UserViewModel::createByUser($this->userRepository->findUserById($id), $this->userTeamRepository)
@@ -81,11 +77,6 @@ class UserController extends AbstractController
      */
     public function addToTeam(Request $request): Response
     {
-        try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized');
-        }
 
         $data = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserById($data["userId"]);
