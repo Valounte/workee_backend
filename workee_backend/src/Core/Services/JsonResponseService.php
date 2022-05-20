@@ -17,16 +17,16 @@ final class JsonResponseService
             "company" => $user->getCompanyId(),
         ];
 
-        return new JsonResponse(['status' => "201", 'user' => $user], 201);
+        return new JsonResponse(['user' => $user], 200);
     }
 
-    public function successJsonResponse(string $message): JsonResponse
+    public function successJsonResponse(string $message, int $code): JsonResponse
     {
-        return new JsonResponse(['status' => "201", 'message' => $message], 201);
+        return new JsonResponse(['message' => $message], $code);
     }
 
-    public function errorJsonResponse(string $message): JsonResponse
+    public function errorJsonResponse(string $message, int $code): JsonResponse
     {
-        return new JsonResponse(['status' => "400", 'message' => $message], 400);
+        return new JsonResponse(['message' => $message], $code);
     }
 }
