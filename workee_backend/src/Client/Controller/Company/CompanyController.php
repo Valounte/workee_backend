@@ -2,18 +2,20 @@
 
 namespace App\Client\Controller\Company;
 
-use App\Core\Entity\Company;
-use App\Core\Services\JsonResponseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Core\Components\Company\Entity\Company;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Infrastructure\Repository\CompanyRepository;
+use App\Infrastructure\Response\Services\JsonResponseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CompanyController extends AbstractController
 {
-    public function __construct(private JsonResponseService $jsonResponseService, private CompanyRepository $companyRepository)
-    {
+    public function __construct(
+        private JsonResponseService $jsonResponseService,
+        private CompanyRepositoryInterface $companyRepository
+    ) {
     }
 
     /**

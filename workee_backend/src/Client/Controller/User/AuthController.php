@@ -4,31 +4,34 @@ namespace App\Client\Controller\User;
 
 use Exception;
 use Firebase\JWT\JWT;
-use App\Core\Entity\User;
-use App\Core\Services\CheckUserInformationService;
-use App\Core\Services\JsonResponseService;
-use App\Infrastructure\Services\TokenService;
+use App\Core\Components\User\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Core\Services\RegistrationEmailGenerator;
-use App\Infrastructure\Repository\CompanyRepository;
-use App\Infrastructure\Repository\UserRepository;
+use App\Infrastructure\Token\Services\TokenService;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Infrastructure\User\Services\CheckUserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Mailer\MailerInterface;
+use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepositoryInterface $userRepository,
         private UserPasswordHasherInterface $encoder,
         private JsonResponseService $jsonResponseService,
         private TokenService $tokenService,
         private UserPasswordHasherInterface $passwordHasher,
         private CheckUserInformationService $checkUserInformationService,
         private MailerInterface $mailer,
-        private CompanyRepository $companyRepository,
+        private CompanyRepositoryInterface $companyRepository,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -60,7 +63,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * @Route("/api/registration/password", name="registrationEditPassword", methods={"POST"})
+     * @Route("/api/registration/password", name="registrationEditPassword", methods={"PUT"})
      */
     public function registrationEditPassword(Request $request): Response
     {
@@ -69,7 +72,7 @@ class AuthController extends AbstractController
         try {
             $token = $this->tokenService->decode($request);
         } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Invalid token', 400);
+            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
         }
 
         $user = $this->userRepository->findUserByEmail($token["email"]);
@@ -104,30 +107,22 @@ class AuthController extends AbstractController
         }
 
         $userData = json_decode($request->getContent(), true);
-        $returnValue = $this->checkUserInformationService->createResponseIfDataAreNotValid($userData);
+        $company = $this->companyRepository->findOneById($jwt["company"]);
 
-        if ($returnValue instanceof Response) {
-            return $returnValue;
-        }
-
-        $user = new User(
-            $userData["email"],
+        $registerUserCommand = new RegisterUserCommand(
             $userData["firstname"],
             $userData["lastname"],
-            $this->companyRepository->findOneById($jwt["company"]),
+            $userData["email"],
+            $company,
         );
 
-        $this->userRepository->save($user);
+        try {
+            $this->messageBus->dispatch($registerUserCommand);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
+        }
 
-        $token = JWT::encode(
-            ["email" => $userData["email"]],
-            'jwt_secret',
-            'HS256'
-        );
-
-        $email = RegistrationEmailGenerator::generate($user, $token);
-
-        $this->mailer->send($email);
+        $this->messageBus->dispatch(new SendInviteEmailCommand($userData["email"]));
 
         return $this->jsonResponseService->successJsonResponse("User successfully invited !", 201);
     }

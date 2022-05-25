@@ -3,28 +3,28 @@
 namespace App\Client\Controller\User;
 
 use Exception;
-use App\Client\ViewModel\UserViewModel;
-use App\Core\Services\JsonResponseService;
-use App\Infrastructure\Services\TokenService;
+use App\Client\ViewModel\User\UserViewModel;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Infrastructure\Repository\TeamRepository;
-use App\Infrastructure\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Infrastructure\Repository\CompanyRepository;
-use App\Infrastructure\Repository\UserTeamRepository;
+use App\Infrastructure\Token\Services\TokenService;
+use App\Infrastructure\Response\Services\JsonResponseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class MeController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepositoryInterface $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
-        private CompanyRepository $companyRepository,
-        private TeamRepository $teamRepository,
-        private UserTeamRepository $userTeamRepository,
+        private CompanyRepositoryInterface $companyRepository,
+        private TeamRepositoryInterface $teamRepository,
+        private UserTeamRepositoryInterface $userTeamRepository,
         private TokenService $tokenService,
     ) {
     }
