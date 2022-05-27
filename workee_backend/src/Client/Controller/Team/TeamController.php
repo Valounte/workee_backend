@@ -2,24 +2,23 @@
 
 namespace App\Client\Controller\Team;
 
-use App\Core\Entity\Team;
-use App\Core\Entity\Company;
-use App\Core\Services\JsonResponseService;
+use App\Core\Components\Team\Entity\Team;
+use App\Client\ViewModel\Team\TeamViewModel;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Infrastructure\Repository\TeamRepository;
-use App\Infrastructure\Repository\CompanyRepository;
-use App\Client\ViewModel\TeamViewModel;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Response\Services\JsonResponseService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TeamController extends AbstractController
 {
     public function __construct(
-        private TeamRepository $teamRepository,
+        private TeamRepositoryInterface $teamRepository,
         private JsonResponseService $jsonResponseService,
-        private CompanyRepository $companyRepository,
+        private CompanyRepositoryInterface $companyRepository,
     ) {
     }
 

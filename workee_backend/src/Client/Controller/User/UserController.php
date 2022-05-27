@@ -3,38 +3,38 @@
 namespace App\Client\Controller\User;
 
 use Exception;
-use Firebase\JWT\JWT;
-use App\Core\Entity\User;
-use App\Core\Entity\UserTeam;
-use App\Client\ViewModel\UserViewModel;
-use App\Core\Services\CheckUserInformationService;
-use App\Core\Services\JsonResponseService;
-use App\Core\Services\RegistrationEmailGenerator;
-use App\Infrastructure\Services\TokenService;
+use App\Client\ViewModel\User\UserViewModel;
+use App\Core\Components\User\Entity\UserTeam;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Infrastructure\Repository\TeamRepository;
-use App\Infrastructure\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Infrastructure\Repository\CompanyRepository;
-use App\Infrastructure\Repository\UserTeamRepository;
+use App\Infrastructure\Token\Services\TokenService;
+use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Infrastructure\User\Services\CheckUserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Mailer\MailerInterface;
+use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
+use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepositoryInterface $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserPasswordHasherInterface $passwordHasher,
-        private CompanyRepository $companyRepository,
-        private TeamRepository $teamRepository,
-        private UserTeamRepository $userTeamRepository,
+        private CompanyRepositoryInterface $companyRepository,
+        private TeamRepositoryInterface $teamRepository,
+        private UserTeamRepositoryInterface $userTeamRepository,
         private TokenService $tokenService,
         private MailerInterface $mailer,
         private CheckUserInformationService $checkUserInformationService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -62,21 +62,17 @@ class UserController extends AbstractController
     public function createUser(Request $request): Response
     {
         $userData = json_decode($request->getContent(), true);
-        $returnValue = $this->checkUserInformationService->createResponseIfDataAreNotValid($userData);
 
-        if ($returnValue instanceof Response) {
-            return $returnValue;
-        }
-
-        $user = new User(
-            $userData["email"],
+        $registerUserCommand = new RegisterUserCommand(
             $userData["firstname"],
             $userData["lastname"],
+            $userData["email"],
             $this->companyRepository->findOneById($userData["company"]),
+            $userData["password"],
         );
 
-        $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
-        $this->userRepository->save($user);
+        $this->messageBus->dispatch($registerUserCommand);
+
         return $this->jsonResponseService->successJsonResponse("User successfully created !", 201);
     }
 
