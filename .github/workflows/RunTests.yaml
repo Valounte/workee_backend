@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: install dependencies
-      run: cd workee_backend && composer install && apt install symfony-cli
+      run: cd workee_backend && composer install
     - name: Execute Fonctionnal tests
       run: cd workee_backend && make tests
