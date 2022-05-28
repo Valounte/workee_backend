@@ -9,4 +9,5 @@ interface CompanyRepositoryInterface
     public function add(Company $entity, bool $flush = true): void;
     public function remove(Company $entity, bool $flush = true): void;
     public function findOneById($id): ?Company;
+    public function findOneByName(string $name): ?Company;
 }

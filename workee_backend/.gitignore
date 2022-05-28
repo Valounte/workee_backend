@@ -12,3 +12,13 @@
 .php-cs-fixer.cache
 workee_backend/.php-cs-fixer.cache
 /mysql/
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
