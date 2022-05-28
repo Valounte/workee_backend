@@ -1,26 +1,46 @@
 <?php
+namespace App\Tests\Functionnal\Client\Controller\User;
 
-namespace App\Tests\Client\Controller\User;
 
-use App\DataFixtures\CompanyFixture;
-use App\Tests\Services\LoginService;
+use App\Tests\Functionnal\Services\LoginService;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Infrastructure\User\Repository\UserRepository;
 use App\Infrastructure\Company\Repository\CompanyRepository;
-use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Tests\Functionnal\AbstractApiTestCase;
 
-final class AuthControllerTest extends WebTestCase
+final class AuthControllerTest extends AbstractApiTestCase
 {
     private CompanyRepository $companyRepository;
 
-    private KernelBrowser $client;
-
     protected function setUp(): void
     {
-        $this->client = static::createClient([], []);
+        $this->client = static::createClient();
         $this->companyRepository = static::getContainer()->get(CompanyRepository::class);
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+        parent::setUp();
+    }
+
+    public function test_invite_user()
+    {
+        $bodyInvite = [
+            'email' => 'workeetech@gmail.com',
+            'firstname' => 'work',
+            'lastname' => 'EE',
+        ];
+
+        $response = $this->client->request(
+            'POST',
+            '/api/invite/user',
+            [],
+            [],
+            array('HTTP_Authorization' => LoginService::generateToken()),
+            json_encode($bodyInvite)
+        );
+
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('User successfully invited !', $response->message);
     }
 
 
@@ -29,7 +49,7 @@ final class AuthControllerTest extends WebTestCase
         $company = $this->companyRepository->findOneByName('Instapro');
 
         $bodyRegister = [
-            'email' => 'val@gmail.com',
+            'email' => 'workeetech@gmail.com',
             'password' => 'Password123456!',
             'company' => $company->getId(),
             'firstname' => 'jéjé',
@@ -37,7 +57,7 @@ final class AuthControllerTest extends WebTestCase
         ];
 
         $bodyLogin = [
-            'email' => 'val@gmail.com',
+            'email' => 'workeetech@gmail.com',
             'password' => 'Password123456!',
         ];
 
@@ -51,7 +71,6 @@ final class AuthControllerTest extends WebTestCase
         );
 
         $response = json_decode($this->client->getResponse()->getContent());
-
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('User successfully created !', $response->message);
 
@@ -65,7 +84,6 @@ final class AuthControllerTest extends WebTestCase
         );
 
         $response = json_decode($this->client->getResponse()->getContent());
-
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('success!', $response->message);
     }
