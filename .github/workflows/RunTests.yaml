@@ -10,4 +10,4 @@ jobs:
     - name: install dependencies
       run: cd workee_backend && composer install
     - name: Execute Fonctionnal tests
-      run: cd workee_backend && make tests
+      run: cd workee_backend && php bin/phpunit
