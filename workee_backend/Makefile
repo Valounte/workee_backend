@@ -6,4 +6,5 @@ tests:
 	bin/console doctrine:migrations:migrate -n --env=test
 	bin/console doctrine:fixtures:load -n --env=test
 	vendor/bin/phpunit
+	
 .PHONY: tests
