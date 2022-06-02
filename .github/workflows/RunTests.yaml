@@ -12,6 +12,6 @@ jobs:
       run: pwd
     - uses: actions/checkout@v3
     - name: install dependencies
-      run: cd workee_backend && composer install
+      run: composer install
     - name: Execute Fonctionnal tests
-      run: cd workee_backend && php bin/phpunit
+      run: php bin/phpunit
