@@ -1,6 +1,6 @@
 <?php
-namespace App\Tests\Functionnal\Client\Controller\User;
 
+namespace App\Tests\Functionnal\Client\Controller\User;
 
 use App\Tests\Functionnal\Services\LoginService;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

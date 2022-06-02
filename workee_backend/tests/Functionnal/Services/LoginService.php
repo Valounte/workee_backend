@@ -1,6 +1,6 @@
 <?php
-namespace App\Tests\Functionnal\Services;
 
+namespace App\Tests\Functionnal\Services;
 
 use Firebase\JWT\JWT;
 use Symfony\Component\BrowserKit\Cookie;
