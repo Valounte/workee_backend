@@ -8,10 +8,8 @@ jobs:
     steps:
     - name: create environement
       run: cat ${{ secrets.ENV }} > .env
-      working-directory: ./workee_backend
     - name: chech environement exists
       run: pwd
-      working-directory: ./workee_backend
     - uses: actions/checkout@v3
     - name: install dependencies
       run: composer install
