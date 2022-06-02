@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: create environement
-      run: pwd; cat ${{ secrets.env }} > .env
+      run: cat ${{ secrets.env }} > .env
     - name: chech environement exists
-      run: cd workee_backend; cat .env
+      run: cat .env
     - uses: actions/checkout@v3
     - name: install dependencies
       run: cd workee_backend && composer install
