@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: create environement
-      run: cat ${{ secrets.env }} > .env
+      run: cat ${{ secrets.ENV }} > .env
     - name: chech environement exists
       run: cat .env
     - uses: actions/checkout@v3
