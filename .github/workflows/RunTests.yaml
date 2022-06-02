@@ -9,7 +9,7 @@ jobs:
     - name: create environement
       run: cat ${{ secrets.ENV }} > .env
     - name: chech environement exists
-      run: cat .env
+      run: ls && cat .env
     - uses: actions/checkout@v3
     - name: install dependencies
       run: cd workee_backend && composer install
