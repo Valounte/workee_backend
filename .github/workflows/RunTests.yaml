@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: create environement
-      run: cd workee_backend; cat ${{ secrets.env }} > .env
+      run: pwd; cat ${{ secrets.env }} > .env
     - name: chech environement exists
       run: cd workee_backend; cat .env
     - uses: actions/checkout@v3
