@@ -71,7 +71,11 @@ class UserController extends AbstractController
             $userData["password"],
         );
 
-        $this->messageBus->dispatch($registerUserCommand);
+        try {
+            $this->messageBus->dispatch($registerUserCommand);
+        } catch (Exception $e) {
+            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
+        }
 
         return $this->jsonResponseService->successJsonResponse("User successfully created !", 201);
     }
