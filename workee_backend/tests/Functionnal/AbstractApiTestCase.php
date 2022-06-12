@@ -3,13 +3,13 @@
 namespace App\Tests\Functionnal;
 
 use Firebase\JWT\JWT;
-use App\DataFixtures\UserFixture;
-use App\DataFixtures\CompanyFixture;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Infrastructure\User\Repository\UserRepository;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use App\Infrastructure\Doctrine\DataFixtures\UserFixture;
+use App\Infrastructure\Doctrine\DataFixtures\CompanyFixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 abstract class AbstractApiTestCase extends WebTestCase
