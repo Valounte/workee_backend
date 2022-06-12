@@ -9,9 +9,14 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserFixture extends Fixture implements FixtureInterface, DependentFixtureInterface
 {
+    public function __construct(private UserPasswordHasherInterface $hasher)
+    {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $user = new User(
@@ -19,8 +24,10 @@ final class UserFixture extends Fixture implements FixtureInterface, DependentFi
             'workee',
             'back',
             $this->getReference(CompanyFixture::INSTAPRO_REFERENCE),
-            'Password123!',
+            null,
         );
+
+        $user->setPassword($this->hasher->hashPassword($user, 'Password123!'));
 
         $manager->persist($user);
         $manager->flush();

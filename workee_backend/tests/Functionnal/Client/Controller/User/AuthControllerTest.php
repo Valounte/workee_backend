@@ -2,9 +2,6 @@
 
 namespace App\Tests\Functionnal\Client\Controller\User;
 
-use App\Tests\Functionnal\Services\LoginService;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Infrastructure\User\Repository\UserRepository;
 use App\Infrastructure\Company\Repository\CompanyRepository;
 use App\Tests\Functionnal\AbstractApiTestCase;
@@ -20,29 +17,6 @@ final class AuthControllerTest extends AbstractApiTestCase
         $this->userRepository = static::getContainer()->get(UserRepository::class);
         parent::setUp();
     }
-
-    public function test_invite_user()
-    {
-        $bodyInvite = [
-            'email' => 'workeetech@gmail.com',
-            'firstname' => 'work',
-            'lastname' => 'EE',
-        ];
-
-        $response = $this->client->request(
-            'POST',
-            '/api/invite/user',
-            [],
-            [],
-            array('HTTP_Authorization' => LoginService::generateToken()),
-            json_encode($bodyInvite)
-        );
-
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('User successfully invited !', $response->message);
-    }
-
 
     public function test_register_and_login(): void
     {

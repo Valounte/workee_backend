@@ -42,7 +42,6 @@ class AuthController extends AbstractController
     {
         $userData = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserByEmail($userData['email']);
-
         if (!$user || !$this->encoder->isPasswordValid($user, $userData['password'])) {
             return $this->json(
                 ['message' => 'email or password is wrong.'],
