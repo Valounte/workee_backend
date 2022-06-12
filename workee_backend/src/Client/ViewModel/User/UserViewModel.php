@@ -2,48 +2,35 @@
 
 namespace App\Client\ViewModel\User;
 
+use App\Core\Components\Job\Entity\Job;
 use App\Core\Components\User\Entity\User;
 use App\Infrastructure\User\Repository\UserTeamRepository;
 
 final class UserViewModel
 {
-    public string $email;
-
-    public string $firstname;
-
-    public string $lastname;
-
-    public int $companyId;
-
-    public int $id;
-
-    public ?array $teams;
-
     public function __construct(
-        int $id,
-        string $email,
-        string $firstname,
-        string $lastname,
-        int $companyId,
-        UserTeamRepository $userTeamRepository,
+        public int $id,
+        public string $email,
+        public string $firstname,
+        public string $lastname,
+        public array $company,
+        public ?array $job = null,
+        public ?array $teams = null,
+        public ?array $permissions = null,
     ) {
-        $this->email = $email;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->companyId = $companyId;
-        $this->id = $id;
-        $this->teams = $userTeamRepository->findOneTeamByUser($id);
     }
 
-    public static function createByUser(User $user, UserTeamRepository $userTeamRepository): self
+    public static function createByUser(User $user, ?array $teams = null, ?array $permissions = null): self
     {
         return new self(
             $user->getId(),
             $user->getEmail(),
             $user->getFirstname(),
             $user->getLastname(),
-            $user->getCompany()->getId(),
-            $userTeamRepository,
+            ['name' => $user->getCompany()->getCompanyName(), 'id' => $user->getCompany()->getId()],
+            ['name' => $user->getJob()->getName() ?? null, 'id' => $user->getJob()->getId() ?? null],
+            $teams ?? null,
+            $permissions ?? null,
         );
     }
 
@@ -62,9 +49,9 @@ final class UserViewModel
         return $this->lastname;
     }
 
-    public function getCompanyId(): int
+    public function getCompany(): array
     {
-        return $this->companyId;
+        return $this->company;
     }
 
     /**

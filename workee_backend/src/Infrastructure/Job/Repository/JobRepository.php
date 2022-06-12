@@ -1,26 +1,32 @@
 <?php
 
-namespace App\Infrastructure\User\Repository;
+namespace App\Infrastructure\Job\Repository;
 
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Core\Components\User\Entity\UserTeam;
-use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
+use App\Core\Components\Job\Entity\Job;
+use App\Core\Components\Job\Repository\JobRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepositoryInterface
+/**
+ * @method Job|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Job|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Job[]    findAll()
+ * @method Job[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class JobRepository extends ServiceEntityRepository implements JobRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserTeam::class);
+        parent::__construct($registry, Job::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(UserTeam $entity, bool $flush = true): void
+    public function add(Job $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -32,7 +38,7 @@ class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepo
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(UserTeam $entity, bool $flush = true): void
+    public function remove(Job $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -41,7 +47,7 @@ class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepo
     }
 
     // /**
-    //  * @return UserTeam[] Returns an array of UserTeam objects
+    //  * @return Job[] Returns an array of Job objects
     //  */
     /*
     public function findByExampleField($value)
@@ -57,31 +63,13 @@ class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepo
     }
     */
 
-    public function findOneById($id): ?UserTeam
+    public function findOneById($id): ?Job
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()
-        ;
-    }
-
-    //find teams by user
-    public function findTeamsByUser($user): array
-    {
-        return $this->createQueryBuilder('c')
-            ->select('t')
-            ->andWhere('c.user = :user')
-            ->setParameter('user', $user)
-            ->leftJoin(
-                'App\Core\Components\Team\Entity\Team',
-                't',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
-                'c.team = t.id'
-            )
-            ->getQuery()
-            ->getResult()
         ;
     }
 }

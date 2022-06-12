@@ -25,6 +25,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Core/Components/Team/Entity'
                 prefix: App\Core\Components\Team\Entity
                 alias: Team
+            Job:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/Job/Entity'
+                prefix: App\Core\Components\Job\Entity
+                alias: Job
 
 when@test:
     doctrine:

@@ -5,6 +5,7 @@ namespace App\Core\Components\User\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Core\Components\Company\Entity\Company;
+use App\Core\Components\Job\Entity\Job;
 use App\Infrastructure\User\Repository\UserRepository;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -35,11 +36,16 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private $company;
 
+    #[ORM\ManyToOne(targetEntity: Job::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private $job;
+
     public function __construct(
         string $email,
         string $firstname,
         string $lastname,
         Company $company,
+        ?Job $job = null,
         ?string $password = null,
         DateTime $created_at = new DateTime('now'),
     ) {
@@ -49,6 +55,7 @@ class User implements PasswordAuthenticatedUserInterface
         $this->created_at = $created_at;
         $this->company = $company;
         $this->password = $password;
+        $this->job = $job;
     }
 
     public function getId(): ?int
@@ -124,6 +131,26 @@ class User implements PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of job
+     */
+    public function getJob()
+    {
+        return $this->job;
+    }
+
+    /**
+     * Set the value of job
+     *
+     * @return  self
+     */
+    public function setJob($job)
+    {
+        $this->job = $job;
 
         return $this;
     }
