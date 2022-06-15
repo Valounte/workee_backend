@@ -9,5 +9,5 @@ interface UserTeamRepositoryInterface
     public function add(UserTeam $entity, bool $flush = true): void;
     public function remove(UserTeam $entity, bool $flush = true): void;
     public function findOneById($id): ?UserTeam;
-    public function findTeamsByUser($user): array;
+    public function findTeamsByUser($user): ?array;
 }

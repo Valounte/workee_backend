@@ -7,7 +7,7 @@ use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 
 class PermissionNameType extends AbstractEnumType
 {
-    public const NAME = 'permissionname';
+    public const NAME = 'permission_name';
 
     public function getName(): string
     {

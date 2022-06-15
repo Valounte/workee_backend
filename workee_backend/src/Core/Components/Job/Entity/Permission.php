@@ -13,10 +13,10 @@ class Permission
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'permissionname', length: 255)]
+    #[ORM\Column(type: 'permission_name', length: 255)]
     private $name;
 
-    #[ORM\Column(type: 'permissioncontext', length: 255)]
+    #[ORM\Column(type: 'permission_context', length: 255)]
     private $context;
 
     /**

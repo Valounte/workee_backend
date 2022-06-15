@@ -68,7 +68,7 @@ class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepo
     }
 
     //find teams by user
-    public function findTeamsByUser($user): array
+    public function findTeamsByUser($user): ?array
     {
         return $this->createQueryBuilder('c')
             ->select('t')

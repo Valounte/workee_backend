@@ -1,16 +1,25 @@
 <?php
 
-namespace App\Client\ViewModel\Team;
+namespace App\Client\ViewModel\Job;
 
 use App\Client\ViewModel\Company\CompanyViewModel;
 
-final class TeamViewModel
+final class JobViewModel
 {
     public function __construct(
         public int $id,
         public string $name,
         public CompanyViewModel $company,
+        public array $permissions,
     ) {
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -30,10 +39,10 @@ final class TeamViewModel
     }
 
     /**
-     * Get the value of id
+     * Get the value of permissions
      */
-    public function getId()
+    public function getPermissions()
     {
-        return $this->id;
+        return $this->permissions;
     }
 }
