@@ -1,11 +1,12 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\Infrastructure\Doctrine\DataFixtures;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use App\Core\Components\Company\Entity\Company;
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use App\Infrastructure\Doctrine\Fixture\AbstractFixture;
 
 final class CompanyFixture extends Fixture implements FixtureInterface
 {

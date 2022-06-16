@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -35,6 +36,7 @@ class UserController extends AbstractController
         private MailerInterface $mailer,
         private CheckUserInformationService $checkUserInformationService,
         private MessageBusInterface $messageBus,
+        private GetUserService $getUserService,
     ) {
     }
 
@@ -50,9 +52,9 @@ class UserController extends AbstractController
             return $this->jsonResponseService->errorJsonResponse('Unautorized', 401);
         }
 
-        return $this->jsonResponseService->userViewModelJsonResponse(
-            UserViewModel::createByUser($this->userRepository->findUserById($id), $this->userTeamRepository)
-        );
+        $user = $this->getUserService->getUserViewModelById($id);
+
+        return new JsonResponse($user);
     }
 
     /**
@@ -125,14 +127,7 @@ class UserController extends AbstractController
         $usersViewModels = [];
 
         foreach ($users as $user) {
-            $usersViewModels[] = new UserViewModel(
-                $user['id'],
-                $user['email'],
-                $user['firstname'],
-                $user['lastname'],
-                $company->getId(),
-                $this->userTeamRepository,
-            );
+            $usersViewModels[] = $this->getUserService->getUserViewModelById($user->getId());
         }
 
         return new JsonResponse($usersViewModels, 200);

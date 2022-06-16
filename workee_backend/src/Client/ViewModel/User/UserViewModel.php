@@ -2,49 +2,24 @@
 
 namespace App\Client\ViewModel\User;
 
+use App\Client\ViewModel\Company\CompanyViewModel;
+use App\Client\ViewModel\Job\JobViewModel;
+use App\Core\Components\Company\ValueObject\CompanyValueObject;
+use App\Core\Components\Job\Entity\Job;
 use App\Core\Components\User\Entity\User;
 use App\Infrastructure\User\Repository\UserTeamRepository;
 
 final class UserViewModel
 {
-    public string $email;
-
-    public string $firstname;
-
-    public string $lastname;
-
-    public int $companyId;
-
-    public int $id;
-
-    public ?array $teams;
-
     public function __construct(
-        int $id,
-        string $email,
-        string $firstname,
-        string $lastname,
-        int $companyId,
-        UserTeamRepository $userTeamRepository,
+        public int $id,
+        public string $email,
+        public string $firstname,
+        public string $lastname,
+        public CompanyViewModel $company,
+        public ?array $teams = null,
+        public ?JobViewModel $job = null,
     ) {
-        $this->email = $email;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->companyId = $companyId;
-        $this->id = $id;
-        $this->teams = $userTeamRepository->findOneTeamByUser($id);
-    }
-
-    public static function createByUser(User $user, UserTeamRepository $userTeamRepository): self
-    {
-        return new self(
-            $user->getId(),
-            $user->getEmail(),
-            $user->getFirstname(),
-            $user->getLastname(),
-            $user->getCompany()->getId(),
-            $userTeamRepository,
-        );
     }
 
     public function getEmail(): string
@@ -62,9 +37,9 @@ final class UserViewModel
         return $this->lastname;
     }
 
-    public function getCompanyId(): int
+    public function getCompany(): CompanyViewModel
     {
-        return $this->companyId;
+        return $this->company;
     }
 
     /**
@@ -81,5 +56,13 @@ final class UserViewModel
     public function getTeams(): ?array
     {
         return $this->teams;
+    }
+
+    /**
+     * Get the value of job
+     */
+    public function getJob()
+    {
+        return $this->job;
     }
 }

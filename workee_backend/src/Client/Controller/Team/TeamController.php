@@ -2,6 +2,7 @@
 
 namespace App\Client\Controller\Team;
 
+use App\Client\ViewModel\Company\CompanyViewModel;
 use App\Core\Components\Team\Entity\Team;
 use App\Client\ViewModel\Team\TeamViewModel;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
@@ -53,7 +54,14 @@ class TeamController extends AbstractController
         $response = array();
 
         foreach ($teams as $team) {
-            array_push($response, TeamViewModel::createByTeam($team));
+            array_push($response, new TeamViewModel(
+                $team->getId(),
+                $team->getTeamName(),
+                new CompanyViewModel(
+                    $team->getCompany()->getId(),
+                    $team->getCompany()->getCompanyName(),
+                ),
+            ));
         }
 
         return new JsonResponse(
@@ -102,7 +110,14 @@ class TeamController extends AbstractController
         $team->setTeamName($teamData["teamName"]);
         $this->teamRepository->add($team);
         return new JsonResponse(
-            ["team" => TeamViewModel::createByTeam($team)],
+            ["team" => new TeamViewModel(
+                $team->getId(),
+                $team->getTeamName(),
+                new CompanyViewModel(
+                    $team->getCompany()->getId(),
+                    $team->getCompany()->getCompanyName(),
+                )
+            )],
             200
         );
     }
@@ -122,7 +137,14 @@ class TeamController extends AbstractController
         }
 
         return new JsonResponse(
-            ["team" => TeamViewModel::createByTeam($team)],
+            ["team" => new TeamViewModel(
+                $team->getId(),
+                $team->getTeamName(),
+                new CompanyViewModel(
+                    $team->getCompany()->getId(),
+                    $team->getCompany()->getCompanyName(),
+                )
+            )],
             200
         );
     }
