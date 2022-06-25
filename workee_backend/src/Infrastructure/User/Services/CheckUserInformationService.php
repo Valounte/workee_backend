@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\User\Services;
 
-use Symfony\Component\HttpFoundation\Response;
+use App\Infrastructure\User\Exceptions\UserInformationException;
 use App\Infrastructure\User\Repository\UserRepository;
 
 final class CheckUserInformationService
@@ -11,22 +11,21 @@ final class CheckUserInformationService
     {
     }
 
-    public function checkUserInformation(string $email, ?string $password = null): string
+    public function checkUserInformation(string $email, ?string $password = null): void
     {
         if ($this->userRepository->findUserByEmail($email) != null) {
-            return 'Email already used';
+            throw UserInformationException::emailAlreadyUsedException();
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return 'Email not valid';
+            throw UserInformationException::invalidEmailException();
         }
 
         if (isset($password)) {
             if (!$this->checkPasswordFormat($password)) {
-                return 'Password format not valid';
+                throw UserInformationException::invalidPasswordException();
             }
         }
-        return '';
     }
 
 

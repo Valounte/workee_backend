@@ -5,10 +5,12 @@ namespace App\Core\Components\User\UseCase\Register;
 use Exception;
 use App\Core\Components\User\Entity\User;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Infrastructure\User\Exceptions\UserInformationException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Infrastructure\User\Services\CheckUserInformationService;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Throwable;
 
 final class RegisterUserHandler implements MessageHandlerInterface
 {
@@ -19,17 +21,15 @@ final class RegisterUserHandler implements MessageHandlerInterface
     ) {
     }
 
-    /** @throws Exception */
     public function __invoke(RegisterUserCommand $command): void
     {
-        $returnMessage = $this->checkUserInformationService->checkUserInformation(
-            $command->getEmail(),
-            $command->getPassword()
-        );
-
-        if (!empty($returnMessage)) {
-            throw new Exception($returnMessage);
-            return;
+        try {
+            $this->checkUserInformationService->checkUserInformation(
+                $command->getEmail(),
+                $command->getPassword()
+            );
+        } catch(UserInformationException $e) {
+            throw new Exception();
         }
 
         $user = new User(
