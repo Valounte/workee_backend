@@ -3,13 +3,14 @@
 namespace App\Core\Components\User\UseCase\Register;
 
 use Firebase\JWT\JWT;
+use Symfony\Component\Mailer\MailerInterface;
+use App\Infrastructure\Repository\UserRepository;
 use App\Infrastructure\Token\Services\TokenService;
 use App\Client\Emails\User\RegistrationEmailGenerator;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
-use App\Infrastructure\Repository\UserRepository;
-use Symfony\Component\Mailer\MailerInterface;
 
 final class SendInviteEmailHandler implements MessageHandlerInterface
 {

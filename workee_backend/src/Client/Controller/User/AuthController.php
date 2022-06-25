@@ -4,21 +4,27 @@ namespace App\Client\Controller\User;
 
 use Exception;
 use Firebase\JWT\JWT;
-use App\Core\Components\User\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Infrastructure\User\Exceptions\UserInformationException;
+use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserInformationService;
+use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
-use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Throwable;
 
 class AuthController extends AbstractController
 {
@@ -32,6 +38,7 @@ class AuthController extends AbstractController
         private MailerInterface $mailer,
         private CompanyRepositoryInterface $companyRepository,
         private MessageBusInterface $messageBus,
+        private CheckUserPermissionsService $checkUserPermissionsService,
     ) {
     }
 
@@ -97,12 +104,12 @@ class AuthController extends AbstractController
      * @Route("api/invite/user", name="invite_user"),
      * methods("POST")
      */
-    public function inviteUser(Request $request): Response
+    public function inviteUser(Request $request): JsonResponse
     {
         try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 400);
+            $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $userData = json_decode($request->getContent(), true);
@@ -117,11 +124,15 @@ class AuthController extends AbstractController
 
         try {
             $this->messageBus->dispatch($registerUserCommand);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
+        } catch (UserInformationException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $this->messageBus->dispatch(new SendInviteEmailCommand($userData["email"]));
+        try {
+            $this->messageBus->dispatch(new SendInviteEmailCommand($userData["email"]));
+        } catch(TransportExceptionInterface $e) {
+            return new JsonResponse("Email sending failed", 500);
+        }
 
         return $this->jsonResponseService->successJsonResponse("User successfully invited !", 201);
     }
