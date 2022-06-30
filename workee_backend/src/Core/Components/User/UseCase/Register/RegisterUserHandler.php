@@ -2,10 +2,8 @@
 
 namespace App\Core\Components\User\UseCase\Register;
 
-use Exception;
 use App\Core\Components\User\Entity\User;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
-use App\Infrastructure\User\Exceptions\UserInformationException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Infrastructure\User\Services\CheckUserInformationService;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
@@ -23,14 +21,10 @@ final class RegisterUserHandler implements MessageHandlerInterface
 
     public function __invoke(RegisterUserCommand $command): void
     {
-        try {
-            $this->checkUserInformationService->checkUserInformation(
-                $command->getEmail(),
-                $command->getPassword()
-            );
-        } catch(UserInformationException $e) {
-            throw new Exception();
-        }
+        $this->checkUserInformationService->checkUserInformation(
+            $command->getEmail(),
+            $command->getPassword()
+        );
 
         $user = new User(
             $command->getEmail(),

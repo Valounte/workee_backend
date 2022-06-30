@@ -33,10 +33,6 @@ final class SendInviteEmailHandler implements MessageHandlerInterface
 
         $email = RegistrationEmailGenerator::generate($user, $token);
 
-        try {
-            $this->mailer->send($email);
-        } catch (TransportExceptionInterface $e) {
-            throw new TransportExceptionInterface();
-        }
+        $this->mailer->send($email);
     }
 }

@@ -24,7 +24,7 @@ final class UserInformationException extends \Exception
         return new self(
             "Invalid email",
             400
-        ); 
+        );
     }
 
     public static function invalidPasswordException(): self

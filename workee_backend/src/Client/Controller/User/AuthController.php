@@ -124,13 +124,13 @@ class AuthController extends AbstractController
 
         try {
             $this->messageBus->dispatch($registerUserCommand);
-        } catch (Throwable $e) {
-            return new JsonResponse($e->getPrevious()->getMessage(), $e->getPrevious()->getCode());
+        } catch (UserInformationException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         try {
             $this->messageBus->dispatch(new SendInviteEmailCommand($userData["email"]));
-        } catch(TransportExceptionInterface $e) {
+        } catch (TransportExceptionInterface $e) {
             return new JsonResponse("Email sending failed", 500);
         }
 
