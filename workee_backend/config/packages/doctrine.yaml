@@ -30,6 +30,16 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Core/Components/Job/Entity'
                 prefix: App\Core\Components\Job\Entity
                 alias: Job
+            HumidityMetric:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
+                prefix: App\Core\Components\EnvironmentMetrics\Entity
+                alias: HumidityMetric
+            TemperatureMetric:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
+                prefix: App\Core\Components\EnvironmentMetrics\Entity
+                alias: TemperatureMetric
 
 when@test:
     doctrine:
