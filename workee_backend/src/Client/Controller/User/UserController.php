@@ -20,6 +20,7 @@ use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
 use App\Core\Components\User\Service\GetUserService;
+use App\Infrastructure\User\Exceptions\UserInformationException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -61,7 +62,7 @@ class UserController extends AbstractController
      * @Route("api/user", name="create_user"),
      * methods("POST")
      */
-    public function createUser(Request $request): Response
+    public function createUser(Request $request): JsonResponse
     {
         $userData = json_decode($request->getContent(), true);
 
@@ -75,8 +76,8 @@ class UserController extends AbstractController
 
         try {
             $this->messageBus->dispatch($registerUserCommand);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
+        } catch (UserInformationException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         return $this->jsonResponseService->successJsonResponse("User successfully created !", 201);

@@ -64,7 +64,7 @@ class JobPermissionRepository extends ServiceEntityRepository implements JobPerm
     */
 
     //find permissions by job
-    public function findPermissionsByJob($job): array
+    public function findPermissionsByJob($job): ?array
     {
         return $this->createQueryBuilder('jp')
             ->select('p')
