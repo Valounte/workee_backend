@@ -2,15 +2,15 @@
 
 namespace App\Client\ViewModel\EnvironmentMetrics;
 
-use App\Core\Components\EnvironmentMetrics\ValueObject\HumidityAlert;
+use App\Core\Components\EnvironmentMetrics\ValueObject\TemperatureAlert;
 
-final class HumidityMetricViewModel
+final class TemperatureMetricViewModel
 {
     public function __construct(
         private int $id,
         private float $value,
         private int $userId,
-        private ?HumidityAlert $humidityAlert = null,
+        private TemperatureAlert $alert,
     ) {
     }
 
@@ -39,10 +39,10 @@ final class HumidityMetricViewModel
     }
 
     /**
-     * Get the value of humidityAlert
+     * Get the value of alert
      */
-    public function getHumidityAlert()
+    public function getAlert()
     {
-        return $this->humidityAlert;
+        return $this->alert;
     }
 }

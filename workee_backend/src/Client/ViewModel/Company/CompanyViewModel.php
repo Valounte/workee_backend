@@ -5,8 +5,8 @@ namespace App\Client\ViewModel\Company;
 final class CompanyViewModel
 {
     public function __construct(
-        public int $id,
-        public string $name,
+        private int $id,
+        private string $name,
     ) {
     }
 

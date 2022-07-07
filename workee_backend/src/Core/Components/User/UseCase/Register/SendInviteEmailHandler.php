@@ -23,11 +23,7 @@ final class SendInviteEmailHandler implements MessageHandlerInterface
 
     public function __invoke(SendInviteEmailCommand $command): void
     {
-        $token = JWT::encode(
-            ["email" => $command->getEmail()],
-            'jwt_secret',
-            'HS256'
-        );
+        $token = $this->tokenService->create(["email" => $command->getEmail()]);
 
         $user = $this->userRepository->findUserByEmail($command->getEmail());
 

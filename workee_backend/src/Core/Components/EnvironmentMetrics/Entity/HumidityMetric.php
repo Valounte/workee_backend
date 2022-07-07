@@ -5,7 +5,7 @@ namespace App\Core\Components\EnvironmentMetrics\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Core\Components\User\Entity\User;
-use App\Infrastructure\Job\Repository\HumidityMetricRepository;
+use App\Infrastructure\EnvironmentMetrics\Repository\HumidityMetricRepository;
 
 #[ORM\Entity(repositoryClass: HumidityMetricRepository::class)]
 class HumidityMetric
@@ -38,7 +38,7 @@ class HumidityMetric
     /**
      * Get the value of id
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -46,7 +46,7 @@ class HumidityMetric
     /**
      * Get the value of value
      */
-    public function getValue()
+    public function getValue(): float
     {
         return $this->value;
     }
@@ -54,7 +54,7 @@ class HumidityMetric
     /**
      * Get the value of user
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -62,7 +62,7 @@ class HumidityMetric
     /**
      * Get the value of created_at
      */
-    public function getCreated_at()
+    public function getCreated_at(): DateTime
     {
         return $this->created_at;
     }

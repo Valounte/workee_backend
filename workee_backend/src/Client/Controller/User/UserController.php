@@ -55,7 +55,7 @@ class UserController extends AbstractController
 
         $user = $this->getUserService->getUserViewModelById($id);
 
-        return new JsonResponse($user);
+        return $this->jsonResponseService->create($user);
     }
 
     /**
@@ -113,7 +113,7 @@ class UserController extends AbstractController
      * @Route("api/users/company", name="get_user_by_company"),
      * methods("GET")
      */
-    public function getUserByCompany(Request $request): JsonResponse
+    public function getUsersByCompany(Request $request): JsonResponse
     {
         try {
             $jwt = $this->tokenService->decode($request);
@@ -131,6 +131,6 @@ class UserController extends AbstractController
             $usersViewModels[] = $this->getUserService->getUserViewModelById($user->getId());
         }
 
-        return new JsonResponse($usersViewModels, 200);
+        return $this->jsonResponseService->create($usersViewModels);
     }
 }

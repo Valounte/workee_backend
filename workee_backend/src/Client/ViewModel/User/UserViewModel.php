@@ -12,13 +12,13 @@ use App\Infrastructure\User\Repository\UserTeamRepository;
 final class UserViewModel
 {
     public function __construct(
-        public int $id,
-        public string $email,
-        public string $firstname,
-        public string $lastname,
-        public CompanyViewModel $company,
-        public ?array $teams = null,
-        public ?JobViewModel $job = null,
+        private int $id,
+        private string $email,
+        private string $firstname,
+        private string $lastname,
+        private CompanyViewModel $company,
+        private ?array $teams = null,
+        private ?JobViewModel $job = null,
     ) {
     }
 

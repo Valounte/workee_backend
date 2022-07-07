@@ -21,4 +21,10 @@ final class TokenService
         $decoded_array = (array) $jwt;
         return $decoded_array;
     }
+
+    public function create(array $payload): string
+    {
+        $token = JWT::encode($payload, 'jwt_secret', 'HS256');
+        return $token;
+    }
 }
