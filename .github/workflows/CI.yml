@@ -3,20 +3,15 @@ name: Check & fix styling
 on: [pull_request]
 
 jobs:
-    build_back:
+    Cs-fixer:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
             - name: install dependencies
-              run: cd workee_backend && composer install
+              run: cd workee_backend && composer install && cd tools/php-cs-fixer && composer install
 
-    php-cs-fixer:
-      runs-on: ubuntu-latest
-      needs: [build]
-      steps:
-        - uses: actions/checkout@v2
-        - name: Run PHP CS Fixer
-          run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
+            - name: Run PHP CS Fixer
+              run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
     BDD:
       runs-on: ubuntu-latest
       steps:
@@ -25,19 +20,16 @@ jobs:
           run: cd workee_backend || docker-compose up -d
     PHP-Stan:
       runs-on: ubuntu-latest
-      needs: [build_back]
+      needs: [Cs-fixer]
       steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
       runs-on: ubuntu-latest
-      needs: [build_back]
+      needs: [Cs-fixer]
       steps:
-      - uses: actions/checkout@v2
       - name: Execute Fonctionnal tests
-        run: cd workee_backend && php bin/phpunit
+        run: php bin/phpunit
         working-directory: ./workee_backend
     symfony-tests:
       runs-on: ubuntu-latest
