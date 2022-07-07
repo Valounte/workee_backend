@@ -21,11 +21,15 @@ jobs:
     PHP-Stan:
       runs-on: ubuntu-latest
       steps:
+      - uses: actions/checkout@v2
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
       runs-on: ubuntu-latest
       steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: cd workee_backend
       - name: Execute Fonctionnal tests
         run: php bin/phpunit
         working-directory: ./workee_backend
