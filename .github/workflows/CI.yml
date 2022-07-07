@@ -8,10 +8,11 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: install dependencies
-              run: cd workee_backend && composer install && cd tools/php-cs-fixer && composer install
+              run: cd workee_backend && composer install
 
     php-cs-fixer:
       runs-on: ubuntu-latest
+      needs: [build]
       steps:
         - uses: actions/checkout@v2
         - name: Run PHP CS Fixer
@@ -24,10 +25,10 @@ jobs:
           run: cd workee_backend || docker-compose up -d
     PHP-Stan:
       runs-on: ubuntu-latest
+      needs: [build_back]
       steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: cd workee_backend && composer install
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
@@ -36,7 +37,7 @@ jobs:
       steps:
       - uses: actions/checkout@v2
       - name: Execute Fonctionnal tests
-        run: php bin/phpunit
+        run: cd workee_backend && php bin/phpunit
         working-directory: ./workee_backend
     symfony-tests:
       runs-on: ubuntu-latest
