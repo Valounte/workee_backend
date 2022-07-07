@@ -12,8 +12,8 @@ jobs:
 
     php-cs-fixer:
       runs-on: ubuntu-latest
-      needs: [build_back]
       steps:
+        - uses: actions/checkout@v2
         - name: Run PHP CS Fixer
           run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
     BDD:
@@ -34,8 +34,7 @@ jobs:
       runs-on: ubuntu-latest
       needs: [build_back]
       steps:
-      - name: install dependencies
-        run: cd workee_backend && composer clearcache && composer install
+      - uses: actions/checkout@v2
       - name: Execute Fonctionnal tests
         run: php bin/phpunit
         working-directory: ./workee_backend
