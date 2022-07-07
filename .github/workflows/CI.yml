@@ -23,7 +23,7 @@ jobs:
       needs: Cs-fixer
       steps:
       - name: get fucking arbo
-        run: apt-get install tree && tree -a -u -g
+        run: apt-get install tree && tree -d
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
