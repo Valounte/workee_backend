@@ -22,6 +22,8 @@ jobs:
       runs-on: ubuntu-latest
       needs: Cs-fixer
       steps:
+      - name: get fucking arbo
+        run: apt-get install tree && tree -a -u -g
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
