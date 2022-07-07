@@ -2,10 +2,10 @@
 
 namespace App\Core\Components\EnvironmentMetrics\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Core\Components\User\Entity\User;
-use App\Infrastructure\Job\Repository\TemperatureMetricRepository;
-use DateTime;
+use App\Infrastructure\EnvironmentMetrics\Repository\TemperatureMetricRepository;
 
 #[ORM\Entity(repositoryClass: TemperatureMetricRepository::class)]
 class TemperatureMetric

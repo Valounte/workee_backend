@@ -63,6 +63,17 @@ class TemperatureMetricRepository extends ServiceEntityRepository implements Tem
     }
     */
 
+    public function findLastTemperatureMetricByUser($user): ?TemperatureMetric
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('c.created_at', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
     public function findOneById($id): ?TemperatureMetric
     {

@@ -5,7 +5,7 @@ namespace App\Core\Components\EnvironmentMetrics\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Core\Components\User\Entity\User;
-use App\Infrastructure\Job\Repository\HumidityMetricRepository;
+use App\Infrastructure\EnvironmentMetrics\Repository\HumidityMetricRepository;
 
 #[ORM\Entity(repositoryClass: HumidityMetricRepository::class)]
 class HumidityMetric
