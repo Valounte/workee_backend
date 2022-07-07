@@ -1,0 +1,63 @@
+name: Check & fix styling
+
+on: [pull_request]
+
+jobs:
+    build_back:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: install dependencies
+              run: cd workee_backend && composer install && cd tools/php-cs-fixer && composer install
+
+    php-cs-fixer:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Run PHP CS Fixer
+          run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
+    BDD:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+        - name: Build the Docker image
+          run: cd workee_backend || docker-compose up -d
+    PHP-Stan:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: cd workee_backend && composer install
+      - name: Run PhpStan
+        run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
+    build-test:
+      runs-on: ubuntu-latest
+      needs: [build_back]
+      steps:
+      - name: Execute Fonctionnal tests
+        run: php bin/phpunit
+        working-directory: ./workee_backend
+    symfony-tests:
+      runs-on: ubuntu-latest
+      steps:
+      #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
+      # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
+      # uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
+        with:
+          php-version: '8.1'
+      - uses: actions/checkout@v2
+      - name: Copy .env.test.local
+        run: cd workee_backend || php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      - name: Install Dependencies
+        run: cd workee_backend || composer install 
+      - name: Run cs php fix
+        run: cd workee_backend || tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --dry-run
