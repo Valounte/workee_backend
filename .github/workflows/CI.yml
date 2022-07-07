@@ -12,12 +12,12 @@ jobs:
 
     php-cs-fixer:
       runs-on: ubuntu-latest
+      needs: [build_back]
       steps:
         - name: Run PHP CS Fixer
           run: cd workee_backend && tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --diff --dry-run
     BDD:
       runs-on: ubuntu-latest
-
       steps:
         - uses: actions/checkout@v2
         - name: Build the Docker image
@@ -34,6 +34,8 @@ jobs:
       runs-on: ubuntu-latest
       needs: [build_back]
       steps:
+      - name: install dependencies
+        run: cd workee_backend && composer clearcache && composer install
       - name: Execute Fonctionnal tests
         run: php bin/phpunit
         working-directory: ./workee_backend
