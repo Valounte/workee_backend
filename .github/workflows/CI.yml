@@ -20,13 +20,11 @@ jobs:
           run: cd workee_backend || docker-compose up -d
     PHP-Stan:
       runs-on: ubuntu-latest
-      needs: [Cs-fixer]
       steps:
       - name: Run PhpStan
         run: cd workee_backend && vendor/bin/phpstan analyse src --level 3
     build-test:
       runs-on: ubuntu-latest
-      needs: [Cs-fixer]
       steps:
       - name: Execute Fonctionnal tests
         run: php bin/phpunit
