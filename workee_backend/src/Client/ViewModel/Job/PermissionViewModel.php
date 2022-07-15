@@ -8,9 +8,9 @@ use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 final class PermissionViewModel
 {
     public function __construct(
-        public int $id,
-        public PermissionNameEnum $name,
-        public PermissionContextEnum $context,
+        private int $id,
+        private PermissionNameEnum $name,
+        private PermissionContextEnum $context,
     ) {
     }
 

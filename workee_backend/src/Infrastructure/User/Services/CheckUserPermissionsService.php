@@ -9,6 +9,7 @@ use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
+use App\Infrastructure\User\Exceptions\UserNotFoundException;
 
 final class CheckUserPermissionsService
 {
@@ -32,6 +33,11 @@ final class CheckUserPermissionsService
         }
 
         $user = $this->userRepositoryInterface->findUserById($jwt['id']);
+
+        if ($user == null) {
+            throw new UserNotFoundException();
+        }
+
         $job = $user->getJob();
 
         if ($job != null) {

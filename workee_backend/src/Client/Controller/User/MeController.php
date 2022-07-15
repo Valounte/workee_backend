@@ -37,6 +37,6 @@ class MeController extends AbstractController
 
         $user = $this->getUserService->getUserViewModelById($jwt["id"]);
 
-        return new JsonResponse($user);
+        return $this->jsonResponseService->create($user);
     }
 }

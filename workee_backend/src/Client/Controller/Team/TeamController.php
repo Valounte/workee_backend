@@ -63,11 +63,7 @@ class TeamController extends AbstractController
                 ),
             ));
         }
-
-        return new JsonResponse(
-            ["teams" => $response],
-            200
-        );
+        return $this->jsonResponseService->create($response);
     }
 
     /**
@@ -136,16 +132,15 @@ class TeamController extends AbstractController
             );
         }
 
-        return new JsonResponse(
-            ["team" => new TeamViewModel(
-                $team->getId(),
-                $team->getTeamName(),
-                new CompanyViewModel(
-                    $team->getCompany()->getId(),
-                    $team->getCompany()->getCompanyName(),
-                )
-            )],
-            200
+        $teamViewModel = new TeamViewModel(
+            $team->getId(),
+            $team->getTeamName(),
+            new CompanyViewModel(
+                $team->getCompany()->getId(),
+                $team->getCompany()->getCompanyName(),
+            )
         );
+
+        return $this->jsonResponseService->create($teamViewModel);
     }
 }

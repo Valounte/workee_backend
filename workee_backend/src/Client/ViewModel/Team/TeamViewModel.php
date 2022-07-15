@@ -7,9 +7,9 @@ use App\Client\ViewModel\Company\CompanyViewModel;
 final class TeamViewModel
 {
     public function __construct(
-        public int $id,
-        public string $name,
-        public CompanyViewModel $company,
+        private int $id,
+        private string $name,
+        private CompanyViewModel $company,
     ) {
     }
 

@@ -7,10 +7,10 @@ use App\Client\ViewModel\Company\CompanyViewModel;
 final class JobViewModel
 {
     public function __construct(
-        public int $id,
-        public string $name,
-        public CompanyViewModel $company,
-        public array $permissions,
+        private int $id,
+        private string $name,
+        private CompanyViewModel $company,
+        private array $permissions,
     ) {
     }
 

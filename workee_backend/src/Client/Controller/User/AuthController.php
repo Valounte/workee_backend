@@ -3,6 +3,7 @@
 namespace App\Client\Controller\User;
 
 use Exception;
+use Throwable;
 use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -13,6 +14,7 @@ use App\Infrastructure\Token\Services\TokenService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Infrastructure\User\Exceptions\UserNotFoundException;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserInformationException;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
@@ -24,7 +26,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Throwable;
 
 class AuthController extends AbstractController
 {
@@ -56,11 +57,7 @@ class AuthController extends AbstractController
             );
         }
 
-        $jwt = JWT::encode(
-            ["id" => $user->getId(), "company" => $user->getCompany()->getId()],
-            'jwt_secret',
-            'HS256'
-        );
+        $jwt = $this->tokenService->create(["id" => $user->getId(), "company" => $user->getCompany()->getId()]);
 
         return $this->json([
             'message' => 'success!',
@@ -76,22 +73,22 @@ class AuthController extends AbstractController
         $userData = json_decode($request->getContent(), true);
 
         try {
-            $token = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse($e->getMessage(), 400);
+            $token = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $user = $this->userRepository->findUserByEmail($token["email"]);
+
+        if ($user->getPassword() != null) {
+            return new JsonResponse("Account already created", 400);
+        }
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $userData["password"]));
 
         $this->userRepository->save($user);
 
-        $jwt = JWT::encode(
-            ["id" => $user->getId(), "company" => $user->getCompany()->getId()],
-            'jwt_secret',
-            'HS256'
-        );
+        $jwt = $this->tokenService->create(["id" => $user->getId(), "company" => $user->getCompany()->getId()]);
 
         return $this->json([
             'message' => 'success!',
@@ -108,7 +105,7 @@ class AuthController extends AbstractController
     {
         try {
             $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
-        } catch (UserPermissionsException $e) {
+        } catch (UserPermissionsException|UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 

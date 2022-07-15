@@ -2,7 +2,6 @@
 
 namespace App\Core\Components\Job\Repository;
 
-use App\Core\Components\Job\Entity\Job;
 use App\Core\Components\Job\Entity\JobPermission;
 
 interface JobPermissionRepositoryInterface
