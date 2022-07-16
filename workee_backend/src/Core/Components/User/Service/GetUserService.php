@@ -2,6 +2,7 @@
 
 namespace App\Core\Components\User\Service;
 
+use App\Core\Components\User\Entity\User;
 use App\Client\ViewModel\Job\JobViewModel;
 use App\Client\ViewModel\Team\TeamViewModel;
 use App\Client\ViewModel\User\UserViewModel;
@@ -26,9 +27,8 @@ final class GetUserService
     ) {
     }
 
-    public function getUserViewModelById(int $id): UserViewModel
+    public function createUserViewModel(User $user): UserViewModel
     {
-        $user = $this->userRepository->findUserById($id);
         $job = $user->getJob();
         $permissionsViewModels = null;
         $jobViewModel = null;

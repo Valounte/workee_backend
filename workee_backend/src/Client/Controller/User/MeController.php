@@ -30,12 +30,12 @@ class MeController extends AbstractController
     public function me(Request $request): JsonResponse
     {
         try {
-            $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
         } catch (UserPermissionsException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $user = $this->getUserService->getUserViewModelById($jwt["id"]);
+        $user = $this->getUserService->createUserViewModel($user);
 
         return $this->jsonResponseService->create($user);
     }

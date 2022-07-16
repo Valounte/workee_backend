@@ -70,15 +70,13 @@ class AuthController extends AbstractController
      */
     public function registrationEditPassword(Request $request): Response
     {
-        $userData = json_decode($request->getContent(), true);
-
         try {
-            $token = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
         } catch (UserPermissionsException|UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $user = $this->userRepository->findUserByEmail($token["email"]);
+        $userData = json_decode($request->getContent(), true);
 
         if ($user->getPassword() != null) {
             return new JsonResponse("Account already created", 400);
@@ -104,13 +102,13 @@ class AuthController extends AbstractController
     public function inviteUser(Request $request): JsonResponse
     {
         try {
-            $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
         } catch (UserPermissionsException|UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $userData = json_decode($request->getContent(), true);
-        $company = $this->companyRepository->findOneById($jwt["company"]);
+        $company = $this->companyRepository->findOneById($user->getCompany()->getId());
 
         $registerUserCommand = new RegisterUserCommand(
             $userData["firstname"],

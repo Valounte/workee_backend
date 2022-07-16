@@ -9,6 +9,10 @@ use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
+use App\Core\Components\User\Entity\User;
+use App\Infrastructure\Token\ValueObject\Jwt;
+use App\Infrastructure\Token\ValueObject\UserIdentification;
+use App\Infrastructure\Token\ValueObject\UserIdentifier;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
 
 final class CheckUserPermissionsService
@@ -20,7 +24,7 @@ final class CheckUserPermissionsService
     ) {
     }
 
-    public function checkUserPermissionsByJwt(Request $request, ?PermissionNameEnum $permission = null): array
+    public function checkUserPermissionsByJwt(Request $request, ?PermissionNameEnum $permission = null): User
     {
         try {
             $jwt = $this->tokenService->decode($request);
@@ -28,11 +32,12 @@ final class CheckUserPermissionsService
             throw UserPermissionsException::invalidTokenException();
         }
 
+        $user = $this->userRepositoryInterface->findUserById($jwt['id']);
+
         if ($permission == null) {
-            return $jwt;
+            return $user;
         }
 
-        $user = $this->userRepositoryInterface->findUserById($jwt['id']);
 
         if ($user == null) {
             throw new UserNotFoundException();
@@ -45,7 +50,7 @@ final class CheckUserPermissionsService
 
             foreach ($jobPermissions as $jobPermission) {
                 if ($jobPermission->getName() === $permission) {
-                    return $jwt;
+                    return $user;
                 }
             }
         }

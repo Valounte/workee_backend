@@ -3,34 +3,37 @@
 namespace App\Client\Controller\EnvironmentMetrics;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
+use App\Core\Components\EnvironmentMetrics\Entity\SoundMetric;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
+use App\Client\ViewModel\EnvironmentMetrics\SoundMetricViewModel;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Core\Components\EnvironmentMetrics\Entity\TemperatureMetric;
-use App\Client\ViewModel\EnvironmentMetrics\TemperatureMetricViewModel;
-use App\Core\Components\EnvironmentMetrics\Services\TemperatureMetricsAlertService;
-use App\Core\Components\EnvironmentMetrics\Repository\TemperatureMetricRepositoryInterface;
+use App\Core\Components\EnvironmentMetrics\Services\SoundMetricsAlertService;
+use App\Core\Components\EnvironmentMetrics\Services\HumidityMetricsAlertService;
+use App\Core\Components\EnvironmentMetrics\Repository\SoundMetricRepositoryInterface;
+use App\Core\Components\EnvironmentMetrics\Repository\HumidityMetricRepositoryInterface;
 
-final class TemperatureController extends AbstractController
+final class SoundController extends AbstractController
 {
     public function __construct(
-        private TemperatureMetricRepositoryInterface $temperatureMetricRepository,
+        private SoundMetricRepositoryInterface $soundMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
         private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
-        private TemperatureMetricsAlertService $temperatureMetricsAlertService,
+        private SoundMetricsAlertService $soundMetricsAlertService,
     ) {
     }
 
     /**
-     * @Route("/api/temperature", name="postTemperature", methods={"POST"})
+     * @Route("/api/sound", name="postSound", methods={"POST"})
      */
-    public function postTemperature(Request $request): JsonResponse
+    public function postSound(Request $request): JsonResponse
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
@@ -40,20 +43,20 @@ final class TemperatureController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $temperatureMetric = new TemperatureMetric(
+        $soundMetric = new SoundMetric(
             (float) $data["value"],
             $user,
         );
 
-        $this->temperatureMetricRepository->add($temperatureMetric, true);
+        $this->soundMetricRepository->add($soundMetric, true);
 
         return new JsonResponse("data stored", 201);
     }
 
     /**
-     * @Route("/api/current_temperature", name="getCurrentTemperature", methods={"GET"})
+     * @Route("/api/current_sound", name="getCurrentHumidity", methods={"GET"})
      */
-    public function getCurrentTemperature(Request $request): JsonResponse
+    public function getCurrentHumidity(Request $request): Response
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
@@ -61,19 +64,19 @@ final class TemperatureController extends AbstractController
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $lastTemperatureValue = $this->temperatureMetricRepository->findLastTemperatureMetricByUser($user);
+        $lastSoundValue = $this->soundMetricRepository->findLastSoundMetricByUser($user);
 
-        if ($lastTemperatureValue === null) {
+        if ($lastSoundValue === null) {
             return new JsonResponse("no data", 404);
         }
 
-        $temperatureViewModel = new TemperatureMetricViewModel(
-            $lastTemperatureValue->getId(),
-            $lastTemperatureValue->getValue(),
+        $humidityViewModel = new SoundMetricViewModel(
+            $lastSoundValue->getId(),
+            $lastSoundValue->getValue(),
             $user->getId(),
-            $this->temperatureMetricsAlertService->createAlert($lastTemperatureValue),
+            $this->soundMetricsAlertService->createAlert($lastSoundValue),
         );
 
-        return $this->jsonResponseService->create($temperatureViewModel);
+        return $this->jsonResponseService->create($humidityViewModel, 200);
     }
 }
