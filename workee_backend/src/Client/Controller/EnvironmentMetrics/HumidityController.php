@@ -36,13 +36,12 @@ final class HumidityController extends AbstractController
     public function postHumidity(Request $request): JsonResponse
     {
         try {
-            $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
         } catch (UserPermissionsException|UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $data = json_decode($request->getContent(), true);
-        $user = $this->userRepositoryInterface->findUserById($jwt["id"]);
 
         $humidityMetric = new HumidityMetric(
             (float) $data["value"],
@@ -60,12 +59,11 @@ final class HumidityController extends AbstractController
     public function getCurrentHumidity(Request $request): Response
     {
         try {
-            $jwt = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
         } catch (UserPermissionsException|UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $user = $this->userRepositoryInterface->findUserById($jwt["id"]);
         $lastHumidityValue = $this->humidityMetricRepository->findLastHumidityMetricByUser($user);
 
         if ($lastHumidityValue === null) {

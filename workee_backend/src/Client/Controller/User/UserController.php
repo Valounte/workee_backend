@@ -11,17 +11,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
+use App\Core\Components\User\Service\GetUserService;
+use Symfony\Component\Messenger\MessageBusInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Infrastructure\User\Exceptions\UserInformationException;
+use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
-use App\Core\Components\User\Service\GetUserService;
-use App\Infrastructure\User\Exceptions\UserInformationException;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
@@ -38,6 +40,7 @@ class UserController extends AbstractController
         private CheckUserInformationService $checkUserInformationService,
         private MessageBusInterface $messageBus,
         private GetUserService $getUserService,
+        private CheckUserPermissionsService $checkUserPermissionsService,
     ) {
     }
 
@@ -53,7 +56,9 @@ class UserController extends AbstractController
             return $this->jsonResponseService->errorJsonResponse('Unautorized', 401);
         }
 
-        $user = $this->getUserService->getUserViewModelById($id);
+        $wantedUser = $this->userRepository->findUserById($id);
+
+        $user = $this->getUserService->createUserViewModel($wantedUser);
 
         return $this->jsonResponseService->create($user);
     }
@@ -90,9 +95,9 @@ class UserController extends AbstractController
     public function addToTeam(Request $request): Response
     {
         try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
+            $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $data = json_decode($request->getContent(), true);
@@ -116,19 +121,17 @@ class UserController extends AbstractController
     public function getUsersByCompany(Request $request): JsonResponse
     {
         try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unauthorized', 401);
+            $me = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $users = $this->userRepository->findByCompany($jwt['company']);
-
-        $company = $this->companyRepository->findOneById($jwt['company']);
+        $users = $this->userRepository->findByCompany($me->getCompany()->getId());
 
         $usersViewModels = [];
 
         foreach ($users as $user) {
-            $usersViewModels[] = $this->getUserService->getUserViewModelById($user->getId());
+            $usersViewModels[] = $this->getUserService->createUserViewModel($user);
         }
 
         return $this->jsonResponseService->create($usersViewModels);
