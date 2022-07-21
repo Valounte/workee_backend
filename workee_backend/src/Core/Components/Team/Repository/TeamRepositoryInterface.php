@@ -10,4 +10,5 @@ interface TeamRepositoryInterface
     public function remove(Team $entity, bool $flush = true): void;
     public function findOneById($id): ?Team;
     public function findAll();
+    public function findTeamsByCompany($company): ?array;
 }
