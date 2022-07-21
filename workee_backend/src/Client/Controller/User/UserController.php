@@ -76,7 +76,7 @@ class UserController extends AbstractController
             $userData["lastname"],
             $userData["email"],
             $this->companyRepository->findOneById($userData["company"]),
-            $userData["password"],
+            password: $userData["password"],
         );
 
         try {
