@@ -11,6 +11,8 @@ final class RegisterUserCommand
         private string $lastname,
         private string $email,
         private Company $company,
+        private ?array $teamsId = null,
+        private ?int $jobId = null,
         private ?string $password = null,
     ) {
     }
@@ -38,5 +40,21 @@ final class RegisterUserCommand
     public function getPassword(): ?string
     {
         return $this->password;
+    }
+
+    /**
+     * Get the value of jobId
+     */
+    public function getJobId(): ?int
+    {
+        return $this->jobId;
+    }
+
+    /**
+     * Get the value of teamId
+     */
+    public function getTeamsId(): ?array
+    {
+        return $this->teamsId;
     }
 }

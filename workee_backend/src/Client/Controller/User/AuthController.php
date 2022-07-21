@@ -115,6 +115,8 @@ class AuthController extends AbstractController
             $userData["lastname"],
             $userData["email"],
             $company,
+            isset($userData["teamsId"]) ? $userData["teamsId"] : null,
+            isset($userData["jobId"]) ? $userData["jobId"] : null,
         );
 
         try {
