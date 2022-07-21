@@ -2,17 +2,19 @@
 
 namespace App\Client\Controller\Team;
 
-use App\Client\ViewModel\Company\CompanyViewModel;
 use App\Core\Components\Team\Entity\Team;
 use App\Client\ViewModel\Team\TeamViewModel;
-use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
-use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Client\ViewModel\Company\CompanyViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
+use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Infrastructure\User\Services\CheckUserPermissionsService;
 
 class TeamController extends AbstractController
 {
@@ -20,6 +22,7 @@ class TeamController extends AbstractController
         private TeamRepositoryInterface $teamRepository,
         private JsonResponseService $jsonResponseService,
         private CompanyRepositoryInterface $companyRepository,
+        private CheckUserPermissionsService $checkUserPermissionsService
     ) {
     }
 
@@ -47,9 +50,15 @@ class TeamController extends AbstractController
     /**
     * @Route("/api/teams", name="listTeams", methods={"GET"})
     */
-    public function listTeams()
+    public function listTeams(Request $request): Response
     {
-        $teams = $this->teamRepository->findAll();
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $teams = $this->teamRepository->findTeamsByCompany($user->getCompany());
 
         $response = array();
 

@@ -115,10 +115,10 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("api/users/company", name="get_user_by_company"),
+     * @Route("api/users", name="get_users"),
      * methods("GET")
      */
-    public function getUsersByCompany(Request $request): JsonResponse
+    public function getUsers(Request $request): JsonResponse
     {
         try {
             $me = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);

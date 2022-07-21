@@ -72,4 +72,15 @@ class TeamRepository extends ServiceEntityRepository implements TeamRepositoryIn
             ->getOneOrNullResult()
         ;
     }
+
+    //find teams by company
+    public function findTeamsByCompany($companyId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.company = :companyId')
+            ->setParameter('companyId', $companyId)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

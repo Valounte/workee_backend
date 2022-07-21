@@ -3,9 +3,10 @@
 namespace App\Infrastructure\Job\Repository;
 
 use Doctrine\ORM\ORMException;
+use App\Core\Components\Job\Entity\Job;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Core\Components\Job\Entity\Job;
+use App\Core\Components\Company\Entity\Company;
 use App\Core\Components\Job\Repository\JobRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -70,6 +71,17 @@ class JobRepository extends ServiceEntityRepository implements JobRepositoryInte
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()
+        ;
+    }
+
+    //find by company
+    public function findByCompany(Company $company): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.company = :company')
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getResult()
         ;
     }
 }
