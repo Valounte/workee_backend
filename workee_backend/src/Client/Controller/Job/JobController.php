@@ -32,9 +32,9 @@ final class JobController extends AbstractController
     }
 
     /**
-     * @Route("/api/jobs", name="getJobs", methods={"GET"})
+     * @Route("/api/jobs", name="getAllJobs", methods={"GET"})
      */
-    public function getJobs(Request $request): Response
+    public function getAllJobs(Request $request): Response
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
@@ -64,7 +64,7 @@ final class JobController extends AbstractController
     }
 
     /**
-     * @Route("/api/job", name="getJobs", methods={"POST"})
+     * @Route("/api/job", name="createJob", methods={"POST"})
      */
     public function createJob(Request $request): Response
     {
@@ -98,6 +98,32 @@ final class JobController extends AbstractController
         }
 
         return $this->jsonResponseService->successJsonResponse('Job created', 200);
+    }
+
+    /**
+     * @Route("/api/job", name="modifyJob", methods={"PUT"})
+     */
+    public function modifyJob(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_JOB);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $input = json_decode($request->getContent(), true);
+
+        $job = $this->jobRepository->findOneById($input["id"]);
+
+        if (isset($input["name"])) {
+            $job->setName($input["name"]);
+        }
+
+        $this->jobRepository->add($job);
+
+        if ($input["permissions"]) {
+            $permissions = $this->jobPermissionRepository->findPermissionsByJob($job);
+        }
     }
 
     private function getPermissionsViewModels(array $permissions): array
