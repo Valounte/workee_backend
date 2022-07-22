@@ -2,19 +2,23 @@
 
 namespace App\Client\Controller\Job;
 
+use App\Core\Components\Job\Entity\Job;
 use App\Client\ViewModel\Job\JobViewModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Client\ViewModel\Job\PermissionViewModel;
+use App\Core\Components\Job\Entity\JobPermission;
 use App\Client\ViewModel\Company\CompanyViewModel;
-use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
+use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Job\Repository\JobRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
+use App\Core\Components\Job\Repository\PermissionRepositoryInterface;
 
 final class JobController extends AbstractController
 {
@@ -23,6 +27,7 @@ final class JobController extends AbstractController
         private JobRepositoryInterface $jobRepository,
         private JsonResponseService $jsonResponseService,
         private JobPermissionRepositoryInterface $jobPermissionRepository,
+        private PermissionRepositoryInterface $permissionRepository,
     ) {
     }
 
@@ -56,6 +61,43 @@ final class JobController extends AbstractController
         }
 
         return $this->jsonResponseService->create($jobViewModel);
+    }
+
+    /**
+     * @Route("/api/job", name="getJobs", methods={"POST"})
+     */
+    public function createJob(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_JOB);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if ($this->jobRepository->findByNameAndCompany($data["name"], $user->getCompany()) !== null) {
+            return $this->jsonResponseService->errorJsonResponse("Job with this name already exists", 404);
+        }
+
+        $job = new Job(
+            $data["name"],
+            $user->getCompany(),
+        );
+
+        $this->jobRepository->add($job);
+
+        foreach ($data["permissionsId"] as $permission) {
+            $permission = $this->permissionRepository->findOneById($permission);
+            $jobPermission = new JobPermission(
+                $job,
+                $permission,
+            );
+
+            $this->jobPermissionRepository->add($jobPermission);
+        }
+
+        return $this->jsonResponseService->successJsonResponse('Job created', 200);
     }
 
     private function getPermissionsViewModels(array $permissions): array

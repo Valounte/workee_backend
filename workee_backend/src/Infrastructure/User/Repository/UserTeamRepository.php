@@ -84,4 +84,22 @@ class UserTeamRepository extends ServiceEntityRepository implements UserTeamRepo
             ->getResult()
         ;
     }
+
+    //find users by team and Company
+    public function findUsersByTeamId($team): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('u')
+            ->andWhere('c.team = :team')
+            ->setParameter('team', $team)
+            ->leftJoin(
+                'App\Core\Components\User\Entity\User',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                'c.user = u.id'
+            )
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

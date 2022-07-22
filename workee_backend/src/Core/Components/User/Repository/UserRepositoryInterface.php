@@ -2,6 +2,7 @@
 
 namespace App\Core\Components\User\Repository;
 
+use App\Core\Components\Company\Entity\Company;
 use App\Core\Components\User\Entity\User;
 
 interface UserRepositoryInterface
@@ -11,5 +12,5 @@ interface UserRepositoryInterface
     public function findByTeamId(int $team): ?array;
     public function findUserByEmail(string $email): ?User;
     public function findUserById(int $id): ?User;
-    public function findByCompany(int $company): ?array;
+    public function findByCompany(Company $company): ?array;
 }

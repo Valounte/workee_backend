@@ -31,12 +31,17 @@ class TeamController extends AbstractController
      */
     public function createTeam(Request $request): Response
     {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
         $teamData = json_decode($request->getContent(), true);
-        $company = $this->companyRepository->findOneById($teamData['companyId']);
 
         $team = new Team(
             $teamData["teamName"],
-            $company,
+            $user->getCompany(),
         );
 
         $this->teamRepository->add($team);

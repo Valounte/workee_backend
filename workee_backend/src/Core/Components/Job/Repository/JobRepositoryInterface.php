@@ -11,4 +11,5 @@ interface JobRepositoryInterface
     public function remove(Job $entity, bool $flush = true): void;
     public function findOneById($id): ?Job;
     public function findByCompany(Company $company): ?array;
+    public function findByNameAndCompany(string $name, Company $company): ?array;
 }

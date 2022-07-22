@@ -6,4 +6,5 @@ enum PermissionContextEnum: string
 {
     case TEAM = 'TEAM';
     case USER = 'USER';
+    case JOB = 'JOB';
 }
