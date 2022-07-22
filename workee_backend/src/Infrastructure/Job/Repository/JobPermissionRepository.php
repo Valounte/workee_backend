@@ -89,4 +89,15 @@ class JobPermissionRepository extends ServiceEntityRepository implements JobPerm
             ->getOneOrNullResult()
         ;
     }
+
+    //delete all permissions by job
+    public function deleteAllPermissionsByJob($job): void
+    {
+        $this->createQueryBuilder('jp')
+            ->delete()
+            ->where('jp.job = :job')
+            ->setParameter('job', $job)
+            ->getQuery()
+            ->execute();
+    }
 }
