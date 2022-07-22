@@ -84,4 +84,17 @@ class JobRepository extends ServiceEntityRepository implements JobRepositoryInte
             ->getResult()
         ;
     }
+
+    //find by name and company
+    public function findByNameAndCompany(string $name, Company $company): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name = :name')
+            ->andWhere('c.company = :company')
+            ->setParameter('name', $name)
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

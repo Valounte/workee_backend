@@ -126,8 +126,7 @@ class UserController extends AbstractController
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $users = $this->userRepository->findByCompany($me->getCompany()->getId());
-
+        $users = $this->userRepository->findByCompany($me->getCompany());
         $usersViewModels = [];
 
         foreach ($users as $user) {

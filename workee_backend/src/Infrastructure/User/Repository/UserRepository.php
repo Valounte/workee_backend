@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\User\Repository;
 
+use App\Core\Components\Company\Entity\Company;
 use Doctrine\ORM\ORMException;
 use App\Core\Components\User\Entity\User;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
@@ -86,13 +87,12 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     }
 
     //find all users by company
-    public function findByCompany(int $company): ?array
+    public function findByCompany(Company $company): ?array
     {
-        $query = $this->createQueryBuilder('u')
+        return $this->createQueryBuilder('u')
         ->andWhere('u.company = :company')
         ->setParameter('company', $company)
-        ->getQuery();
-
-        return $query->getArrayResult();
+        ->getQuery()
+        ->getResult();
     }
 }
