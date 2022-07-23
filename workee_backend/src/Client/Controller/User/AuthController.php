@@ -12,6 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Infrastructure\FileUploader\Services\FileUploader;
 use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
@@ -26,6 +28,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Core\Components\User\UseCase\InviteByCsv\InviteUsersByCsvCommand;
 
 class AuthController extends AbstractController
 {
@@ -72,7 +75,7 @@ class AuthController extends AbstractController
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
+        } catch (UserPermissionsException | UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
@@ -103,7 +106,7 @@ class AuthController extends AbstractController
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
+        } catch (UserPermissionsException | UserNotFoundException $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
@@ -132,5 +135,27 @@ class AuthController extends AbstractController
         }
 
         return $this->jsonResponseService->successJsonResponse("User successfully invited !", 201);
+    }
+
+    /**
+     * @Route("api/invite/user/csv", name="invite_user_csv"),
+     * methods("POST")
+     */
+    public function inviteUserByCsv(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
+        } catch (UserPermissionsException | UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $command = new InviteUsersByCsvCommand(
+            $request->files->get('file'),
+            $user->getCompany(),
+        );
+
+        $this->messageBus->dispatch($command);
+
+        return new Response("Users invited", 201);
     }
 }

@@ -113,7 +113,7 @@ final class JobController extends AbstractController
 
         $input = json_decode($request->getContent(), true);
 
-        $job = $this->jobRepository->findOneById($input["id"]);
+        $job = $this->jobRepository->findOneById($input["jobId"]);
 
         if (isset($input["name"])) {
             $job->setName($input["name"]);
@@ -122,8 +122,19 @@ final class JobController extends AbstractController
         $this->jobRepository->add($job);
 
         if ($input["permissions"]) {
-            $permissions = $this->jobPermissionRepository->findPermissionsByJob($job);
+            $this->jobPermissionRepository->deleteAllPermissionsByJob($job);
+
+            foreach ($input["permissions"] as $permission) {
+                $permission = $this->permissionRepository->findOneById($permission);
+                $jobPermission = new JobPermission(
+                    $job,
+                    $permission,
+                );
+                $this->jobPermissionRepository->add($jobPermission);
+            }
         }
+
+        return $this->jsonResponseService->successJsonResponse('Job modified', 200);
     }
 
     private function getPermissionsViewModels(array $permissions): array
