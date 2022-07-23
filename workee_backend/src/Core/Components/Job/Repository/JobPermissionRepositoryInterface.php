@@ -10,4 +10,5 @@ interface JobPermissionRepositoryInterface
     public function remove(JobPermission $entity, bool $flush = true): void;
     public function findOneById($id): ?JobPermission;
     public function findPermissionsByJob($job): ?array;
+    public function deleteAllPermissionsByJob($job): void;
 }
