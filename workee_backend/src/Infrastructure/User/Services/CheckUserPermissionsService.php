@@ -32,7 +32,11 @@ final class CheckUserPermissionsService
             throw UserPermissionsException::invalidTokenException();
         }
 
-        $user = $this->userRepositoryInterface->findUserById($jwt['id']);
+        if (isset($jwt['id'])) {
+            $user = $this->userRepositoryInterface->findUserById($jwt['id']);
+        } else if (isset($jwt['email'])) {
+            $user = $this->userRepositoryInterface->findUserByEmail($jwt['email']);
+        }
 
         if ($permission == null) {
             return $user;
