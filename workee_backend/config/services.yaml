@@ -6,6 +6,7 @@
 parameters:
     jwt_secret: Epitech42WorkeeJwtSecret
     upload_directory: '%kernel.project_dir%/public'
+    mercure_hub_url: 'https://mercure.brangers.eu'
 
 services:
 
@@ -29,6 +30,10 @@ services:
     App\Infrastructure\FileUploader\Services\FileUploader:
         arguments:
             $targetDirectory: '%upload_directory%'
+
+    App\Core\Components\Notification\UseCase\NotificationHandler:
+        arguments:
+            $mercureHubUrl: '%mercure_hub_url%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -60,7 +60,7 @@ class AuthController extends AbstractController
             );
         }
 
-        $jwt = $this->tokenService->create(["id" => $user->getId(), "company" => $user->getCompany()->getId()]);
+        $jwt = $this->tokenService->createLoginToken($user);
 
         return $this->json([
             'message' => 'success!',
