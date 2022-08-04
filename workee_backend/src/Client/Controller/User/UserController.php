@@ -45,6 +45,26 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("api/user/picture", name="set_picture"),
+     * methods("POST")
+     */
+    public function setPicture(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+        $data = json_decode($request->getContent(), true);
+
+        $user->setPicture($data['picture']);
+
+        $this->userRepository->save($user);
+
+        return $this->jsonResponseService->successJsonResponse('Picture updated', 200);
+    }
+
+    /**
      * @Route("api/user/{id}", name="get_user_by_id"),
      * methods("GET")
      */
@@ -58,10 +78,15 @@ class UserController extends AbstractController
 
         $wantedUser = $this->userRepository->findUserById($id);
 
+        if ($wantedUser === null) {
+            return $this->jsonResponseService->errorJsonResponse('User not found', 404);
+        }
+
         $user = $this->getUserService->createUserViewModel($wantedUser);
 
         return $this->jsonResponseService->create($user);
     }
+
 
     /**
      * @Route("api/user", name="create_user"),

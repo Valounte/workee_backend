@@ -17,6 +17,7 @@ final class UserViewModel
         private string $firstname,
         private string $lastname,
         private CompanyViewModel $company,
+        private ?string $picture,
         private ?array $teams = null,
         private ?JobViewModel $job = null,
     ) {
@@ -64,5 +65,13 @@ final class UserViewModel
     public function getJob()
     {
         return $this->job;
+    }
+
+    /**
+     * Get the value of picture
+     */
+    public function getPicture()
+    {
+        return $this->picture;
     }
 }

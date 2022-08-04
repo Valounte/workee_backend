@@ -32,6 +32,9 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $password;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $picture;
+
     #[ORM\ManyToOne(targetEntity: Company::class)]
     #[ORM\JoinColumn(nullable: false)]
     private $company;
@@ -47,6 +50,7 @@ class User implements PasswordAuthenticatedUserInterface
         Company $company,
         ?Job $job = null,
         ?string $password = null,
+        ?string $picture = null,
         DateTime $created_at = new DateTime('now'),
     ) {
         $this->email = $email;
@@ -55,6 +59,7 @@ class User implements PasswordAuthenticatedUserInterface
         $this->created_at = $created_at;
         $this->company = $company;
         $this->password = $password;
+        $this->picture = $picture;
         $this->job = $job;
     }
 
@@ -151,6 +156,27 @@ class User implements PasswordAuthenticatedUserInterface
     public function setJob($job)
     {
         $this->job = $job;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of picture
+     */
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+
+    /**
+     * Set the value of picture
+     *
+     * @return  self
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
 
         return $this;
     }

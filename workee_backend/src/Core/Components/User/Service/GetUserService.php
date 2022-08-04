@@ -61,6 +61,7 @@ final class GetUserService
             $user->getFirstname(),
             $user->getLastname(),
             new CompanyViewModel($user->getCompany()->getId(), $user->getCompany()->getCompanyName()),
+            $user->getPicture(),
             $teamsViewModels,
             $jobViewModel,
         );
