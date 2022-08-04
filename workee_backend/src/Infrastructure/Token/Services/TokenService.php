@@ -4,6 +4,7 @@ namespace App\Infrastructure\Token\Services;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use App\Core\Components\User\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 
 final class TokenService
@@ -20,6 +21,20 @@ final class TokenService
         }
         $decoded_array = (array) $jwt;
         return $decoded_array;
+    }
+
+    public function createLoginToken(User $user): string
+    {
+        $token = JWT::encode(
+            [
+                'id' => $user->getId(),
+                'company' => $user->getCompany()->getId(),
+            ],
+            'jwt_secret',
+            'HS256'
+        );
+
+        return $token;
     }
 
     public function create(array $payload): string
