@@ -18,4 +18,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: mirroring to walter repo
-        run: git push --mirror https://github.com/Gaz0il/Backup_Workee_Backend.git
+        run: git push --mirror git@github.com:Gaz0il/Backup_Workee_Backend.git
