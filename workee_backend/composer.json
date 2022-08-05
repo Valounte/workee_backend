@@ -90,5 +90,17 @@
         "symfony/browser-kit": "6.0.*",
         "symfony/maker-bundle": "^1.38",
         "symfony/phpunit-bridge": " ^3.4.3"
-    }
+    },
+    
+    "repositories": [
+        {"type": "composer", "url": "https://workee.jfrog.io/artifactory/api/composer/backend_workee-php"},
+        {"packagist": false}
+    ],
+    "http-basic": {
+        "workee.jfrog.io": {
+            "username": "herisson.walter@gmail.com",
+            "password": "AKCp8mZwPwQx9i82gQsUGmxxkmmzNVKwkS7T6DvxL8FmaNHAxxTqYY6srn9VQYNeF5DeDSMka"
+        }
+    }  
+    
 }
