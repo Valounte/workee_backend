@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Components\Notification\ValueObject\Enum;
+namespace App\Core\Components\Notification\Entity\Enum;
 
 enum NotificationAlertLevelEnum: string
 {

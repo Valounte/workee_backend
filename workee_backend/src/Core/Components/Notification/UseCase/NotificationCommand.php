@@ -2,7 +2,7 @@
 
 namespace App\Core\Components\Notification\UseCase;
 
-use App\Core\Components\Notification\ValueObject\Notification;
+use App\Core\Components\Notification\Entity\Notification;
 
 final class NotificationCommand
 {
@@ -14,7 +14,7 @@ final class NotificationCommand
     /**
      * Get the value of notification
      */
-    public function getNotification()
+    public function getNotification(): Notification
     {
         return $this->notification;
     }
