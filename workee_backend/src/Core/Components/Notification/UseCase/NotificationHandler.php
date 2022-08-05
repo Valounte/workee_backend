@@ -2,7 +2,7 @@
 
 namespace App\Core\Components\Notification\UseCase;
 
-use App\Client\ViewModel\Notification\NotificationViewModel;
+use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -15,6 +15,7 @@ final class NotificationHandler implements MessageHandlerInterface
         private HubInterface $hub,
         private string $mercureHubUrl,
         private TokenService $tokenService,
+        private NotificationRepositoryInterface $notificationRepository,
     ) {
     }
 
@@ -22,7 +23,7 @@ final class NotificationHandler implements MessageHandlerInterface
     {
         $notification = $command->getNotification();
 
-        $jwt = $this->tokenService->createLoginToken($notification->getRecepteur());
+        $jwt = $this->tokenService->createLoginToken($notification->getReceiver());
 
         $update = new Update(
             $this->mercureHubUrl . '/notification' . '/' . $jwt,
@@ -31,9 +32,11 @@ final class NotificationHandler implements MessageHandlerInterface
                 'lastname' => $notification->getSender()->getLastname(),
                 'message' => $notification->getMessage(),
                 'alertLevel' => $notification->getAlertLevel(),
-                'createdAt' => $notification->getCreatedAt(),
+                'createdAt' => $notification->getCreated_at(),
             ])
         );
+
+        $this->notificationRepository->add($notification);
 
         $this->hub->publish($update);
     }
