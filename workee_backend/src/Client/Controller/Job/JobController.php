@@ -75,8 +75,9 @@ final class JobController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+        $job = $this->jobRepository->findByNameAndCompany($data["name"], $user->getCompany());
 
-        if ($this->jobRepository->findByNameAndCompany($data["name"], $user->getCompany()) !== null) {
+        if (!isset($job)) {
             return $this->jsonResponseService->errorJsonResponse("Job with this name already exists", 404);
         }
 
@@ -121,10 +122,10 @@ final class JobController extends AbstractController
 
         $this->jobRepository->add($job);
 
-        if ($input["permissions"]) {
-            $this->jobPermissionRepository->deleteAllPermissionsByJob($job);
 
-            foreach ($input["permissions"] as $permission) {
+        if (isset($input["permissionsId"])) {
+            $this->jobPermissionRepository->deleteAllPermissionsByJob($job);
+            foreach ($input["permissionsId"] as $permission) {
                 $permission = $this->permissionRepository->findOneById($permission);
                 $jobPermission = new JobPermission(
                     $job,

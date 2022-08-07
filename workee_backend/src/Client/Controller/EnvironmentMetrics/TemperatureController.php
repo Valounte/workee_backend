@@ -47,7 +47,7 @@ final class TemperatureController extends AbstractController
 
         $this->temperatureMetricRepository->add($temperatureMetric, true);
 
-        return new JsonResponse("data stored", 201);
+        return $this->jsonResponseService->successJsonResponse('Data stored', 200);
     }
 
     /**

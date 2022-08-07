@@ -32,7 +32,7 @@ final class NotificationController extends AbstractController
     }
 
     /**
-     * @Route("/api/notification", name="postHumidity", methods={"POST"})
+     * @Route("/api/notification", name="send-notification", methods={"POST"})
      */
     public function publish(Request $request): Response
     {
@@ -63,11 +63,11 @@ final class NotificationController extends AbstractController
 
         $this->messageBus->dispatch($command);
 
-        return new Response('Notification sent !');
+        return $this->jsonResponseService->successJsonResponse('Notification sent', 200);
     }
 
     /**
-     * @Route("/api/notification", name="getNotifications", methods={"GET"})
+     * @Route("/api/notifications", name="getNotifications", methods={"GET"})
      */
     public function getNotifications(Request $request): Response
     {
@@ -78,6 +78,11 @@ final class NotificationController extends AbstractController
         }
 
         $notifications = $this->notificationRepository->findLastNotifications($receiver);
+
+        if (empty($notifications)) {
+            return $this->jsonResponseService->successJsonResponse('No notifications found', 404);
+        }
+
         $notificationsViewModel = [];
 
         foreach ($notifications as $notification) {
