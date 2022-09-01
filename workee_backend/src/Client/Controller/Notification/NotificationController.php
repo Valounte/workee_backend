@@ -32,7 +32,7 @@ final class NotificationController extends AbstractController
     }
 
     /**
-     * @Route("/api/notification", name="send-notification", methods={"POST"})
+     * @Route("/api/send-notification", name="send-notification", methods={"POST"})
      */
     public function publish(Request $request): Response
     {
