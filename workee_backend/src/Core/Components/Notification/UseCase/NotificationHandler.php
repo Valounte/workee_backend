@@ -25,6 +25,8 @@ final class NotificationHandler implements MessageHandlerInterface
 
         $jwt = $this->tokenService->createLoginToken($notification->getReceiver());
 
+        $this->notificationRepository->add($notification);
+
         $update = new Update(
             $this->mercureHubUrl . '/notification' . '/' . $jwt,
             json_encode([
@@ -33,10 +35,10 @@ final class NotificationHandler implements MessageHandlerInterface
                 'message' => $notification->getMessage(),
                 'alertLevel' => $notification->getAlertLevel(),
                 'createdAt' => $notification->getCreated_at(),
+                'notificationId' => $notification->getId(),
             ])
         );
 
-        $this->notificationRepository->add($notification);
 
         $this->hub->publish($update);
     }
