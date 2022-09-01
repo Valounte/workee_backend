@@ -29,7 +29,7 @@ final class NotificationControllerTest extends AbstractApiTestCase
         ];
         $this->client->request(
             'POST',
-            '/api/notification',
+            '/api/send-notification',
             [],
             [],
             ['HTTP_Authorization' => $this->generateToken()],
