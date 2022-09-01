@@ -25,8 +25,14 @@ final class JobPermissionFixture extends Fixture implements FixtureInterface, De
             $this->getReference(PermissionFixture::CREATE_TEAM_REFERENCE),
         );
 
+        $jobPermissionsCreateJob = new JobPermission(
+            $this->getReference(JobFixture::MANAGER_REFERENCE),
+            $this->getReference(PermissionFixture::CREATE_JOB_REFERENCE),
+        );
+
         $manager->persist($jobPermissionCreateUser);
         $manager->persist($jobPermissionsCreateTeam);
+        $manager->persist($jobPermissionsCreateJob);
         $manager->flush();
     }
 

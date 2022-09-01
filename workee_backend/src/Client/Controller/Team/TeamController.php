@@ -40,7 +40,7 @@ class TeamController extends AbstractController
         $teamData = json_decode($request->getContent(), true);
 
         $team = new Team(
-            $teamData["teamName"],
+            $teamData["name"],
             $user->getCompany(),
         );
 
@@ -48,7 +48,7 @@ class TeamController extends AbstractController
 
         return $this->jsonResponseService->successJsonResponse(
             'Team created successfully.',
-            201
+            200
         );
     }
 
@@ -103,7 +103,7 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/team", name="editTeam", methods={"put"})
+    * @Route("/api/team", name="editTeam", methods={"PUT"})
     */
     public function editTeam(Request $request): Response
     {
@@ -123,7 +123,7 @@ class TeamController extends AbstractController
             );
         }
 
-        $team->setTeamName($teamData["teamName"]);
+        $team->setTeamName($teamData["name"]);
         $this->teamRepository->add($team);
         return new JsonResponse(
             ["team" => new TeamViewModel(

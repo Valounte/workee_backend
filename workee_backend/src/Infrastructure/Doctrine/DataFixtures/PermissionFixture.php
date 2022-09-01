@@ -13,8 +13,9 @@ use App\Core\Components\Job\Entity\Enum\PermissionContextEnum;
 
 final class PermissionFixture extends Fixture implements FixtureInterface
 {
-    public const CREATE_USER_REFERENCE = 'create_user';
-    public const CREATE_TEAM_REFERENCE = 'create_team';
+    public const CREATE_USER_REFERENCE = 'CREATE_USER';
+    public const CREATE_TEAM_REFERENCE = 'CREATE_TEAM';
+    public const CREATE_JOB_REFERENCE = 'CREATE_JOB';
 
     public function load(ObjectManager $manager): void
     {
@@ -26,11 +27,17 @@ final class PermissionFixture extends Fixture implements FixtureInterface
         $permissionCreateTeam->setName(PermissionNameEnum::CREATE_TEAM);
         $permissionCreateTeam->setContext(PermissionContextEnum::TEAM);
 
+        $permissionCreateJob = new Permission();
+        $permissionCreateJob->setName(PermissionNameEnum::CREATE_JOB);
+        $permissionCreateJob->setContext(PermissionContextEnum::TEAM);
+
         $this->addReference(self::CREATE_USER_REFERENCE, $permissionCreateUser);
         $this->addReference(self::CREATE_TEAM_REFERENCE, $permissionCreateTeam);
+        $this->addReference(self::CREATE_JOB_REFERENCE, $permissionCreateJob);
 
         $manager->persist($permissionCreateTeam);
         $manager->persist($permissionCreateUser);
+        $manager->persist($permissionCreateJob);
         $manager->flush();
     }
 }

@@ -26,7 +26,7 @@ class CompanyController extends AbstractController
         $companyData = json_decode($request->getContent(), true);
 
         $company = new Company(
-            $companyData["companyName"],
+            $companyData["name"],
         );
 
         $this->companyRepository->add($company);

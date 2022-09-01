@@ -114,7 +114,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("api/user/team", name="add_to_team"),
+     * @Route("api/add-to-team", name="add_to_team"),
      * methods("POST")
      */
     public function addToTeam(Request $request): Response

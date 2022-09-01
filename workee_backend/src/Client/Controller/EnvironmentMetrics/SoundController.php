@@ -50,7 +50,7 @@ final class SoundController extends AbstractController
 
         $this->soundMetricRepository->add($soundMetric, true);
 
-        return new JsonResponse("data stored", 201);
+        return $this->jsonResponseService->successJsonResponse('Data stored', 200);
     }
 
     /**
