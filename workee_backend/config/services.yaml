@@ -8,6 +8,8 @@ parameters:
     upload_directory: '%kernel.project_dir%/public'
     mercure_hub_url: 'https://mercure.brangers.eu'
     encrypt_key: "a8MHdKzY7DOi3U+IjrGScwE+Qh7Nv9kYpSxiKJ5NT38="
+    rgpd_document: '%kernel.project_dir%/public/LegalDocuments/rgpd.html'
+    cgu_document: '%kernel.project_dir%/public/LegalDocuments/CGU.pdf'
 
 services:
 
@@ -35,6 +37,10 @@ services:
     App\Core\Components\Notification\UseCase\NotificationHandler:
         arguments:
             $mercureHubUrl: '%mercure_hub_url%'
+    App\Client\Controller\LegalDocuments\LegalDocumentsController:
+        arguments:
+            $rpgdDocumentPath : '%rgpd_document%'
+            $cguDocumentPath : '%cgu_document%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

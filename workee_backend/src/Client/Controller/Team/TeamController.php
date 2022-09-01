@@ -103,12 +103,18 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/team/{id}", name="editTeam", methods={"put"})
+    * @Route("/api/team", name="editTeam", methods={"put"})
     */
-    public function editTeam(Request $request, $id): Response
+    public function editTeam(Request $request): Response
     {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
         $teamData = json_decode($request->getContent(), true);
-        $team = $this->teamRepository->findOneById($id);
+        $team = $this->teamRepository->findOneById($teamData["id"]);
 
         if (!$team) {
             return $this->jsonResponseService->errorJsonResponse(
