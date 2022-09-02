@@ -23,7 +23,7 @@ final class JsonResponseService
         return new JsonResponse(['message' => $message], $code);
     }
 
-    public function create($data, int $status = 200, array $headers = []): JsonResponse
+    public function create($data, ?int $status = 200): JsonResponse
     {
         if (is_array($data)) {
             $result = array_map(function ($element) {

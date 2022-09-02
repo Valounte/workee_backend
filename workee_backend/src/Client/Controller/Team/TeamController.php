@@ -46,9 +46,13 @@ class TeamController extends AbstractController
 
         $this->teamRepository->add($team);
 
-        return $this->jsonResponseService->successJsonResponse(
+        return $this->jsonResponseService->create(
+            [
+                "team" => new TeamViewModel($team->getId(), $team->getTeamName(), new CompanyViewModel($team->getCompany()->getId(), $team->getCompany()->getCompanyName())),
+                "message" => "Team created successfully."
+            ],
+            200,
             'Team created successfully.',
-            200
         );
     }
 

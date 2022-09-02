@@ -9,7 +9,7 @@ final class TeamViewModel
     public function __construct(
         private int $id,
         private string $name,
-        private CompanyViewModel $company,
+        private ?CompanyViewModel $company = null,
     ) {
     }
 
