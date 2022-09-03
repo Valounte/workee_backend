@@ -52,7 +52,6 @@ class TeamController extends AbstractController
                 "message" => "Team created successfully."
             ],
             200,
-            'Team created successfully.',
         );
     }
 

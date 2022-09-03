@@ -71,9 +71,41 @@ final class TemperatureController extends AbstractController
             $lastTemperatureValue->getId(),
             $lastTemperatureValue->getValue(),
             $user->getId(),
+            $lastTemperatureValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->temperatureMetricsAlertService->createAlert($lastTemperatureValue),
         );
 
         return $this->jsonResponseService->create($temperatureViewModel);
+    }
+
+    /**
+     * @Route("/api/temperature_historic", name="getTemperatureHistoric", methods={"GET"})
+     */
+    public function getTemperatureHistoric(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $historicValues = $this->temperatureMetricRepository->findTemperatureHistoric($user);
+
+        if ($historicValues === null) {
+            return new JsonResponse("no data", 404);
+        }
+
+        $temperatureViewModels = [];
+
+        foreach ($historicValues as $historicValue) {
+            $temperatureViewModels[] = new TemperatureMetricViewModel(
+                $historicValue->getId(),
+                $historicValue->getValue(),
+                $user->getId(),
+                $historicValue->getCreated_at()->format('Y-m-d H:i:s'),
+            );
+        }
+
+        return $this->jsonResponseService->create($temperatureViewModels);
     }
 }

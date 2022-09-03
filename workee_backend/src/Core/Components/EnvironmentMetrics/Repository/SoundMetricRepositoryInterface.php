@@ -10,4 +10,5 @@ interface SoundMetricRepositoryInterface
     public function remove(SoundMetric $entity, bool $flush = true): void;
     public function findOneById($id): ?SoundMetric;
     public function findLastSoundMetricByUser($user): ?SoundMetric;
+    public function findSoundHistoric($user): ?array;
 }

@@ -15,9 +15,7 @@ use App\Client\ViewModel\EnvironmentMetrics\SoundMetricViewModel;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\EnvironmentMetrics\Services\SoundMetricsAlertService;
-use App\Core\Components\EnvironmentMetrics\Services\HumidityMetricsAlertService;
 use App\Core\Components\EnvironmentMetrics\Repository\SoundMetricRepositoryInterface;
-use App\Core\Components\EnvironmentMetrics\Repository\HumidityMetricRepositoryInterface;
 
 final class SoundController extends AbstractController
 {
@@ -54,9 +52,9 @@ final class SoundController extends AbstractController
     }
 
     /**
-     * @Route("/api/current_sound", name="getCurrentHumidity", methods={"GET"})
+     * @Route("/api/current_sound", name="getCurrentSound", methods={"GET"})
      */
-    public function getCurrentHumidity(Request $request): Response
+    public function getCurrentSound(Request $request): Response
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
@@ -70,13 +68,44 @@ final class SoundController extends AbstractController
             return new JsonResponse("no data", 404);
         }
 
-        $humidityViewModel = new SoundMetricViewModel(
+        $soundViewModel = new SoundMetricViewModel(
             $lastSoundValue->getId(),
             $lastSoundValue->getValue(),
             $user->getId(),
             $this->soundMetricsAlertService->createAlert($lastSoundValue),
         );
 
-        return $this->jsonResponseService->create($humidityViewModel, 200);
+        return $this->jsonResponseService->create($soundViewModel, 200);
+    }
+
+    /**
+     * @Route("/api/sound_historic", name="getTemperatureHistoric", methods={"GET"})
+     */
+    public function getSoundHistoric(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $historicValues = $this->soundMetricRepository->findSoundHistoric($user);
+
+        if ($historicValues === null) {
+            return new JsonResponse("no data", 404);
+        }
+
+        $soundViewModels = [];
+
+        foreach ($historicValues as $historicValue) {
+            $soundViewModels[] = new SoundMetricViewModel(
+                $historicValue->getId(),
+                $historicValue->getValue(),
+                $user->getId(),
+                $historicValue->getCreated_at()->format('Y-m-d H:i:s'),
+            );
+        }
+
+        return $this->jsonResponseService->create($soundViewModels);
     }
 }
