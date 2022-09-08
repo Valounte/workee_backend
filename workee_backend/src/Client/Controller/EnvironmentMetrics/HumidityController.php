@@ -78,4 +78,35 @@ final class HumidityController extends AbstractController
         );
         return $this->jsonResponseService->create($humidityViewModel, 200);
     }
+
+    /**
+     * @Route("/api/humidity_historic", name="getHumidityHistoric", methods={"GET"})
+     */
+    public function getHumidityHistoric(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $historicValues = $this->humidityMetricRepository->findHumidityHistoric($user);
+
+        if ($historicValues === null) {
+            return new JsonResponse("no data", 404);
+        }
+
+        $humidityViewModels = [];
+
+        foreach ($historicValues as $historicValue) {
+            $humidityViewModels[] = new HumidityMetricViewModel(
+                $historicValue->getId(),
+                $historicValue->getValue(),
+                $user->getId(),
+                $historicValue->getCreated_at()->format('Y-m-d H:i:s'),
+            );
+        }
+
+        return $this->jsonResponseService->create($humidityViewModels);
+    }
 }

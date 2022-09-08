@@ -10,7 +10,8 @@ final class TemperatureMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
-        private TemperatureAlert $alert,
+        private string $createdAt,
+        private ?TemperatureAlert $alert = null,
     ) {
     }
 
@@ -44,5 +45,13 @@ final class TemperatureMetricViewModel
     public function getAlert()
     {
         return $this->alert;
+    }
+
+    /**
+     * Get the value of createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

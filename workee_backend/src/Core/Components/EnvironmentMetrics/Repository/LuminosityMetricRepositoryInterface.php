@@ -10,4 +10,5 @@ interface LuminosityMetricRepositoryInterface
     public function remove(LuminosityMetric $entity, bool $flush = true): void;
     public function findOneById($id): ?LuminosityMetric;
     public function findLastLuminosityMetricByUser($user): ?LuminosityMetric;
+    public function findLuminosityHistoric($user): ?array;
 }

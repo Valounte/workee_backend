@@ -22,11 +22,11 @@ use App\Core\Components\EnvironmentMetrics\Repository\LuminosityMetricRepository
 final class LuminosityController extends AbstractController
 {
     public function __construct(
-        private LuminosityMetricRepositoryInterface $humidityMetricRepository,
+        private LuminosityMetricRepositoryInterface $luminosityMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
         private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
-        private LuminosityMetricsAlertService $humidityMetricsAlertService,
+        private LuminosityMetricsAlertService $luminosityMetricsAlertService,
     ) {
     }
 
@@ -43,12 +43,12 @@ final class LuminosityController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $humidityMetric = new LuminosityMetric(
+        $luminosityMetric = new LuminosityMetric(
             (float) $data["value"],
             $user,
         );
 
-        $this->humidityMetricRepository->add($humidityMetric, true);
+        $this->luminosityMetricRepository->add($luminosityMetric, true);
 
         return $this->jsonResponseService->successJsonResponse('Data stored', 200);
     }
@@ -64,18 +64,49 @@ final class LuminosityController extends AbstractController
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $lastLuminosityValue = $this->humidityMetricRepository->findLastLuminosityMetricByUser($user);
+        $lastLuminosityValue = $this->luminosityMetricRepository->findLastLuminosityMetricByUser($user);
 
         if ($lastLuminosityValue === null) {
             return new JsonResponse("no data", 404);
         }
 
-        $humidityViewModel = new LuminosityMetricViewModel(
+        $luminosityViewModel = new LuminosityMetricViewModel(
             $lastLuminosityValue->getId(),
             $lastLuminosityValue->getValue(),
             $user->getId(),
-            $this->humidityMetricsAlertService->createAlert($lastLuminosityValue),
+            $this->luminosityMetricsAlertService->createAlert($lastLuminosityValue),
         );
-        return $this->jsonResponseService->create($humidityViewModel, 200);
+        return $this->jsonResponseService->create($luminosityViewModel, 200);
+    }
+
+    /**
+     * @Route("/api/luminosity_historic", name="getLuminosityHistoric", methods={"GET"})
+     */
+    public function getLuminosityHistoric(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $historicValues = $this->luminosityMetricRepository->findLuminosityHistoric($user);
+
+        if ($historicValues === null) {
+            return new JsonResponse("no data", 404);
+        }
+
+        $luminosityViewModel = [];
+
+        foreach ($historicValues as $historicValue) {
+            $luminosityViewModel[] = new LuminosityMetricViewModel(
+                $historicValue->getId(),
+                $historicValue->getValue(),
+                $user->getId(),
+                $historicValue->getCreated_at()->format('Y-m-d H:i:s'),
+            );
+        }
+
+        return $this->jsonResponseService->create($luminosityViewModel);
     }
 }

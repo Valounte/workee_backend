@@ -10,4 +10,5 @@ interface TemperatureMetricRepositoryInterface
     public function remove(TemperatureMetric $entity, bool $flush = true): void;
     public function findOneById($id): ?TemperatureMetric;
     public function findLastTemperatureMetricByUser($user): ?TemperatureMetric;
+    public function findTemperatureHistoric($user): ?array;
 }

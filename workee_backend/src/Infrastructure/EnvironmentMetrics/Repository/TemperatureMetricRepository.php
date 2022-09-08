@@ -84,4 +84,31 @@ class TemperatureMetricRepository extends ServiceEntityRepository implements Tem
             ->getOneOrNullResult()
         ;
     }
+
+    public function findTemperatureHistoric($user): ?array
+    {
+        $historic = [];
+
+        for ($i = 0; $i <= 5; $i++) {
+            $from = date("Y-m-d H:i:s", strtotime("-" . $i . "hours"));
+            $to = date("Y-m-d H:i:s", strtotime("-" . ($i + 1) . "hours"));
+
+            $value =  $this->createQueryBuilder('c')
+            ->andWhere('c.user = :user')
+            ->andWhere('c.created_at BETWEEN :to AND :from')
+            ->setParameter('user', $user)
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->orderBy('c.created_at', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+            if ($value != null) {
+                $historic[] = $value;
+            }
+        }
+
+        return $historic;
+    }
 }

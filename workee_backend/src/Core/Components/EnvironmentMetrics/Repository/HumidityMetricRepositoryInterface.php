@@ -10,4 +10,5 @@ interface HumidityMetricRepositoryInterface
     public function remove(HumidityMetric $entity, bool $flush = true): void;
     public function findOneById($id): ?HumidityMetric;
     public function findLastHumidityMetricByUser($user): ?HumidityMetric;
+    public function findHumidityHistoric($user): ?array;
 }
