@@ -2,22 +2,25 @@
 
 namespace App\Client\Controller\Notification;
 
-use App\Client\ViewModel\Notification\NotificationViewModel;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Components\Notification\Entity\Notification;
+use App\Core\Components\Notification\UseCase\TestCommand;
+use App\Client\ViewModel\Notification\NotificationViewModel;
+use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Core\Components\Notification\UseCase\NotificationCommand;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
-use App\Core\Components\Notification\Entity\Notification;
 use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
-use App\Core\Components\User\Service\GetUserService;
-use App\Infrastructure\Response\Services\JsonResponseService;
 
 final class NotificationController extends AbstractController
 {
@@ -96,5 +99,17 @@ final class NotificationController extends AbstractController
         }
 
         return $this->jsonResponseService->create($notificationsViewModel);
+    }
+
+    /**
+     * @Route("/api/test", name="tests", methods={"POST"})
+     */
+    public function test(Request $request): Response
+    {
+        $this->messageBus->dispatch(
+            new Envelope(new TestCommand('test'), [new DelayStamp(50000)])
+        );
+
+        return $this->jsonResponseService->successJsonResponse('Notification sent', 200);
     }
 }
