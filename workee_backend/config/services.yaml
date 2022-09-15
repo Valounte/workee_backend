@@ -37,6 +37,11 @@ services:
     App\Core\Components\Notification\UseCase\NotificationHandler:
         arguments:
             $mercureHubUrl: '%mercure_hub_url%'
+
+    App\Core\Components\Notification\UseCase\TestHandler:
+        arguments:
+            $mercureHubUrl: '%mercure_hub_url%'
+            
     App\Client\Controller\LegalDocuments\LegalDocumentsController:
         arguments:
             $rpgdDocumentPath : '%rgpd_document%'
