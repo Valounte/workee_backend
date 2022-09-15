@@ -9,6 +9,7 @@ use DateTime;
 final class NotificationViewModel
 {
     public function __construct(
+        private int $id,
         private string $message,
         private string $senderFirstname,
         private string $senderLastname,
@@ -55,5 +56,13 @@ final class NotificationViewModel
     public function getSenderLastname()
     {
         return $this->senderLastname;
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }

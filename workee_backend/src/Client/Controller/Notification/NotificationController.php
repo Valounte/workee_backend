@@ -90,6 +90,7 @@ final class NotificationController extends AbstractController
 
         foreach ($notifications as $notification) {
             $notificationsViewModel[] = new NotificationViewModel(
+                $notification->getId(),
                 $notification->getMessage(),
                 $notification->getSender()->getFirstname(),
                 $notification->getSender()->getLastname(),
