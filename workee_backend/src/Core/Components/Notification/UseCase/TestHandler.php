@@ -26,7 +26,7 @@ final class TestHandler implements MessageHandlerInterface
     public function __invoke(TestCommand $command): void
     {
         $myCommand = $command;
-        
+
         $update = new Update(
             $this->mercureHubUrl . '/notification' . '/' . "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiY29tcGFueSI6MX0.eOe0BAe5N9aCCdwB7ETFrrOpQaHSWJUsejayELA-SmU",
             json_encode([

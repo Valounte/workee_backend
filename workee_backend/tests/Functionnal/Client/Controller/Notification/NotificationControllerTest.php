@@ -37,6 +37,6 @@ final class NotificationControllerTest extends AbstractApiTestCase
         );
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('Notification sent', $response->message);
+        $this->assertEquals('Notifications sent', $response->message);
     }
 }
