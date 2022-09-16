@@ -21,6 +21,9 @@ use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
 use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
+use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
+use App\Infrastructure\User\Repository\UserTeamRepository;
 
 final class NotificationController extends AbstractController
 {
@@ -31,6 +34,7 @@ final class NotificationController extends AbstractController
         private NotificationRepositoryInterface $notificationRepository,
         private GetUserService $getUserService,
         private JsonResponseService $jsonResponseService,
+        private UserTeamRepositoryInterface $userTeamRepository,
     ) {
     }
 
@@ -67,6 +71,42 @@ final class NotificationController extends AbstractController
         $this->messageBus->dispatch($command);
 
         return $this->jsonResponseService->successJsonResponse('Notification sent', 200);
+    }
+
+    /**
+     * @Route("/api/team-notification", name="sendTeamNotification", methods={"POST"})
+     */
+    public function sendTeamNotification(Request $request): Response
+    {
+        try {
+            $sender = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $input = json_decode($request->getContent(), true);
+
+        $teamUsers = $this->userTeamRepository->findUsersByTeamId($input['teamId']);
+
+        $alertLevel = match ($input['alertLevel']) {
+            'important' => NotificationAlertLevelEnum::IMPORTANT_ALERT,
+            'urgent' => NotificationAlertLevelEnum::URGENT_ALERT,
+            default => NotificationAlertLevelEnum::NORMAL_ALERT,
+        };
+
+        foreach ($teamUsers as $teamUser) {
+            $command = new NotificationCommand(
+                new Notification(
+                    $input['message'],
+                    $sender,
+                    $teamUser,
+                    $alertLevel,
+                ),
+            );
+            $this->messageBus->dispatch($command);
+        }
+
+        return $this->jsonResponseService->successJsonResponse('Notification sent to the team', 200);
     }
 
     /**
