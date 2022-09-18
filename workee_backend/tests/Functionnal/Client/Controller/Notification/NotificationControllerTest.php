@@ -23,7 +23,7 @@ final class NotificationControllerTest extends AbstractApiTestCase
 
         $body = [
             'message' => 'Notification content',
-            'recepteurId' => $users[0]->getId(),
+            'usersId' => [$users[0]->getId()],
             'alertLevel' => "important",
 
         ];
