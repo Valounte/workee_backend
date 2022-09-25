@@ -54,6 +54,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Core/Components/Notification/Entity'
                 prefix: App\Core\Components\Notification\Entity
                 alias: Notification
+            DailyFeedback:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/Feedback/Entity'
+                prefix: App\Core\Components\Feedback\Entity
+                alias: DailyFeedback
             
 
 when@test:
