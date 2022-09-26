@@ -9,17 +9,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Client\ViewModel\Company\CompanyViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\User\Service\GetUserService;
 use App\Core\Components\Feedback\Entity\DailyFeedback;
 use App\Client\ViewModel\Feedback\DailyFeedbackViewModel;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
+use App\Client\ViewModel\Feedback\LastWeekDailyFeedbackViewModel;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use App\Core\Components\Feedback\Repository\DailyFeedbackRepositoryInterface;
-use App\Core\Components\User\Service\GetUserService;
 
 final class DailyFeedbackController extends AbstractController
 {
@@ -78,7 +79,8 @@ final class DailyFeedbackController extends AbstractController
 
         $allFeedback = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
 
-        $feedbackViewModel = [];
+        $dailyFeedbackViewModel = [];
+        $allSatisfactionDegree = [];
 
         foreach ($allFeedback as $feedback) {
             $userViewModel = null;
@@ -86,14 +88,22 @@ final class DailyFeedbackController extends AbstractController
                 $userViewModel = $this->getUserService->createUserViewModel($feedback->getUser());
             }
 
-            $feedbackViewModel[] = new DailyFeedbackViewModel(
+            $allSatisfactionDegree[] = $feedback->getSatisfactionDegree();
+
+            $dailyFeedbackViewModel[] = new DailyFeedbackViewModel(
                 $feedback->getId(),
                 $feedback->getSatisfactionDegree(),
-                new TeamViewModel($team->getId(), $team->getTeamName()),
                 $userViewModel,
             );
         }
 
-        return $this->jsonResponseService->create($feedbackViewModel, 200);
+
+        $lastWeekDailyFeedbackViewModel = new LastWeekDailyFeedbackViewModel(
+            array_sum($allSatisfactionDegree) / count($allSatisfactionDegree),
+            $dailyFeedbackViewModel,
+            new TeamViewModel($team->getId(), $team->getTeamName()),
+        );
+
+        return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
     }
 }

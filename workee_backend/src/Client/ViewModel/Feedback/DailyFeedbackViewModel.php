@@ -11,7 +11,6 @@ final class DailyFeedbackViewModel
     public function __construct(
         private int $id,
         private int $satisfactionDegree,
-        private TeamViewModel $team,
         private ?UserViewModel $user = null,
     ) {
     }
@@ -30,14 +29,6 @@ final class DailyFeedbackViewModel
     public function getSatisfactionDegree(): int
     {
         return $this->satisfactionDegree;
-    }
-
-    /**
-     * Get the value of team
-     */
-    public function getTeam(): TeamViewModel
-    {
-        return $this->team;
     }
 
     /**
