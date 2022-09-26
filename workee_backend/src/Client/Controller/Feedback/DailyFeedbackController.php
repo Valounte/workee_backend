@@ -64,9 +64,9 @@ final class DailyFeedbackController extends AbstractController
     }
 
     /**
-     * @Route("/api/last-week-daily-feedback", name="getLastWeekDailyFeedback", methods={"GET"})
+     * @Route("/api/last-week-daily-feedback/{teamId}", name="getLastWeekDailyFeedback", methods={"GET"})
      */
-    public function getLastWeekDailyFeedback(Request $request): Response
+    public function getLastWeekDailyFeedback(int $teamId, Request $request): Response
     {
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
@@ -74,9 +74,7 @@ final class DailyFeedbackController extends AbstractController
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $input = json_decode($request->getContent(), true);
-
-        $team = $this->teamRepository->findOneById($input["teamId"]);
+        $team = $this->teamRepository->findOneById($teamId);
 
         $allFeedback = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
 
