@@ -7,6 +7,7 @@ use App\Client\ViewModel\Team\TeamViewModel;
 final class LastWeekDailyFeedbackViewModel
 {
     public function __construct(
+        private int $id,
         private float $averageSatisfactionDegree,
         private array $dailyFeedback,
         private TeamViewModel $team,
@@ -35,5 +36,13 @@ final class LastWeekDailyFeedbackViewModel
     public function getDailyFeedback()
     {
         return $this->dailyFeedback;
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }
