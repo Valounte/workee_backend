@@ -65,9 +65,14 @@ class HumidityMetricRepository extends ServiceEntityRepository implements Humidi
 
     public function findLastHumidityMetricByUser($user): ?HumidityMetric
     {
+        $date = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+        $date->sub(new \DateInterval('PT10M'));
+
         return $this->createQueryBuilder('c')
             ->andWhere('c.user = :user')
             ->setParameter('user', $user)
+            ->andWhere('c.created_at > :date')
+            ->setParameter('date', $date)
             ->orderBy('c.created_at', 'desc')
             ->setMaxResults(1)
             ->getQuery()
