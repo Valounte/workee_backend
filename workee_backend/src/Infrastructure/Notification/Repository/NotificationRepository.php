@@ -74,12 +74,12 @@ class NotificationRepository extends ServiceEntityRepository implements Notifica
         ;
     }
 
-    public function findLastNotifications(User $receiver): ?array
+    public function findLastNotifications(User $receiver, int $limit): ?array
     {
         return $this->createQueryBuilder('c')
         ->andWhere('c.receiver = :receiver')
         ->setParameter('receiver', $receiver)
-        ->setMaxResults(10)
+        ->setMaxResults($limit)
         ->addOrderBy('c.id', "DESC")
         ->getQuery()
         ->getResult();

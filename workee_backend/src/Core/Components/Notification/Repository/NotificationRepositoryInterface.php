@@ -11,5 +11,5 @@ interface NotificationRepositoryInterface
     public function remove(Notification $entity, bool $flush = true): void;
     public function findOneById($id): ?Notification;
     public function findAll();
-    public function findLastNotifications(User $receiver): ?array;
+    public function findLastNotifications(User $receiver, int $limit): ?array;
 }

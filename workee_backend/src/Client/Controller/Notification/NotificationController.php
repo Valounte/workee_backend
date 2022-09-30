@@ -99,7 +99,12 @@ final class NotificationController extends AbstractController
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
-        $notifications = $this->notificationRepository->findLastNotifications($receiver);
+        $limit = $request->query->get('limit');
+
+        $notifications = $this->notificationRepository->findLastNotifications(
+            $receiver,
+            isset($limit) ? $limit : 20,
+        );
 
         if (empty($notifications)) {
             return $this->jsonResponseService->successJsonResponse('No notifications found', 404);
