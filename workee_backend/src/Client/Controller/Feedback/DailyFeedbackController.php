@@ -99,7 +99,6 @@ final class DailyFeedbackController extends AbstractController
 
 
         $lastWeekDailyFeedbackViewModel = new LastWeekDailyFeedbackViewModel(
-            random_int(1, 50000),
             array_sum($allSatisfactionDegree) / count($allSatisfactionDegree),
             $dailyFeedbackViewModel,
             new TeamViewModel($team->getId(), $team->getTeamName()),
