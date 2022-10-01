@@ -16,6 +16,7 @@ framework:
         routing:
             # Route your messages to the transports
             'App\Core\Components\Notification\UseCase\TestCommand': async
+            'App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesCommand': async            
 
 # when@test:
 #    framework:

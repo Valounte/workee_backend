@@ -132,7 +132,7 @@ final class NotificationController extends AbstractController
     public function test(Request $request): Response
     {
         $this->messageBus->dispatch(
-            new Envelope(new TestCommand('test'), [new DelayStamp(1000)])
+            new Envelope(new TestCommand('test'), [new DelayStamp(10000)])
         );
 
         return $this->jsonResponseService->successJsonResponse('Notification sent', 200);

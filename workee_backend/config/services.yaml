@@ -47,5 +47,9 @@ services:
             $rpgdDocumentPath : '%rgpd_document%'
             $cguDocumentPath : '%cgu_document%'
 
+    App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesHandler:
+        arguments:
+            $mercureHubUrl: '%mercure_hub_url%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
