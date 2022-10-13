@@ -43,6 +43,6 @@ final class HumidityMetricViewModel
      */
     public function getHumidityAlert()
     {
-        return $this->humidityAlert;
+        return $this->alert;
     }
 }

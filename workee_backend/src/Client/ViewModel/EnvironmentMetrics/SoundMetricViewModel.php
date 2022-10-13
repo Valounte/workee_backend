@@ -43,6 +43,6 @@ final class SoundMetricViewModel
      */
     public function getSoundAlert(): ?SoundAlert
     {
-        return $this->soundAlert;
+        return $this->alert;
     }
 }
