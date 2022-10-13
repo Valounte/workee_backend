@@ -10,7 +10,7 @@ final class LuminosityMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
-        private ?LuminosityAlert $humidityAlert = null,
+        private ?LuminosityAlert $alert = null,
     ) {
     }
 

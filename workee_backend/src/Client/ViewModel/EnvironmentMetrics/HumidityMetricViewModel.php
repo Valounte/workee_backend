@@ -10,7 +10,7 @@ final class HumidityMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
-        private ?HumidityAlert $humidityAlert = null,
+        private ?HumidityAlert $alert = null,
     ) {
     }
 

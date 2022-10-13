@@ -10,7 +10,7 @@ final class SoundMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
-        private ?SoundAlert $soundAlert = null,
+        private ?SoundAlert $alert = null,
     ) {
     }
 
