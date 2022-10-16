@@ -41,7 +41,7 @@ final class SoundMetricViewModel
     /**
      * Get the value of humidityAlert
      */
-    public function getSoundAlert(): ?SoundAlert
+    public function getAlert(): ?SoundAlert
     {
         return $this->alert;
     }

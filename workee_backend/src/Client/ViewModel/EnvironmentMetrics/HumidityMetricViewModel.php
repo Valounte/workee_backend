@@ -41,7 +41,7 @@ final class HumidityMetricViewModel
     /**
      * Get the value of humidityAlert
      */
-    public function getHumidityAlert()
+    public function getAlert()
     {
         return $this->alert;
     }
