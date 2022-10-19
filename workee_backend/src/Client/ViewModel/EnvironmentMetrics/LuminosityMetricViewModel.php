@@ -10,6 +10,7 @@ final class LuminosityMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
+        private string $createdAt,
         private ?LuminosityAlert $alert = null,
     ) {
     }
@@ -44,5 +45,13 @@ final class LuminosityMetricViewModel
     public function getAlert()
     {
         return $this->alert;
+    }
+
+    /**
+     * Get the value of createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

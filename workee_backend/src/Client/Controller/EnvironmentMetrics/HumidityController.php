@@ -74,6 +74,7 @@ final class HumidityController extends AbstractController
             $lastHumidityValue->getId(),
             $lastHumidityValue->getValue(),
             $user->getId(),
+            $lastHumidityValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->humidityMetricsAlertService->createAlert($lastHumidityValue),
         );
         return $this->jsonResponseService->create($humidityViewModel, 200);
@@ -110,3 +111,4 @@ final class HumidityController extends AbstractController
         return $this->jsonResponseService->create($humidityViewModels);
     }
 }
+

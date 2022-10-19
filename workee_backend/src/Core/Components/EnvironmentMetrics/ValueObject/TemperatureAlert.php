@@ -11,7 +11,7 @@ final class TemperatureAlert
     public function __construct(
         private AlertLevelEnum $alertLevel,
         private RecommendedTemperatureMessageEnum $recommendationMessage,
-        private ?RecommendedTemperatureEnum $recommendedTemperature = null,
+        private ?RecommendedTemperatureEnum $recommendedValue = null,
     ) {
     }
 
@@ -26,9 +26,9 @@ final class TemperatureAlert
     /**
      * Get the value of recommendedTemperature
      */
-    public function getRecommendedTemperature(): RecommendedTemperatureEnum
+    public function getRecommendedValue(): RecommendedTemperatureEnum
     {
-        return $this->recommendedTemperature;
+        return $this->recommendedValue;
     }
 
     /**

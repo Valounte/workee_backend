@@ -10,6 +10,7 @@ final class SoundMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
+        private string $createdAt,
         private ?SoundAlert $alert = null,
     ) {
     }
@@ -44,5 +45,13 @@ final class SoundMetricViewModel
     public function getAlert(): ?SoundAlert
     {
         return $this->alert;
+    }
+
+    /**
+     * Get the value of createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

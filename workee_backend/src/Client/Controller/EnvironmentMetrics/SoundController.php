@@ -72,6 +72,7 @@ final class SoundController extends AbstractController
             $lastSoundValue->getId(),
             $lastSoundValue->getValue(),
             $user->getId(),
+            $lastSoundValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->soundMetricsAlertService->createAlert($lastSoundValue),
         );
 

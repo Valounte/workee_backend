@@ -10,7 +10,7 @@ final class SoundAlert
     public function __construct(
         private AlertLevelEnum $alertLevel,
         private RecommendedSoundMessageEnum $recommendationMessage,
-        private string $recommendedHumidity = ' < 80dB',
+        private string $recommendedValue = ' < 80dB',
     ) {
     }
 
@@ -25,9 +25,9 @@ final class SoundAlert
     /**
      * Get the value of recommendedHumidity
      */
-    public function getRecommendedHumidity(): string
+    public function getRecommendedValue(): string
     {
-        return $this->recommendedHumidity;
+        return $this->recommendedValue;
     }
 
     /**

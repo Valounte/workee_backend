@@ -10,7 +10,7 @@ final class LuminosityAlert
     public function __construct(
         private AlertLevelEnum $alertLevel,
         private RecommendedLuminosityMessageEnum $recommendationMessage,
-        private string $recommendedLuminosity = '200lx - 500lx',
+        private string $recommendedValue = '200lx - 500lx',
     ) {
     }
 
@@ -25,9 +25,9 @@ final class LuminosityAlert
     /**
      * Get the value of recommendedLuminosity
      */
-    public function getRecommendedLuminosity(): string
+    public function getRecommendedValue(): string
     {
-        return $this->recommendedLuminosity;
+        return $this->recommendedValue;
     }
 
     /**

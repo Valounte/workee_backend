@@ -10,7 +10,7 @@ final class HumidityAlert
     public function __construct(
         private AlertLevelEnum $alertLevel,
         private RecommendedHumidityMessageEnum $recommendationMessage,
-        private string $recommendedHumidity = '40% - 60%',
+        private string $recommendedValue = '40% - 60%',
     ) {
     }
 
@@ -25,9 +25,9 @@ final class HumidityAlert
     /**
      * Get the value of recommendedHumidity
      */
-    public function getRecommendedHumidity(): string
+    public function getRecommendedValue(): string
     {
-        return $this->recommendedHumidity;
+        return $this->recommendedValue;
     }
 
     /**

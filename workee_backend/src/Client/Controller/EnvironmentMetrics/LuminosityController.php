@@ -74,6 +74,7 @@ final class LuminosityController extends AbstractController
             $lastLuminosityValue->getId(),
             $lastLuminosityValue->getValue(),
             $user->getId(),
+            $lastLuminosityValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->luminosityMetricsAlertService->createAlert($lastLuminosityValue),
         );
         return $this->jsonResponseService->create($luminosityViewModel, 200);

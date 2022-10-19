@@ -10,6 +10,7 @@ final class HumidityMetricViewModel
         private int $id,
         private float $value,
         private int $userId,
+        private string $createdAt,
         private ?HumidityAlert $alert = null,
     ) {
     }
@@ -44,5 +45,13 @@ final class HumidityMetricViewModel
     public function getAlert()
     {
         return $this->alert;
+    }
+
+    /**
+     * Get the value of createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }
