@@ -80,7 +80,7 @@ final class SoundController extends AbstractController
     }
 
     /**
-     * @Route("/api/sound_historic", name="getTemperatureHistoric", methods={"GET"})
+     * @Route("/api/sound_historic", name="getSoundHistoric", methods={"GET"})
      */
     public function getSoundHistoric(Request $request): JsonResponse
     {
