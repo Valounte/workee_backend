@@ -95,9 +95,9 @@ class HumidityMetricRepository extends ServiceEntityRepository implements Humidi
     {
         $historic = [];
 
-        for ($i = 0; $i <= 5; $i++) {
+        for ($i = 0; $i <= 10; $i++) {
             $from = date("Y-m-d H:i:s", strtotime("-" . $i . "hours"));
-            $to = date("Y-m-d H:i:s", strtotime("-" . ($i + 1) . "hours"));
+            $to = date("Y-m-d H:i:s", strtotime("-" . ($i + 0.5) . "hours"));
 
             $value =  $this->createQueryBuilder('c')
             ->andWhere('c.user = :user')
