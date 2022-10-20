@@ -32,7 +32,7 @@ final class HumidityMetricsAlertService
         if ($humidity >= 40 && $humidity <= 60) {
             $this->recommendationMessage = RecommendedHumidityMessageEnum::CONFORM_HUMIDITY;
             $this->alertLevel = AlertLevelEnum::CONFORM_VALUE;
-        } elseif ($humidity > 30 && $humidity < 40 || $humidity > 60 && $humidity <= 70) {
+        } elseif ($humidity >= 30 && $humidity < 40 || $humidity > 60 && $humidity <= 70) {
             $this->alertLevel = AlertLevelEnum::WARNING_VALUE;
             if ($humidity < 40) {
                 $this->recommendationMessage = RecommendedHumidityMessageEnum::WARNING_HUMIDITY_TOO_LOW;
