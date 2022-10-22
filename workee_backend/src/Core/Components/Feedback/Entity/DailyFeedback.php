@@ -19,8 +19,7 @@ class DailyFeedback
     #[ORM\Column(type: 'integer')]
     private $satisfactionDegree;
 
-    #[ORM\Column(type: 'string')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\Column(type: 'string', nullable: true)]
     private $message;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

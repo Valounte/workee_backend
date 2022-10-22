@@ -111,4 +111,3 @@ final class HumidityController extends AbstractController
         return $this->jsonResponseService->create($humidityViewModels);
     }
 }
-

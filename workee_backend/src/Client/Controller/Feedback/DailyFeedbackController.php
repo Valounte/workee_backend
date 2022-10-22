@@ -64,13 +64,17 @@ final class DailyFeedbackController extends AbstractController
 
         $userTeams = $this->userTeamRepository->findTeamsByUser($user);
         $isAnonymous = $input["isAnonymous"] ?? false;
-        $message = $input["message"] ?? null;
-        
+
+        $message = null;
+        if (isset($input["message"])) {
+            $message = $input["message"];
+        }
+
         foreach ($userTeams as $userTeam) {
             $dailyFeedback = new DailyFeedback(
                 $input["satisfactionDegree"],
-                $message,
                 $userTeam,
+                $message,
                 $isAnonymous == true ? null : $user,
             );
 
@@ -92,6 +96,7 @@ final class DailyFeedbackController extends AbstractController
         }
 
         $team = $this->teamRepository->findOneById($request->query->get('teamId'));
+
 
         $allFeedback = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
 
