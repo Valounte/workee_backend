@@ -11,6 +11,7 @@ final class DailyFeedbackViewModel
     public function __construct(
         private int $id,
         private int $satisfactionDegree,
+        private ?string $message,
         private ?UserViewModel $user = null,
     ) {
     }
@@ -37,5 +38,13 @@ final class DailyFeedbackViewModel
     public function getUser(): ?UserViewModel
     {
         return $this->user;
+    }
+
+    /**
+     * Get the value of message
+     */
+    public function getMessage(): ?string
+    {
+        return $this->message;
     }
 }

@@ -63,12 +63,13 @@ final class DailyFeedbackController extends AbstractController
         $input = json_decode($request->getContent(), true);
 
         $userTeams = $this->userTeamRepository->findTeamsByUser($user);
-
         $isAnonymous = $input["isAnonymous"] ?? false;
-
+        $message = $input["message"] ?? null;
+        
         foreach ($userTeams as $userTeam) {
             $dailyFeedback = new DailyFeedback(
                 $input["satisfactionDegree"],
+                $message,
                 $userTeam,
                 $isAnonymous == true ? null : $user,
             );
@@ -108,6 +109,7 @@ final class DailyFeedbackController extends AbstractController
             $dailyFeedbackViewModel[] = new DailyFeedbackViewModel(
                 $feedback->getId(),
                 $feedback->getSatisfactionDegree(),
+                $feedback->getMessage(),
                 $userViewModel,
             );
         }

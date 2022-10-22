@@ -19,6 +19,10 @@ class DailyFeedback
     #[ORM\Column(type: 'integer')]
     private $satisfactionDegree;
 
+    #[ORM\Column(type: 'string')]
+    #[ORM\JoinColumn(nullable: true)]
+    private $message;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true)]
     private $user;
@@ -33,11 +37,13 @@ class DailyFeedback
     public function __construct(
         int $satisfactionDegree,
         Team $team,
+        ?string $message = null,
         ?User $user = null,
         DateTime $created_at = new DateTime('now'),
     ) {
         $this->user = $user;
         $this->team = $team;
+        $this->message = $message;
         $this->satisfactionDegree = $satisfactionDegree;
         $this->created_at = $created_at;
     }
@@ -80,5 +86,13 @@ class DailyFeedback
     public function getCreated_at()
     {
         return $this->created_at;
+    }
+
+    /**
+     * Get the value of message
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }
