@@ -9,6 +9,7 @@ final class JobViewModel
     public function __construct(
         private int $id,
         private string $name,
+        private string $description,
         private CompanyViewModel $company,
         private array $permissions,
     ) {
@@ -45,4 +46,12 @@ final class JobViewModel
     {
         return $this->permissions;
     }
+
+        /**
+         * Get the value of description
+         */ 
+        public function getDescription()
+        {
+                return $this->description;
+        }
 }

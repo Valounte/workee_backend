@@ -52,6 +52,7 @@ final class JobController extends AbstractController
             $jobViewModel[] = new JobViewModel(
                 $job->getId(),
                 $job->getName(),
+                $job->getDescription(),
                 new CompanyViewModel(
                     $job->getCompany()->getId(),
                     $job->getCompany()->getCompanyName(),
@@ -83,6 +84,7 @@ final class JobController extends AbstractController
 
         $job = new Job(
             $data["name"],
+            $data["description"],
             $user->getCompany(),
         );
 

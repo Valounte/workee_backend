@@ -17,13 +17,17 @@ class Job
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $description;
+
     #[ORM\ManyToOne(targetEntity: Company::class)]
     #[ORM\JoinColumn(nullable: false)]
     private $company;
 
-    public function __construct(string $name, Company $company)
+    public function __construct(string $name, string $description, Company $company)
     {
         $this->name = $name;
+        $this->description = $description;
         $this->company = $company;
     }
 
@@ -73,5 +77,13 @@ class Job
         $this->company = $company;
 
         return $this;
+    }
+
+    /**
+     * Get the value of description
+     */ 
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
