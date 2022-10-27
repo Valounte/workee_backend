@@ -42,6 +42,7 @@ final class GetUserService
             $jobViewModel = new JobViewModel(
                 $job->getId(),
                 $job->getName(),
+                $job->getDescription(),
                 new CompanyViewModel(
                     $job->getCompany()->getId(),
                     $job->getCompany()->getCompanyName(),
@@ -86,7 +87,7 @@ final class GetUserService
         $teamValueObject = [];
         foreach ($teams as $team) {
             $companyValueObject = new CompanyViewModel($team->getCompany()->getId(), $team->getCompany()->getCompanyName());
-            array_push($teamValueObject, new TeamViewModel($team->getId(), $team->getTeamName(), $companyValueObject));
+            array_push($teamValueObject, new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription(), $companyValueObject));
         }
 
         return $teamValueObject;

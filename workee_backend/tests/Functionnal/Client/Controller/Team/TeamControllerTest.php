@@ -18,6 +18,7 @@ final class TeamControllerTest extends AbstractApiTestCase
     {
         $body = [
             'name' => 'Team name',
+            'description' => 'Team description',
         ];
         $this->client->request(
             'POST',
@@ -37,6 +38,7 @@ final class TeamControllerTest extends AbstractApiTestCase
         $teams = $this->teamRepository->findAll();
         $body = [
             'name' => 'Team name',
+            'description' => 'la team',
             'id' => $teams[0]->getId(),
         ];
         $this->client->request(

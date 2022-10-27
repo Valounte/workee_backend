@@ -81,7 +81,7 @@ class Job
 
     /**
      * Get the value of description
-     */ 
+     */
     public function getDescription()
     {
         return $this->description;

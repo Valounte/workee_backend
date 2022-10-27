@@ -47,11 +47,11 @@ final class JobViewModel
         return $this->permissions;
     }
 
-        /**
-         * Get the value of description
-         */ 
-        public function getDescription()
-        {
-                return $this->description;
-        }
+    /**
+     * Get the value of description
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

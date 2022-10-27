@@ -18,6 +18,7 @@ final class JobFixture extends Fixture implements FixtureInterface, DependentFix
     {
         $job = new Job(
             'Manager',
+            "Manager's job",
             $this->getReference(CompanyFixture::INSTAPRO_REFERENCE),
         );
 

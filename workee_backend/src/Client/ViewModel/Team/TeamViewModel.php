@@ -38,11 +38,11 @@ final class TeamViewModel
         return $this->id;
     }
 
-        /**
-         * Get the value of description
-         */ 
-        public function getDescription()
-        {
-                return $this->description;
-        }
+    /**
+     * Get the value of description
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }
