@@ -9,6 +9,7 @@ final class TeamViewModel
     public function __construct(
         private int $id,
         private string $name,
+        private string $description,
         private ?CompanyViewModel $company = null,
     ) {
     }
@@ -35,5 +36,13 @@ final class TeamViewModel
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the value of description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

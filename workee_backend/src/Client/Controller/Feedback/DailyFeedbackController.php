@@ -32,7 +32,6 @@ use App\Core\Components\Feedback\Repository\DailyFeedbackRepositoryInterface;
 use App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesCommand;
 use App\Core\Components\Feedback\Repository\DailyFeedbackTeamPreferencesRepositoryInterface;
 use App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesHandler;
-use App\Core\Components\Feedback\UseCase\testService;
 
 final class DailyFeedbackController extends AbstractController
 {
@@ -109,7 +108,7 @@ final class DailyFeedbackController extends AbstractController
         $lastWeekDailyFeedbackViewModel = new LastWeekDailyFeedbackViewModel(
             array_sum($allSatisfactionDegree) / count($allSatisfactionDegree),
             $dailyFeedbackViewModel,
-            new TeamViewModel($team->getId(), $team->getTeamName()),
+            new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription()),
         );
 
         return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
@@ -179,7 +178,7 @@ final class DailyFeedbackController extends AbstractController
             $lastWeekDailyFeedbackViewModel[] = new LastWeekDailyFeedbackViewModel(
                 $this->getAverageSatisfactionDegreeOfATeam($teamFeedbackViewModel),
                 $teamFeedbackViewModel,
-                new TeamViewModel($team->getId(), $team->getTeamName()),
+                new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription()),
             );
         }
 

@@ -22,6 +22,7 @@ final class JobControllerTest extends AbstractApiTestCase
 
         $body = [
             'name' => 'Lead developerdzad',
+            'description' => 'Lead developerdzad',
             'permissionsId' => [
                 $permissions[0]->getId(),
             ],

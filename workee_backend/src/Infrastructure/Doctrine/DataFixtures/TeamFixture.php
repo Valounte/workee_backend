@@ -20,6 +20,7 @@ final class TeamFixture extends Fixture implements FixtureInterface, DependentFi
     {
         $team = new Team(
             'IT Team',
+            'IT Team',
             $this->getReference(CompanyFixture::INSTAPRO_REFERENCE),
         );
 

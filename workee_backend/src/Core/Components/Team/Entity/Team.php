@@ -18,6 +18,9 @@ class Team
     #[ORM\Column(type: 'string', length: 255)]
     private $teamName;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $description;
+
     #[ORM\ManyToOne(targetEntity: Company::class)]
     #[ORM\JoinColumn(nullable: false)]
     private $company;
@@ -27,10 +30,12 @@ class Team
 
     public function __construct(
         string $teamName,
+        string $description,
         Company $company,
         DateTime $created_at = new DateTime('now'),
     ) {
         $this->teamName = $teamName;
+        $this->description = $description;
         $this->company = $company;
         $this->created_at = $created_at;
     }
@@ -101,5 +106,13 @@ class Team
         $this->created_at = $created_at;
 
         return $this;
+    }
+
+    /**
+     * Get the value of description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

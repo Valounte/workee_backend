@@ -41,6 +41,7 @@ class TeamController extends AbstractController
 
         $team = new Team(
             $teamData["name"],
+            $teamData["description"],
             $user->getCompany(),
         );
 
@@ -48,7 +49,7 @@ class TeamController extends AbstractController
 
         return $this->jsonResponseService->create(
             [
-                "team" => new TeamViewModel($team->getId(), $team->getTeamName(), new CompanyViewModel($team->getCompany()->getId(), $team->getCompany()->getCompanyName())),
+                "team" => new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription(), new CompanyViewModel($team->getCompany()->getId(), $team->getCompany()->getCompanyName())),
                 "message" => "Team created successfully."
             ],
             200,
@@ -74,6 +75,7 @@ class TeamController extends AbstractController
             array_push($response, new TeamViewModel(
                 $team->getId(),
                 $team->getTeamName(),
+                $team->getDescription(),
                 new CompanyViewModel(
                     $team->getCompany()->getId(),
                     $team->getCompany()->getCompanyName(),
@@ -132,6 +134,7 @@ class TeamController extends AbstractController
             ["team" => new TeamViewModel(
                 $team->getId(),
                 $team->getTeamName(),
+                $team->getDescription(),
                 new CompanyViewModel(
                     $team->getCompany()->getId(),
                     $team->getCompany()->getCompanyName(),
@@ -158,6 +161,7 @@ class TeamController extends AbstractController
         $teamViewModel = new TeamViewModel(
             $team->getId(),
             $team->getTeamName(),
+            $team->getDescription(),
             new CompanyViewModel(
                 $team->getCompany()->getId(),
                 $team->getCompany()->getCompanyName(),
