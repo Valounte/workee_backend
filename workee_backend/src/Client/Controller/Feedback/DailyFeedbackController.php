@@ -98,25 +98,11 @@ final class DailyFeedbackController extends AbstractController
         $team = $this->teamRepository->findOneById($request->query->get('teamId'));
 
 
-        $allFeedback = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
+        $dailyFeedbackViewModel = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
 
-        $dailyFeedbackViewModel = [];
         $allSatisfactionDegree = [];
-
-        foreach ($allFeedback as $feedback) {
-            $userViewModel = null;
-            if ($feedback->getUser() != null) {
-                $userViewModel = $this->getUserService->createUserViewModel($feedback->getUser());
-            }
-
+        foreach ($dailyFeedbackViewModel as $feedback) {
             $allSatisfactionDegree[] = $feedback->getSatisfactionDegree();
-
-            $dailyFeedbackViewModel[] = new DailyFeedbackViewModel(
-                $feedback->getId(),
-                $feedback->getSatisfactionDegree(),
-                $feedback->getMessage(),
-                $userViewModel,
-            );
         }
 
 
@@ -171,7 +157,33 @@ final class DailyFeedbackController extends AbstractController
         //     new SelectDailyFeedbackTeamPreferencesCommand($sendingTime, $team),
         // );
 
-        return $this->jsonResponseService->successJsonResponse('Daily feedback preferences registered', 200);
+        return $this->jsonResponseService->successJsonResponse('DaiTeamDailyFeedbackViewModelly feedback preferences registered', 200);
+    }
+
+    /**
+     * @Route("/api/teams-daily-feedback", name="teamDailyFeedback", methods={"GET"})
+     */
+    public function teamsDailyFeedback(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $teams = $this->userTeamRepository->findTeamsByUser($user);
+
+        $lastWeekDailyFeedbackViewModel = [];
+        foreach ($teams as $team) {
+            $teamFeedbackViewModel = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
+            $lastWeekDailyFeedbackViewModel[] = new LastWeekDailyFeedbackViewModel(
+                $this->getAverageSatisfactionDegreeOfATeam($teamFeedbackViewModel),
+                $teamFeedbackViewModel,
+                new TeamViewModel($team->getId(), $team->getTeamName()),
+            );
+        }
+
+        return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
     }
 
     private function createNewDailyFeedbackTeamPreferences(string $sendingTime, Team $team): DailyFeedbackTeamPreferences
@@ -192,5 +204,15 @@ final class DailyFeedbackController extends AbstractController
         $intervalInSeconds = $datetime->getTimestamp() - $now->getTimestamp();
 
         return new DelayStamp($intervalInSeconds * 1000);
+    }
+
+    private function getAverageSatisfactionDegreeOfATeam(array $dailyFeedbackViewModel): float
+    {
+        $allSatisfactionDegree = [];
+        foreach ($dailyFeedbackViewModel as $feedback) {
+            $allSatisfactionDegree[] = $feedback->getSatisfactionDegree();
+        }
+
+        return array_sum($allSatisfactionDegree) / count($allSatisfactionDegree);
     }
 }

@@ -6,7 +6,9 @@ use Doctrine\ORM\ORMException;
 use App\Core\Components\Team\Entity\Team;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Core\Components\User\Service\GetUserService;
 use App\Core\Components\Feedback\Entity\DailyFeedback;
+use App\Client\ViewModel\Feedback\DailyFeedbackViewModel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Core\Components\Feedback\Repository\DailyFeedbackRepositoryInterface;
 
@@ -18,7 +20,7 @@ use App\Core\Components\Feedback\Repository\DailyFeedbackRepositoryInterface;
  */
 class DailyFeedbackRepository extends ServiceEntityRepository implements DailyFeedbackRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(private ManagerRegistry $registry, private GetUserService $getUserService)
     {
         parent::__construct($registry, DailyFeedback::class);
     }
@@ -82,8 +84,7 @@ class DailyFeedbackRepository extends ServiceEntityRepository implements DailyFe
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
     public function findLastWeekDailyFeedbackByTeam(Team $team): array
@@ -91,12 +92,29 @@ class DailyFeedbackRepository extends ServiceEntityRepository implements DailyFe
         $timeLimit = new \DateTime();
         $timeLimit->modify('-7 days');
 
-        return $this->createQueryBuilder('c')
+        $rawResult = $this->createQueryBuilder('c')
             ->andWhere('c.team = :team')
             ->andWhere('c.created_at > :timeLimit')
             ->setParameter('team', $team)
             ->setParameter('timeLimit', $timeLimit)
             ->getQuery()
             ->getResult();
+
+        $dailyFeedbackViewModel = [];
+        foreach ($rawResult as $feedback) {
+            $userViewModel = null;
+            if ($feedback->getUser() != null) {
+                $userViewModel = $this->getUserService->createUserViewModel($feedback->getUser());
+            }
+
+            $dailyFeedbackViewModel[] = new DailyFeedbackViewModel(
+                $feedback->getId(),
+                $feedback->getSatisfactionDegree(),
+                $feedback->getMessage(),
+                $userViewModel,
+            );
+        }
+
+        return $dailyFeedbackViewModel;
     }
 }
