@@ -2,12 +2,15 @@
 
 namespace App\Core\Components\Notification\UseCase;
 
-use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
 use Symfony\Component\Mercure\Update;
+use App\Core\Components\User\Entity\User;
 use Symfony\Component\Mercure\HubInterface;
+use App\Infrastructure\Token\Services\TokenService;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Core\Components\Notification\UseCase\NotificationCommand;
-use App\Infrastructure\Token\Services\TokenService;
+use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
+use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
+use App\Core\Components\Notification\Repository\NotificationPreferencesRepositoryInterface;
 
 final class NotificationHandler implements MessageHandlerInterface
 {
@@ -16,6 +19,7 @@ final class NotificationHandler implements MessageHandlerInterface
         private string $mercureHubUrl,
         private TokenService $tokenService,
         private NotificationRepositoryInterface $notificationRepository,
+        private NotificationPreferencesRepositoryInterface $notificationPreferencesRepository,
     ) {
     }
 
@@ -27,19 +31,27 @@ final class NotificationHandler implements MessageHandlerInterface
 
         $this->notificationRepository->add($notification);
 
-        $update = new Update(
-            $this->mercureHubUrl . '/notification' . '/' . $jwt,
-            json_encode([
-                'firstname' => $notification->getSender()->getFirstname(),
-                'lastname' => $notification->getSender()->getLastname(),
-                'message' => $notification->getMessage(),
-                'alertLevel' => $notification->getAlertLevel(),
-                'createdAt' => $notification->getCreated_at(),
-                'notificationId' => $notification->getId(),
-            ])
-        );
+        if ($this->shouldSendNotification($notification->getReceiver(), $notification->getAlertLevel())) {
+            $update = new Update(
+                $this->mercureHubUrl . '/notification' . '/' . $jwt,
+                json_encode([
+                    'firstname' => $notification->getSender()->getFirstname(),
+                    'lastname' => $notification->getSender()->getLastname(),
+                    'message' => $notification->getMessage(),
+                    'alertLevel' => $notification->getAlertLevel(),
+                    'createdAt' => $notification->getCreated_at(),
+                    'notificationId' => $notification->getId(),
+                ])
+            );
 
+            $this->hub->publish($update);
+        }
+    }
 
-        $this->hub->publish($update);
+    private function shouldSendNotification(User $user, NotificationAlertLevelEnum $alertLevel): bool
+    {
+        $notificationPreferences = $this->notificationPreferencesRepository->getOneByUserAndAlertLevel($user, $alertLevel);
+
+        return $notificationPreferences->getIsMute() === false;
     }
 }

@@ -2,17 +2,21 @@
 
 namespace App\Core\Components\User\UseCase\Register;
 
-use App\Core\Components\Job\Repository\JobRepositoryInterface;
-use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use Throwable;
 use App\Core\Components\User\Entity\User;
 use App\Core\Components\User\Entity\UserTeam;
+use App\Core\Components\Job\Repository\JobRepositoryInterface;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Infrastructure\User\Services\CheckUserInformationService;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
+use App\Core\Components\Notification\Entity\NotificationPreferences;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Core\Components\EnvironmentMetrics\ValueObject\Enum\AlertLevelEnum;
+use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
+use App\Core\Components\Notification\Repository\NotificationPreferencesRepositoryInterface;
 
 final class RegisterUserHandler implements MessageHandlerInterface
 {
@@ -23,6 +27,7 @@ final class RegisterUserHandler implements MessageHandlerInterface
         private UserTeamRepositoryInterface $userTeamRepository,
         private TeamRepositoryInterface $teamRepository,
         private JobRepositoryInterface $jobRepository,
+        private NotificationPreferencesRepositoryInterface $notificationPreferencesRepository,
     ) {
     }
 
@@ -50,12 +55,26 @@ final class RegisterUserHandler implements MessageHandlerInterface
 
         $this->userRepository->save($user);
 
+        $this->createDefaultNotificationPreferences($user);
+
         if ($command->getTeamsId() != null) {
             foreach ($command->getTeamsId() as $teamId) {
                 $team = $this->teamRepository->findOneById($teamId);
                 $userTeam = new UserTeam($user, $team);
                 $this->userTeamRepository->add($userTeam);
             }
+        }
+    }
+
+    private function createDefaultNotificationPreferences(User $user): void
+    {
+        $defaultNotifications = [];
+        $defaultNotifications[] = new NotificationPreferences($user, NotificationAlertLevelEnum::NORMAL_ALERT);
+        $defaultNotifications[] = new NotificationPreferences($user, NotificationAlertLevelEnum::IMPORTANT_ALERT);
+        $defaultNotifications[] = new NotificationPreferences($user, NotificationAlertLevelEnum::URGENT_ALERT);
+
+        foreach ($defaultNotifications as $notification) {
+            $this->notificationPreferencesRepository->add($notification);
         }
     }
 }
