@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Client\ViewModel\Company\CompanyViewModel;
+use App\Client\ViewModel\Feedback\DailyFeedbackPreferencesViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -115,6 +116,44 @@ final class DailyFeedbackController extends AbstractController
     }
 
     /**
+     * @Route("/api/daily-feedback-preferences", name="getDailyFeedbackPreferences", methods={"GET"})
+     */
+    public function getDailyFeedbackPreferences(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $teams = $this->userTeamRepository->findTeamsByUser($user);
+
+        $dailyFeedbackPreferencesViewModels = [];
+        foreach ($teams as $team) {
+            $dailyFeedbackTeamPreferences = $this->dailyFeedbackTeamPreferencesRepository->findByTeam($team);
+
+            if ($dailyFeedbackTeamPreferences !== null) {
+                $dailyFeedbackPreferencesViewModels[] = new DailyFeedbackPreferencesViewModel(
+                    true,
+                    $dailyFeedbackTeamPreferences->getSendingTime(),
+                    $this->createDailyFeedbackSendingCronjobTime($dailyFeedbackTeamPreferences->getSendingTime()),
+                    $team->getId(),
+                );
+                break;
+            }
+
+            $dailyFeedbackPreferencesViewModels[] = new DailyFeedbackPreferencesViewModel(
+                false,
+                null,
+                null,
+                $team->getId(),
+            );
+        }
+
+        return $this->jsonResponseService->create($dailyFeedbackPreferencesViewModels, 200);
+    }
+
+    /**
      * @Route("/api/register-daily-feedback-preferences", name="registerDailyFeedbackPreferences", methods={"POST"})
      */
     public function registerDailyFeedbackPreferences(Request $request): Response
@@ -131,32 +170,13 @@ final class DailyFeedbackController extends AbstractController
 
         if ($dailyFeedbackTeamPreferences == null) {
             $dailyFeedbackTeamPreferences = $this->createNewDailyFeedbackTeamPreferences($input["sendingTime"], $team);
-        } else {
-            $dailyFeedbackTeamPreferences->setSendingTime($input["sendingTime"]);
-            $this->dailyFeedbackTeamPreferencesRepository->add($dailyFeedbackTeamPreferences, true);
+            return $this->jsonResponseService->successJsonResponse('Daily feedback preferences registered', 200);
         }
 
+        $dailyFeedbackTeamPreferences->setSendingTime($input["sendingTime"]);
+        $this->dailyFeedbackTeamPreferencesRepository->add($dailyFeedbackTeamPreferences, true);
 
-        $formattedSendingTime = explode(':', $input['sendingTime']);
-        $sendingTime = new DateTime();
-        $sendingTime->setTime($formattedSendingTime[0], $formattedSendingTime[1]);
-
-        if ($sendingTime < new DateTime()) {
-            $sendingTime->add(new DateInterval('P1D'));
-        }
-
-        $this->messageBus->dispatch(
-            new Envelope(
-                new SelectDailyFeedbackTeamPreferencesCommand($sendingTime, $team),
-                [$this->getDelayStampFromNowToDatetime($sendingTime)]
-            ),
-        );
-
-        // $this->selectDailyFeedbackTeamPreferencesHandler->__invoke(
-        //     new SelectDailyFeedbackTeamPreferencesCommand($sendingTime, $team),
-        // );
-
-        return $this->jsonResponseService->successJsonResponse('DaiTeamDailyFeedbackViewModelly feedback preferences registered', 200);
+        return $this->jsonResponseService->successJsonResponse('Feedback preferences modified', 200);
     }
 
     /**
@@ -185,6 +205,15 @@ final class DailyFeedbackController extends AbstractController
         return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
     }
 
+    private function createDailyFeedbackSendingCronjobTime(string $sendingTime): string
+    {
+        $sendingTime = explode(':', $sendingTime);
+        $hour = $sendingTime[0];
+        $minute = $sendingTime[1];
+
+        return $minute . ' ' . $hour . ' * * *';
+    }
+
     private function createNewDailyFeedbackTeamPreferences(string $sendingTime, Team $team): DailyFeedbackTeamPreferences
     {
         $dailyFeedbackTeamPreferences = new DailyFeedbackTeamPreferences(
@@ -197,13 +226,6 @@ final class DailyFeedbackController extends AbstractController
         return $dailyFeedbackTeamPreferences;
     }
 
-    private function getDelayStampFromNowToDatetime(DateTime $datetime): DelayStamp
-    {
-        $now = new DateTime();
-        $intervalInSeconds = $datetime->getTimestamp() - $now->getTimestamp();
-
-        return new DelayStamp($intervalInSeconds * 1000);
-    }
 
     private function getAverageSatisfactionDegreeOfATeam(array $dailyFeedbackViewModel): float
     {
