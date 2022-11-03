@@ -128,6 +128,7 @@ final class DailyFeedbackController extends AbstractController
 
         $teams = $this->userTeamRepository->findTeamsByUser($user);
 
+
         $dailyFeedbackPreferencesViewModels = [];
         foreach ($teams as $team) {
             $dailyFeedbackTeamPreferences = $this->dailyFeedbackTeamPreferencesRepository->findByTeam($team);
@@ -139,15 +140,14 @@ final class DailyFeedbackController extends AbstractController
                     $this->createDailyFeedbackSendingCronjobTime($dailyFeedbackTeamPreferences->getSendingTime()),
                     $team->getId(),
                 );
-                break;
+            } else {
+                $dailyFeedbackPreferencesViewModels[] = new DailyFeedbackPreferencesViewModel(
+                    false,
+                    null,
+                    null,
+                    $team->getId(),
+                );
             }
-
-            $dailyFeedbackPreferencesViewModels[] = new DailyFeedbackPreferencesViewModel(
-                false,
-                null,
-                null,
-                $team->getId(),
-            );
         }
 
         return $this->jsonResponseService->create($dailyFeedbackPreferencesViewModels, 200);
