@@ -7,3 +7,13 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    env_file:
+      - ./grafana/config
+    volumes:
+      - ./grafana/dashboard:/etc/extra-config/grafana
+    command: ./etc/extra-config/grafana/post.sh
