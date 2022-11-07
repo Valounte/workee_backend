@@ -2,6 +2,8 @@
 
 namespace App\Core\Components\User\UseCase\Register;
 
+use App\Core\Components\EnvironmentMetrics\Entity\EnvironmentMetricsPreferences;
+use App\Core\Components\EnvironmentMetrics\Repository\EnvironmentMetricsPreferencesRepositoryInterface;
 use Throwable;
 use App\Core\Components\User\Entity\User;
 use App\Core\Components\User\Entity\UserTeam;
@@ -28,6 +30,7 @@ final class RegisterUserHandler implements MessageHandlerInterface
         private TeamRepositoryInterface $teamRepository,
         private JobRepositoryInterface $jobRepository,
         private NotificationPreferencesRepositoryInterface $notificationPreferencesRepository,
+        private EnvironmentMetricsPreferencesRepositoryInterface $environmentMetricsPreferencesRepository,
     ) {
     }
 
@@ -56,6 +59,7 @@ final class RegisterUserHandler implements MessageHandlerInterface
         $this->userRepository->save($user);
 
         $this->createDefaultNotificationPreferences($user);
+        $this->createDefaultEnvironmentMetricsPreferences($user);
 
         if ($command->getTeamsId() != null) {
             foreach ($command->getTeamsId() as $teamId) {
@@ -75,6 +79,19 @@ final class RegisterUserHandler implements MessageHandlerInterface
 
         foreach ($defaultNotifications as $notification) {
             $this->notificationPreferencesRepository->add($notification);
+        }
+    }
+
+    private function createDefaultEnvironmentMetricsPreferences(User $user): void
+    {
+        $defaultPreferences = [];
+        $defaultPreferences[] = new EnvironmentMetricsPreferences($user, 'TEMPERATURE');
+        $defaultPreferences[] = new EnvironmentMetricsPreferences($user, 'SOUND');
+        $defaultPreferences[] = new EnvironmentMetricsPreferences($user, 'LUMINOSITY');
+        $defaultPreferences[] = new EnvironmentMetricsPreferences($user, 'HUMIDITY');
+
+        foreach ($defaultPreferences as $preference) {
+            $this->environmentMetricsPreferencesRepository->add($preference);
         }
     }
 }
