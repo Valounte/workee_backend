@@ -69,6 +69,16 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
                 prefix: App\Core\Components\EnvironmentMetrics\Entity
                 alias: EnvironmentMetricsPreferences   
+            TeaOrCoffeeMeeting:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity'
+                prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
+                alias: TeaOrCoffeeMeeting
+            TeaOrCoffeeMeetingUser:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity'
+                prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
+                alias: TeaOrCoffeeMeetingUser
 
 when@test:
     doctrine:
