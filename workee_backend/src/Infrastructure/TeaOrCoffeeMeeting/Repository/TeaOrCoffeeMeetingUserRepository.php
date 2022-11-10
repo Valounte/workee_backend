@@ -1,0 +1,192 @@
+<?php
+
+namespace App\Infrastructure\TeaOrCoffeeMeeting\Repository;
+
+use Doctrine\ORM\ORMException;
+use App\Core\Components\User\Entity\User;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Core\Components\User\Service\GetUserService;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingViewModel;
+use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeetingUser;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingUserViewModel;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingInvitedUserViewModel;
+use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\InvitationStatusEnum;
+use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
+
+/**
+ * @method TeaOrCoffeeMeetingUser|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TeaOrCoffeeMeetingUser|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TeaOrCoffeeMeetingUser[]    findAll()
+ * @method TeaOrCoffeeMeetingUser[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implements TeaOrCoffeeMeetingUserRepositoryInterface
+{
+    public function __construct(
+        private ManagerRegistry $registry,
+        private UserRepositoryInterface $userRepository,
+        private GetUserService $getUserService,
+    ) {
+        parent::__construct($registry, TeaOrCoffeeMeetingUser::class);
+    }
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function add(TeaOrCoffeeMeetingUser $entity, bool $flush = true): void
+    {
+        $this->_em->persist($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function remove(TeaOrCoffeeMeetingUser $entity, bool $flush = true): void
+    {
+        $this->_em->remove($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
+    public function findById(int $id): ?TeaOrCoffeeMeetingUser
+    {
+        return $this->find($id);
+    }
+
+    public function getAllTeaOrCoffeeMeetingByInitiator(User $user): ?array
+    {
+        $actualDate = new \DateTime();
+
+        $rawResult = $this->createQueryBuilder('t')
+            ->leftJoin(
+                'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                't.meeting = u.id'
+            )
+            ->select('u')
+            ->andWhere('u.initiator = :user')
+            ->andWhere('u.date > :actualDate')
+            ->setParameter('actualDate', $actualDate)
+            ->setParameter('user', $user)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $result = [];
+        foreach ($rawResult as $item) {
+            $user = $this->userRepository->findUserById($item->getInitiator()->getId());
+            $result[] = new TeaOrCoffeeMeetingViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $user->getId(),
+                    $user->getFirstName(),
+                    $user->getLastName(),
+                ),
+                $this->getInvitedUsersByMeetingId($item->getId()),
+                $item->getMeetingType(),
+                $item->getDate(),
+            );
+        }
+
+        return $result;
+    }
+
+    public function getAllTeaOrCoffeeMeetingByUser(User $user, InvitationStatusEnum $status): ?array
+    {
+        $actualDate = new \DateTime();
+        $declinedStatus = InvitationStatusEnum::DECLINED;
+
+        $rawResult = $this->createQueryBuilder('t')
+            ->leftJoin(
+                'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                't.meeting = u.id'
+            )
+            ->select('u')
+            ->andWhere('t.invitedUser = :user')
+            ->andWhere('t.invitationStatus = :status')
+            ->setParameter('status', $status)
+            ->andWhere('u.date > :actualDate')
+            ->setParameter('actualDate', $actualDate)
+            ->setParameter('user', $user)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $result = [];
+        foreach ($rawResult as $item) {
+            $user = $this->userRepository->findUserById($item->getInitiator()->getId());
+            $result[] = new TeaOrCoffeeMeetingViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $user->getId(),
+                    $user->getFirstName(),
+                    $user->getLastName(),
+                ),
+                $this->getInvitedUsersByMeetingId($item->getId()),
+                $item->getMeetingType(),
+                $item->getDate(),
+            );
+        }
+
+        return $result;
+    }
+
+    private function getInvitedUsersByMeetingId(int $meetingId): ?array
+    {
+        $rawResult = $this->createQueryBuilder('t')
+            ->leftJoin(
+                'App\Core\Components\User\Entity\User',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                't.invitedUser = u.id'
+            )
+            ->andWhere('t.meeting = :meetingId')
+            ->setParameter('meetingId', $meetingId)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $result = [];
+        foreach ($rawResult as $item) {
+            $result[] = new TeaOrCoffeeMeetingInvitedUserViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $item->getInvitedUser()->getId(),
+                    $item->getInvitedUser()->getFirstname(),
+                    $item->getInvitedUser()->getLastname(),
+                ),
+                $item->getInvitationStatus(),
+            );
+        }
+
+        return $result;
+    }
+
+    // /**
+    //  * @return TeaOrCoffeeMeetingUser[] Returns an array of TeaOrCoffeeMeetingUser objects
+    //  */
+    /*
+    public function findByExampleField($value)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.exampleField = :val')
+            ->setParameter('val', $value)
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    */
+}
