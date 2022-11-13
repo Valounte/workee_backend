@@ -9,14 +9,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Infrastructure\Logs\Services\LogsService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 use App\Infrastructure\FileUploader\Services\FileUploader;
 use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
+use App\Core\Components\Logs\Repository\LogsRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserInformationException;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
@@ -27,6 +30,8 @@ use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use App\Core\Components\User\UseCase\Register\SendInviteEmailCommand;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Core\Components\User\UseCase\InviteByCsv\InviteUsersByCsvCommand;
 
@@ -43,6 +48,7 @@ class AuthController extends AbstractController
         private CompanyRepositoryInterface $companyRepository,
         private MessageBusInterface $messageBus,
         private CheckUserPermissionsService $checkUserPermissionsService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -54,13 +60,16 @@ class AuthController extends AbstractController
         $userData = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserByEmail($userData['email']);
         if (!$user || !$this->encoder->isPasswordValid($user, $userData['password'])) {
+            $this->logsService->add(401, LogsContextEnum::LOGIN, LogsAlertEnum::INFO, 'BadCredentialsException');
             return $this->json(
                 ['message' => 'email or password is wrong.'],
-                400,
+                401,
             );
         }
 
         $jwt = $this->tokenService->createLoginToken($user);
+
+        $this->logsService->add(200, LogsContextEnum::LOGIN, null, null, $user);
 
         return $this->json([
             'message' => 'success!',
