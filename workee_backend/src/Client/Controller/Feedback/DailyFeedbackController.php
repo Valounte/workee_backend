@@ -180,6 +180,40 @@ final class DailyFeedbackController extends AbstractController
     }
 
     /**
+     * @Route("/api/is-daily-feedback-submitted", name="isDailyFeedbackSubmitted", methods={"GET"})
+     */
+    public function isDailyFeedbackSubmitted(Request $request): Response
+    {
+        try {
+            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
+        } catch (UserPermissionsException|UserNotFoundException $e) {
+            return new JsonResponse($e->getMessage(), $e->getCode());
+        }
+
+        $feedback = $this->dailyFeedbackRepository->findLastDailyFeedbackByUser($user);
+        $teamPreferences = $this->dailyFeedbackTeamPreferencesRepository->findByTeam(
+            $this->userTeamRepository->findTeamsByUser($user)[0]
+        );
+        $sendingTime = $teamPreferences->getSendingTime();
+
+        $sendingTime = new \DateTime($sendingTime);
+
+        if ($feedback == null) {
+            return $this->jsonResponseService->create(false, 200);
+        }
+
+        $now = new \DateTime();
+        if ($sendingTime > $now) {
+            $sendingTime->sub(new \DateInterval('P1D'));
+        }
+
+        if ($feedback->getCreated_At() > $sendingTime) {
+            return $this->jsonResponseService->create(true, 200);
+        }
+        return $this->jsonResponseService->create(false, 200);
+    }
+
+    /**
      * @Route("/api/teams-daily-feedback", name="teamDailyFeedback", methods={"GET"})
      */
     public function teamsDailyFeedback(Request $request): Response

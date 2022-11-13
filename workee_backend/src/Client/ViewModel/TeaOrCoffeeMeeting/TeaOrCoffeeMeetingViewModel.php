@@ -12,7 +12,7 @@ final class TeaOrCoffeeMeetingViewModel
     public function __construct(
         private TeaOrCoffeeMeetingUserViewModel $initiator,
         /** @var TeaOrCoffeeMeetingInvitedUserViewModel[] */
-        private array $invitedUsers,
+        private array $invitedUsersStatus,
         private TeaOrCoffeeMeetingTypeEnum $meetingType,
         private DateTime $date,
     ) {
@@ -29,9 +29,9 @@ final class TeaOrCoffeeMeetingViewModel
     /**
      * Get the value of invitedUsers
      */
-    public function getInvitedUsers()
+    public function getInvitedUsersStatus()
     {
-        return $this->invitedUsers;
+        return $this->invitedUsersStatus;
     }
 
     /**
