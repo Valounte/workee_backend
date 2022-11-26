@@ -4,7 +4,7 @@ namespace App\Core\Components\Logs\Entity\Enum;
 
 enum LogsAlertEnum: string
 {
-    case INFO = 'INFO';
-    case WARNING = 'WARNING';
-    case CRITIC = 'CRITIC';
+    case INFO = '1';
+    case WARNING = '2';
+    case CRITIC = '3';
 }
