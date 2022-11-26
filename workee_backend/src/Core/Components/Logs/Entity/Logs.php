@@ -24,7 +24,7 @@ class Logs
     private $context;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private $exception;
+    private $exceptionString;
 
     #[ORM\Column(type: 'logs_alert_type', length: 255, nullable: true)]
     private $alert;
@@ -40,7 +40,7 @@ class Logs
         int $code,
         LogsContextEnum $context,
         ?LogsAlertEnum $alert = null,
-        ?string $exception = null,
+        ?string $exceptionString = null,
         ?User $user = null,
         DateTime $created_at = new DateTime('now'),
     ) {
@@ -48,7 +48,7 @@ class Logs
         $this->alert = $alert;
         $this->context = $context;
         $this->code = $code;
-        $this->exception = $exception;
+        $this->exceptionString = $exceptionString;
         $this->created_at = $created_at;
     }
 
@@ -73,7 +73,7 @@ class Logs
      */
     public function getException()
     {
-        return $this->exception;
+        return $this->exceptionString;
     }
 
     /**
