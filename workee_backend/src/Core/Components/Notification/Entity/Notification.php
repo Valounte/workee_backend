@@ -17,11 +17,9 @@ class Notification
     #[ORM\Column(type: 'integer')]
     private $id;
 
-
     /**
-     * @phpstan-ignore-next-line
      * @Encrypted
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string")
      */
     #[Encrypted]
     #[ORM\Column(type: 'string', length: 255)]

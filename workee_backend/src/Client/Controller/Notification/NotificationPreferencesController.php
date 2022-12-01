@@ -2,16 +2,21 @@
 
 namespace App\Client\Controller\Notification;
 
-use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Infrastructure\Logs\Services\LogsService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
+use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Core\Components\Logs\Repository\LogsRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
 use App\Core\Components\Notification\Repository\NotificationPreferencesRepositoryInterface;
-use App\Infrastructure\Response\Services\JsonResponseService;
 
 final class NotificationPreferencesController extends AbstractController
 {
@@ -19,6 +24,7 @@ final class NotificationPreferencesController extends AbstractController
         private CheckUserPermissionsService $checkUserPermissionsService,
         private NotificationPreferencesRepositoryInterface $notificationPreferencesRepository,
         private JsonResponseService $jsonResponseService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -61,10 +67,17 @@ final class NotificationPreferencesController extends AbstractController
         };
 
         $notificationPreference = $this->notificationPreferencesRepository->getOneByUserAndAlertLevel($user, $alertLevelEnum);
+
+        if ($notificationPreference === null) {
+            $this->logsService->add(404, LogsContextEnum::NOTIFICATION_SETTINGS, LogsAlertEnum::WARNING, null, $user);
+
+            return new JsonResponse('Notification preference not found', 404);
+        }
+
         $notificationPreference->setIsMute($isMute);
 
         $this->notificationPreferencesRepository->add($notificationPreference);
-
+        $this->logsService->add(200, LogsContextEnum::NOTIFICATION_SETTINGS, null, null, $user);
         return $this->jsonResponseService->successJsonResponse('Notification preference updated', 200);
     }
 }

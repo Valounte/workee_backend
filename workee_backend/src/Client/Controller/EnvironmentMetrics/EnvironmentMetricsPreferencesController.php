@@ -6,11 +6,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\EnvironmentMetrics\Repository\EnvironmentMetricsPreferencesRepositoryInterface;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 
 final class EnvironmentMetricsPreferencesController extends AbstractController
 {
@@ -18,6 +21,7 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
         private CheckUserPermissionsService $checkUserPermissionsService,
         private EnvironmentMetricsPreferencesRepositoryInterface $environmentMetricsPreferencesRepository,
         private JsonResponseService $jsonResponseService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -53,8 +57,16 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
         $metricType = $input['metricType'];
 
         $environmentMetricsPreference = $this->environmentMetricsPreferencesRepository->getOneByUserAndMetricType($user, $metricType);
+
+        if ($environmentMetricsPreference === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS_SETTINGS, LogsAlertEnum::WARNING, null, $user);
+            return new JsonResponse('Environment metrics preference not found', Response::HTTP_NOT_FOUND);
+        }
+
         $environmentMetricsPreference->setIsDesactivated($isDesactivated);
         $this->environmentMetricsPreferencesRepository->add($environmentMetricsPreference);
+
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS_SETTINGS, null, null, $user);
 
         return $this->jsonResponseService->successJsonResponse('Environment metrics preference updated', 200);
     }
