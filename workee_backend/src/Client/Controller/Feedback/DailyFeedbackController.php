@@ -230,7 +230,7 @@ final class DailyFeedbackController extends AbstractController
         foreach ($teams as $team) {
             $teamFeedbackViewModel = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
             $lastWeekDailyFeedbackViewModel[] = new LastWeekDailyFeedbackViewModel(
-                $this->getAverageSatisfactionDegreeOfATeam($teamFeedbackViewModel),
+                !empty($teamFeedbackViewModel) ? $this->getAverageSatisfactionDegreeOfATeam($teamFeedbackViewModel) : 0,
                 $teamFeedbackViewModel,
                 new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription()),
             );
