@@ -10,15 +10,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Client\ViewModel\Job\PermissionViewModel;
 use App\Core\Components\Job\Entity\JobPermission;
 use App\Client\ViewModel\Company\CompanyViewModel;
-use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Job\Entity\Enum\PermissionNameEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Job\Repository\JobRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
 use App\Core\Components\Job\Repository\PermissionRepositoryInterface;
+use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
 
 final class JobController extends AbstractController
 {
@@ -28,6 +31,7 @@ final class JobController extends AbstractController
         private JsonResponseService $jsonResponseService,
         private JobPermissionRepositoryInterface $jobPermissionRepository,
         private PermissionRepositoryInterface $permissionRepository,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -43,6 +47,12 @@ final class JobController extends AbstractController
         }
 
         $jobs = $this->jobRepository->findByCompany($user->getCompany());
+
+        if (empty($jobs)) {
+            $this->logsService->add(404, LogsContextEnum::JOB, LogsAlertEnum::WARNING, "NoJobsFoundException");
+            return new JsonResponse("No jobs found", 404);
+        }
+
         $jobViewModel = [];
 
         foreach ($jobs as $job) {
@@ -61,6 +71,7 @@ final class JobController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::JOB, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($jobViewModel);
     }
 
@@ -79,7 +90,13 @@ final class JobController extends AbstractController
         $job = $this->jobRepository->findByNameAndCompany($data["name"], $user->getCompany());
 
         if (!isset($job)) {
+            $this->logsService->add(404, LogsContextEnum::JOB, LogsAlertEnum::WARNING, "JobAlreadyExistsException");
             return $this->jsonResponseService->errorJsonResponse("Job with this name already exists", 404);
+        }
+
+        if (!isset($data["name"]) || !isset($data["description"])) {
+            $this->logsService->add(400, LogsContextEnum::JOB, LogsAlertEnum::WARNING, "InvalidInputException");
+            return $this->jsonResponseService->errorJsonResponse("Job input is not valid", 400);
         }
 
         $job = new Job(
@@ -100,6 +117,7 @@ final class JobController extends AbstractController
             $this->jobPermissionRepository->add($jobPermission);
         }
 
+        $this->logsService->add(201, LogsContextEnum::JOB, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Job created', 200);
     }
 
@@ -137,6 +155,7 @@ final class JobController extends AbstractController
             }
         }
 
+        $this->logsService->add(200, LogsContextEnum::JOB, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Job modified', 200);
     }
 

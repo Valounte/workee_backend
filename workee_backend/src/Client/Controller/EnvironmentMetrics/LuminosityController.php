@@ -5,14 +5,18 @@ namespace App\Client\Controller\EnvironmentMetrics;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Infrastructure\Logs\Services\LogsService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
-use App\Core\Components\EnvironmentMetrics\Entity\LuminosityMetric;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\EnvironmentMetrics\Entity\LuminosityMetric;
 use App\Client\ViewModel\EnvironmentMetrics\LuminosityMetricViewModel;
 use App\Core\Components\EnvironmentMetrics\ValueObject\LuminosityAlert;
 use App\Core\Components\EnvironmentMetrics\ValueObject\Enum\AlertLevelEnum;
@@ -27,6 +31,7 @@ final class LuminosityController extends AbstractController
         private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private LuminosityMetricsAlertService $luminosityMetricsAlertService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -42,6 +47,11 @@ final class LuminosityController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['value'])) {
+            $this->logsService->add(400, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'InvalidInputException');
+            return new JsonResponse('value is required', Response::HTTP_BAD_REQUEST);
+        }
 
         $luminosityMetric = new LuminosityMetric(
             (float) $data["value"],
@@ -67,6 +77,7 @@ final class LuminosityController extends AbstractController
         $lastLuminosityValue = $this->luminosityMetricRepository->findLastLuminosityMetricByUser($user);
 
         if ($lastLuminosityValue === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'LuminosityMetricNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -77,6 +88,8 @@ final class LuminosityController extends AbstractController
             $lastLuminosityValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->luminosityMetricsAlertService->createAlert($lastLuminosityValue),
         );
+
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($luminosityViewModel, 200);
     }
 
@@ -94,6 +107,7 @@ final class LuminosityController extends AbstractController
         $historicValues = $this->luminosityMetricRepository->findLuminosityHistoric($user);
 
         if ($historicValues === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'LuminosityHistoricNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -108,6 +122,7 @@ final class LuminosityController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($luminosityViewModel);
     }
 }

@@ -13,17 +13,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
 use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserInformationException;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserInformationService;
+use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\UseCase\Register\RegisterUserCommand;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
-use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
@@ -41,6 +44,7 @@ class UserController extends AbstractController
         private MessageBusInterface $messageBus,
         private GetUserService $getUserService,
         private CheckUserPermissionsService $checkUserPermissionsService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -158,6 +162,7 @@ class UserController extends AbstractController
             $usersViewModels[] = $this->getUserService->createUserViewModel($user);
         }
 
+        $this->logsService->add(200, LogsContextEnum::USER, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($usersViewModels);
     }
 }

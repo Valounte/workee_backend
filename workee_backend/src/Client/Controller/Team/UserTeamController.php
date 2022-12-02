@@ -7,11 +7,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Core\Components\User\Service\GetUserService;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
-use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 
 class UserTeamController extends AbstractController
 {
@@ -20,6 +23,7 @@ class UserTeamController extends AbstractController
         private JsonResponseService $jsonResponseService,
         private CheckUserPermissionsService $checkUserPermissionsService,
         private UserTeamRepositoryInterface $userTeamRepository,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -40,6 +44,7 @@ class UserTeamController extends AbstractController
         $users = $this->userTeamRepository->findUsersByTeamId($teamId);
 
         if (empty($users)) {
+            $this->logsService->add(404, LogsContextEnum::TEAM, LogsAlertEnum::INFO, "NoUsersInTeamException");
             return $this->jsonResponseService->errorJsonResponse('No users found.', 400);
         }
 
@@ -49,6 +54,7 @@ class UserTeamController extends AbstractController
             $usersViewModels[] = $this->getUserService->createUserViewModel($user);
         }
 
+        $this->logsService->add(200, LogsContextEnum::TEAM, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($usersViewModels);
     }
 }

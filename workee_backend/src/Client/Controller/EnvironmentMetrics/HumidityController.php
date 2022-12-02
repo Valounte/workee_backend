@@ -6,6 +6,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
@@ -27,6 +30,7 @@ final class HumidityController extends AbstractController
         private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private HumidityMetricsAlertService $humidityMetricsAlertService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -42,6 +46,11 @@ final class HumidityController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['value'])) {
+            $this->logsService->add(400, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'InvalidInputException');
+            return new JsonResponse('value is required', Response::HTTP_BAD_REQUEST);
+        }
 
         $humidityMetric = new HumidityMetric(
             (float) $data["value"],
@@ -67,6 +76,7 @@ final class HumidityController extends AbstractController
         $lastHumidityValue = $this->humidityMetricRepository->findLastHumidityMetricByUser($user);
 
         if ($lastHumidityValue === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'HumidityMetricNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -77,6 +87,8 @@ final class HumidityController extends AbstractController
             $lastHumidityValue->getCreated_at()->format('Y-m-d H:i:s'),
             $this->humidityMetricsAlertService->createAlert($lastHumidityValue),
         );
+
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($humidityViewModel, 200);
     }
 
@@ -94,6 +106,7 @@ final class HumidityController extends AbstractController
         $historicValues = $this->humidityMetricRepository->findHumidityHistoric($user);
 
         if ($historicValues === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'HumidityHistoriqueNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -108,6 +121,7 @@ final class HumidityController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($humidityViewModels);
     }
 }

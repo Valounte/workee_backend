@@ -8,6 +8,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Infrastructure\Token\Services\TokenService;
 use App\Core\Components\User\Service\GetUserService;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
@@ -20,6 +23,7 @@ class MeController extends AbstractController
         private TokenService $tokenService,
         private GetUserService $getUserService,
         private CheckUserPermissionsService $checkUserPermissionsService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -32,11 +36,13 @@ class MeController extends AbstractController
         try {
             $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
         } catch (UserPermissionsException $e) {
+            $this->logsService->add(404, LogsContextEnum::USER, LogsAlertEnum::WARNING, "UserNotFoundException");
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
 
         $user = $this->getUserService->createUserViewModel($user);
 
+        $this->logsService->add(200, LogsContextEnum::USER, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($user);
     }
 }

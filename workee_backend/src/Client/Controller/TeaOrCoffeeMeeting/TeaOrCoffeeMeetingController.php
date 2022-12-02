@@ -8,14 +8,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
-use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\InvitationStatusEnum;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeetingUser;
+use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\InvitationStatusEnum;
 use App\Core\Components\TeaOrCoffeeMeeting\UseCase\CreateTeaOrCoffeeMeetingCommand;
 use App\Core\Components\TeaOrCoffeeMeeting\UseCase\CreateTeamTeaOrCoffeeMeetingCommand;
 use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingRepositoryInterface;
@@ -31,6 +34,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         private MessageBusInterface $messageBus,
         private TeamRepositoryInterface $teamRepository,
         private TeaOrCoffeeMeetingUserRepositoryInterface $teaOrCoffeeMeetingUserRepository,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -49,6 +53,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
 
         $this->dispatchAppropriateCommand($user, $teaOrCoffeeMeetingInput);
 
+        $this->logsService->add(200, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Tea or coffee meeting created', 201);
     }
 
@@ -67,6 +72,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         $meeting = $this->teaOrCoffeeMeetingUserRepository->findById($input['invitationId']);
 
         if ($meeting->getInvitedUser()->getId() !== $user->getId()) {
+            $this->logsService->add(401, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::CRITIC, "NotAllowedException");
             return new JsonResponse('You are not allowed to change invitation status', 403);
         }
 
@@ -80,6 +86,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         $meeting->setInvitationStatus($invitationStatus);
         $this->teaOrCoffeeMeetingUserRepository->add($meeting);
 
+        $this->logsService->add(401, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Invitation status changed', 200);
     }
 
@@ -97,9 +104,11 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByInitiator($user);
 
         if (empty($meetings)) {
+            $this->logsService->add(404, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO, "NoMeetingsFoundException");
             return $this->jsonResponseService->successJsonResponse('You have no meetings', 200);
         }
 
+        $this->logsService->add(200, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($meetings, 200);
     }
 
@@ -126,9 +135,11 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByUser($user, $invitationstatus);
 
         if (empty($meetings)) {
+            $this->logsService->add(404, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO, "NoMeetingsFoundException");
             return $this->jsonResponseService->successJsonResponse('You have no meetings', 200);
         }
 
+        $this->logsService->add(200, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($meetings, 200);
     }
 
@@ -163,6 +174,8 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
             );
             $this->messageBus->dispatch($command);
+
+            $this->logsService->add(400, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::CRITIC, "InvalidInputException");
             return;
         }
     }

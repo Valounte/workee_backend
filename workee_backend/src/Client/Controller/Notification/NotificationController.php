@@ -10,20 +10,23 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 use App\Core\Components\Notification\Entity\Notification;
 use App\Core\Components\Notification\UseCase\TestCommand;
+use App\Infrastructure\User\Repository\UserTeamRepository;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Client\ViewModel\Notification\NotificationViewModel;
 use App\Infrastructure\Response\Services\JsonResponseService;
+use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Core\Components\Notification\UseCase\NotificationCommand;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\Notification\Entity\Enum\NotificationAlertLevelEnum;
 use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
-use App\Core\Components\Team\Repository\TeamRepositoryInterface;
-use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
-use App\Infrastructure\User\Repository\UserTeamRepository;
 
 final class NotificationController extends AbstractController
 {
@@ -35,6 +38,7 @@ final class NotificationController extends AbstractController
         private GetUserService $getUserService,
         private JsonResponseService $jsonResponseService,
         private UserTeamRepositoryInterface $userTeamRepository,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -50,6 +54,11 @@ final class NotificationController extends AbstractController
         }
 
         $input = json_decode($request->getContent(), true);
+
+        if (!isset($input['message'])) {
+            $this->logsService->add(400, LogsContextEnum::NOTIFICATION, LogsAlertEnum::WARNING, "InvalidInputException");
+            return new JsonResponse("ReceiverId or message is empty", 400);
+        }
 
         $alertLevel = match ($input['alertLevel']) {
             'important' => NotificationAlertLevelEnum::IMPORTANT_ALERT,
@@ -84,7 +93,7 @@ final class NotificationController extends AbstractController
             $this->messageBus->dispatch($command);
         }
 
-
+        $this->logsService->add(200, LogsContextEnum::NOTIFICATION, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Notifications sent', 200);
     }
 
@@ -107,6 +116,7 @@ final class NotificationController extends AbstractController
         );
 
         if (empty($notifications)) {
+            $this->logsService->add(404, LogsContextEnum::NOTIFICATION, LogsAlertEnum::WARNING, "NotFoundException");
             return $this->jsonResponseService->successJsonResponse('No notifications found', 404);
         }
 
@@ -123,6 +133,7 @@ final class NotificationController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::NOTIFICATION, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($notificationsViewModel);
     }
 
