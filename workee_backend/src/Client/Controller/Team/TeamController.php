@@ -9,12 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Client\ViewModel\Company\CompanyViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
+use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\Company\Repository\CompanyRepositoryInterface;
-use App\Infrastructure\User\Services\CheckUserPermissionsService;
 
 class TeamController extends AbstractController
 {
@@ -22,7 +25,8 @@ class TeamController extends AbstractController
         private TeamRepositoryInterface $teamRepository,
         private JsonResponseService $jsonResponseService,
         private CompanyRepositoryInterface $companyRepository,
-        private CheckUserPermissionsService $checkUserPermissionsService
+        private CheckUserPermissionsService $checkUserPermissionsService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -39,6 +43,11 @@ class TeamController extends AbstractController
 
         $teamData = json_decode($request->getContent(), true);
 
+        if (!isset($teamData['name']) || !isset($teamData['description'])) {
+            $this->logsService->add(400, LogsContextEnum::TEAM, LogsAlertEnum::WARNING, "InvalidInputException");
+            return new JsonResponse("Team name is empty", 400);
+        }
+
         $team = new Team(
             $teamData["name"],
             $teamData["description"],
@@ -47,6 +56,7 @@ class TeamController extends AbstractController
 
         $this->teamRepository->add($team);
 
+        $this->logsService->add(200, LogsContextEnum::TEAM, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create(
             [
                 "team" => new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription(), new CompanyViewModel($team->getCompany()->getId(), $team->getCompany()->getCompanyName())),
@@ -82,6 +92,8 @@ class TeamController extends AbstractController
                 ),
             ));
         }
+
+        $this->logsService->add(200, LogsContextEnum::TEAM, LogsAlertEnum::WARNING);
         return $this->jsonResponseService->create($response);
     }
 
@@ -122,6 +134,7 @@ class TeamController extends AbstractController
         $team = $this->teamRepository->findOneById($teamData["id"]);
 
         if (!$team) {
+            $this->logsService->add(404, LogsContextEnum::TEAM, LogsAlertEnum::WARNING, "TeamNotFoundException");
             return $this->jsonResponseService->errorJsonResponse(
                 "No Team Found with the selected ID",
                 404
@@ -130,6 +143,7 @@ class TeamController extends AbstractController
 
         $team->setTeamName($teamData["name"]);
         $this->teamRepository->add($team);
+        $this->logsService->add(200, LogsContextEnum::TEAM, LogsAlertEnum::INFO);
         return new JsonResponse(
             ["team" => new TeamViewModel(
                 $team->getId(),
@@ -152,6 +166,7 @@ class TeamController extends AbstractController
         $team = $this->teamRepository->findOneById($id);
 
         if (!$team) {
+            $this->logsService->add(404, LogsContextEnum::TEAM, LogsAlertEnum::WARNING, "TeamNotFoundException");
             return $this->jsonResponseService->errorJsonResponse(
                 "No Team Found with the selected ID",
                 404
@@ -168,6 +183,7 @@ class TeamController extends AbstractController
             )
         );
 
+        $this->logsService->add(200, LogsContextEnum::TEAM, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($teamViewModel);
     }
 }

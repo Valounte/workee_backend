@@ -14,25 +14,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Client\ViewModel\Company\CompanyViewModel;
-use App\Client\ViewModel\Feedback\DailyFeedbackPreferencesViewModel;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Core\Components\Feedback\Entity\DailyFeedback;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
 use App\Client\ViewModel\Feedback\DailyFeedbackViewModel;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Client\ViewModel\Feedback\LastWeekDailyFeedbackViewModel;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Client\ViewModel\Feedback\DailyFeedbackPreferencesViewModel;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use App\Core\Components\Feedback\Entity\DailyFeedbackTeamPreferences;
 use App\Core\Components\Feedback\Repository\DailyFeedbackRepositoryInterface;
 use App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesCommand;
-use App\Core\Components\Feedback\Repository\DailyFeedbackTeamPreferencesRepositoryInterface;
 use App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesHandler;
+use App\Core\Components\Feedback\Repository\DailyFeedbackTeamPreferencesRepositoryInterface;
 
 final class DailyFeedbackController extends AbstractController
 {
@@ -46,6 +49,7 @@ final class DailyFeedbackController extends AbstractController
         private DailyFeedbackTeamPreferencesRepositoryInterface $dailyFeedbackTeamPreferencesRepository,
         private MessageBusInterface $messageBus,
         private SelectDailyFeedbackTeamPreferencesHandler $selectDailyFeedbackTeamPreferencesHandler,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -61,6 +65,11 @@ final class DailyFeedbackController extends AbstractController
         }
 
         $input = json_decode($request->getContent(), true);
+
+        if (!isset($input['message']) || !isset($input['satisfactionDegree']) || !isset($input['isAnonymous'])) {
+            $this->logsService->add(400, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'InvalidInputException');
+            return new JsonResponse('Team id is required', 400);
+        }
 
         $userTeams = $this->userTeamRepository->findTeamsByUser($user);
         $isAnonymous = $input["isAnonymous"] ?? false;
@@ -81,6 +90,7 @@ final class DailyFeedbackController extends AbstractController
             $this->dailyFeedbackRepository->add($dailyFeedback, true);
         }
 
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Feedback stored', 200);
     }
 
@@ -100,6 +110,11 @@ final class DailyFeedbackController extends AbstractController
 
         $dailyFeedbackViewModel = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
 
+        if (empty($dailyFeedbackViewModel)) {
+            $this->logsService->add(404, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'DailyFeedbackNotFoundException');
+            return new JsonResponse('Daily feedback not found', 404);
+        }
+
         $allSatisfactionDegree = [];
         foreach ($dailyFeedbackViewModel as $feedback) {
             $allSatisfactionDegree[] = $feedback->getSatisfactionDegree();
@@ -112,6 +127,7 @@ final class DailyFeedbackController extends AbstractController
             new TeamViewModel($team->getId(), $team->getTeamName(), $team->getDescription()),
         );
 
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
     }
 
@@ -127,6 +143,11 @@ final class DailyFeedbackController extends AbstractController
         }
 
         $teams = $this->userTeamRepository->findTeamsByUser($user);
+
+        if (empty($teams)) {
+            $this->logsService->add(404, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'NoTeamsException');
+            return new JsonResponse('User does not have any teams', 404);
+        }
 
 
         $dailyFeedbackPreferencesViewModels = [];
@@ -150,6 +171,7 @@ final class DailyFeedbackController extends AbstractController
             }
         }
 
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($dailyFeedbackPreferencesViewModels, 200);
     }
 
@@ -165,6 +187,13 @@ final class DailyFeedbackController extends AbstractController
         }
 
         $input = json_decode($request->getContent(), true);
+
+
+        if (!isset($input['sendingTime']) || !isset($input['teamId'])) {
+            $this->logsService->add(400, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'InvalidInputException');
+            return new JsonResponse('Team id and sending time are required', 400);
+        }
+
         $team = $this->teamRepository->findOneById($input["teamId"]);
         $dailyFeedbackTeamPreferences = $this->dailyFeedbackTeamPreferencesRepository->findByTeam($team);
 
@@ -176,6 +205,7 @@ final class DailyFeedbackController extends AbstractController
         $dailyFeedbackTeamPreferences->setSendingTime($input["sendingTime"]);
         $this->dailyFeedbackTeamPreferencesRepository->add($dailyFeedbackTeamPreferences, true);
 
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Feedback preferences modified', 200);
     }
 
@@ -199,6 +229,7 @@ final class DailyFeedbackController extends AbstractController
         $sendingTime = new \DateTime($sendingTime);
 
         if ($feedback == null) {
+            $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO, "NoFeedbackSubmittedException");
             return $this->jsonResponseService->create(false, 200);
         }
 
@@ -210,6 +241,8 @@ final class DailyFeedbackController extends AbstractController
         if ($feedback->getCreated_At() > $sendingTime) {
             return $this->jsonResponseService->create(true, 200);
         }
+
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create(false, 200);
     }
 
@@ -226,9 +259,15 @@ final class DailyFeedbackController extends AbstractController
 
         $teams = $this->userTeamRepository->findTeamsByUser($user);
 
+        if (empty($teams)) {
+            $this->logsService->add(404, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'NoTeamsException');
+            return new JsonResponse('User does not have any teams', 404);
+        }
+
         $lastWeekDailyFeedbackViewModel = [];
         foreach ($teams as $team) {
             $teamFeedbackViewModel = $this->dailyFeedbackRepository->findLastWeekDailyFeedbackByTeam($team);
+
             $lastWeekDailyFeedbackViewModel[] = new LastWeekDailyFeedbackViewModel(
                 !empty($teamFeedbackViewModel) ? $this->getAverageSatisfactionDegreeOfATeam($teamFeedbackViewModel) : 0,
                 $teamFeedbackViewModel,
@@ -236,6 +275,7 @@ final class DailyFeedbackController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($lastWeekDailyFeedbackViewModel, 200);
     }
 

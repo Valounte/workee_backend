@@ -5,6 +5,9 @@ namespace App\Client\Controller\EnvironmentMetrics;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserNotFoundException;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
@@ -24,6 +27,7 @@ final class TemperatureController extends AbstractController
         private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private TemperatureMetricsAlertService $temperatureMetricsAlertService,
+        private LogsServiceInterface $logsService,
     ) {
     }
 
@@ -39,6 +43,11 @@ final class TemperatureController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['value'])) {
+            $this->logsService->add(400, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'InvalidInputException');
+            return new JsonResponse('value is required', 400);
+        }
 
         $temperatureMetric = new TemperatureMetric(
             (float) $data["value"],
@@ -64,6 +73,7 @@ final class TemperatureController extends AbstractController
         $lastTemperatureValue = $this->temperatureMetricRepository->findLastTemperatureMetricByUser($user);
 
         if ($lastTemperatureValue === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'TemperatureMetricNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -75,6 +85,7 @@ final class TemperatureController extends AbstractController
             $this->temperatureMetricsAlertService->createAlert($lastTemperatureValue),
         );
 
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO, 'TemperatureMetricFound');
         return $this->jsonResponseService->create($temperatureViewModel);
     }
 
@@ -92,6 +103,7 @@ final class TemperatureController extends AbstractController
         $historicValues = $this->temperatureMetricRepository->findTemperatureHistoric($user);
 
         if ($historicValues === null) {
+            $this->logsService->add(404, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::WARNING, 'TemperatureHistoricNotFoundException');
             return new JsonResponse("no data", 404);
         }
 
@@ -106,6 +118,7 @@ final class TemperatureController extends AbstractController
             );
         }
 
+        $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS, LogsAlertEnum::INFO);
         return $this->jsonResponseService->create($temperatureViewModels);
     }
 }
