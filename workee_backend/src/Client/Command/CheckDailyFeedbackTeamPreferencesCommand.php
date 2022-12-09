@@ -37,16 +37,12 @@ class CheckDailyFeedbackTeamPreferencesCommand extends Command {
     {
         $dailyFeedbacksPreferences = $this->dailyFeedbackTeamPreferencesRepository->findPreferencesInNextMinute();
 
-        dd($dailyFeedbacksPreferences);
-
         if ($dailyFeedbacksPreferences === []) {
             return Command::SUCCESS;
         }
 
-
         foreach ($dailyFeedbacksPreferences as $value) {
             $event = new TeamNeedsToSendFeedbackEvent($value->getId(), $value->getSendingTime());
-            dump("coucou");
             $this->messageBus->dispatch($event);
         }
         return Command::SUCCESS;
