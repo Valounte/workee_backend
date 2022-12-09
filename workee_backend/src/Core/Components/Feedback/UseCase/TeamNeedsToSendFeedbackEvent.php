@@ -2,14 +2,23 @@
 
 namespace App\Core\Components\Feedback\UseCase;
 
-final class TeamNeedsToSendFeedbackEvent {
-    public function __construct(private int $teamId, private string $sendingTime) {}
+use App\Core\Components\Team\Entity\Team;
 
-    public function getTeamId(): int
+final class TeamNeedsToSendFeedbackEvent 
+{
+    
+    public function __construct(
+        private Team $team, 
+        private string $sendingTime
+        ) {
+        }
+
+    public function getTeam(): Team
     {
-        return $this->teamId;
+        return $this->team;
     }
-    public function getsendingTime(): string 
+
+    public function getSendingTime(): string 
     {
         return $this->sendingTime;
     }
