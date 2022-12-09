@@ -11,4 +11,5 @@ interface DailyFeedbackTeamPreferencesRepositoryInterface
     public function remove(DailyFeedbackTeamPreferences $entity, bool $flush = true): void;
     public function findOneById($id): ?DailyFeedbackTeamPreferences;
     public function findByTeam(Team $team): ?DailyFeedbackTeamPreferences;
+    public function findPreferencesInNextMinute(): array;
 }
