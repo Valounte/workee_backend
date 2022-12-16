@@ -4,6 +4,7 @@ namespace App\Client\Command;
 use App\Core\Components\Feedback\Entity\DailyFeedbackTeamPreferences;
 use App\Core\Components\Feedback\Repository\DailyFeedbackTeamPreferencesRepositoryInterface;
 use App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackEvent;
+use App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackListener;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +22,7 @@ class CheckDailyFeedbackTeamPreferencesCommand extends Command {
     function __construct(
        private DailyFeedbackTeamPreferencesRepositoryInterface $dailyFeedbackTeamPreferencesRepository,
        private MessageBusInterface $messageBus,
+       private TeamNeedsToSendFeedbackListener $teamNeedsToSendFeedbackListener,
     ) {
         parent::__construct();
     }
@@ -42,8 +44,9 @@ class CheckDailyFeedbackTeamPreferencesCommand extends Command {
         }
 
         foreach ($dailyFeedbacksPreferences as $value) {
-            $event = new TeamNeedsToSendFeedbackEvent($value->getId(), $value->getSendingTime());
-            $this->messageBus->dispatch($event);
+            $event = new TeamNeedsToSendFeedbackEvent($value->getTeam(), $value->getSendingTime());
+            //$this->messageBus->dispatch($event);
+            $this->teamNeedsToSendFeedbackListener->__invoke($event);
         }
         return Command::SUCCESS;
     }
