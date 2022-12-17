@@ -23,7 +23,6 @@ class CheckDailyFeedbackTeamPreferencesCommand extends Command
     function __construct(
        private DailyFeedbackTeamPreferencesRepositoryInterface $dailyFeedbackTeamPreferencesRepository,
        private MessageBusInterface $messageBus,
-       private TeamNeedsToSendFeedbackListener $teamNeedsToSendFeedbackListener,
     ) {
         parent::__construct();
     }
