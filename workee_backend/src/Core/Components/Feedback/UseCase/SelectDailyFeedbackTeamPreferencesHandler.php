@@ -47,7 +47,6 @@ final class SelectDailyFeedbackTeamPreferencesHandler implements MessageHandlerI
                 json_encode([
                     'message' => "daily feedback time",
                     'teamName' => $command->getTeam()->getTeamName(),
-                    'teamId' => $command->getTeam()->getId()(),
                 ])
             );
             $this->hub->publish($update);

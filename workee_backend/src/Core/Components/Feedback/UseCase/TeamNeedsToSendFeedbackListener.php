@@ -9,7 +9,8 @@ use App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackEvent;
 use App\Core\Components\Team\Repository\TeamRepositoryInterface;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 
-final class TeamNeedsToSendFeedbackListener implements MessageHandlerInterface {
+final class TeamNeedsToSendFeedbackListener implements MessageHandlerInterface 
+{
     public function __construct(
         private TokenService $tokenService,
         private UserTeamRepositoryInterface $userTeamRepository,
@@ -19,15 +20,19 @@ final class TeamNeedsToSendFeedbackListener implements MessageHandlerInterface {
     ) {
     }
 
-    public function __invoke(TeamNeedsToSendFeedbackEvent $teamNeedsToSendFeedback)
+    public function __invoke(TeamNeedsToSendFeedbackEvent $event): void
     {
-        $team = $teamNeedsToSendFeedback->getTeam();
+        $team = $event->getTeam();
         $users = $this->userTeamRepository->findUsersByTeamId($team);
 
         foreach ($users as $user) {
             $jwt = $this->tokenService->createLoginToken($user);
             $update = new Update(
                 $this->mercureHubUrl . '/feedback' . '/' . $jwt,
+                json_encode([
+                    'message' => "needs to send feedback",
+                    'teamId' => $team->getId(),
+                    ])
             );
 
             $this->hub->publish($update);
