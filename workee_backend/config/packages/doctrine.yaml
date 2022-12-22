@@ -84,6 +84,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Core/Components/Logs/Entity'
                 prefix: App\Core\Components\Logs\Entity
                 alias: Logs
+            PersonalFeedback:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Core/Components/Feedback/Entity'
+                prefix: App\Core\Components\Feedback\Entity
+                alias: PersonalFeedback
 
 when@test:
     doctrine:
