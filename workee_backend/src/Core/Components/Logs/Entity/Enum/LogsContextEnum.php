@@ -15,4 +15,6 @@ enum LogsContextEnum: string
     case JOB = 'JOB';
     case DAILY_FEEDBACK = 'DAILY_FEEDBACK';
     case ENVIRONMENT_METRICS = 'ENVIRONMENT_METRICS';
+
+    case PERSONAL_FEEDBACK = "PERSONAL_FEEDBACK";
 }

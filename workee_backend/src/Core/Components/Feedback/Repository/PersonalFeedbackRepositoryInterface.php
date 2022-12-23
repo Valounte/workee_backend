@@ -8,7 +8,6 @@ interface PersonalFeedbackRepositoryInterface
 {
     public function add(PersonalFeedback $entity, bool $flush = true): void;
     public function remove(PersonalFeedback $entity, bool $flush = true): void;
-    public function findOneById($id): ?PersonalFeedback;
-    public function findByReceiver(User $receiver): ?PersonalFeedback;
-    public function findLastWeekUserFeedbackByReceiver(User $receiver): array;
+    public function findOneById(int $id): ?PersonalFeedback;
+    public function findByReceiver(User $receiver, int $limit): ?array;
 }
