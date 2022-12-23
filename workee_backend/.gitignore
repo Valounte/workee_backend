@@ -21,4 +21,5 @@ workee_backend/.php-cs-fixer.cache
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
+composer.lock
 ###< symfony/phpunit-bridge ###

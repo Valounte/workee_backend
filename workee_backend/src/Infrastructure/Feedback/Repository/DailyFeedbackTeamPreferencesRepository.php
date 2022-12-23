@@ -95,4 +95,17 @@ class DailyFeedbackTeamPreferencesRepository extends ServiceEntityRepository imp
             ->getOneOrNullResult()
         ;
     }
+
+
+    public function findPreferencesInNextMinute(): array
+    {
+        $now = date("H:i");
+
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.sendingTime = :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
