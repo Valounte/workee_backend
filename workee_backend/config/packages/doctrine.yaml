@@ -89,6 +89,16 @@ doctrine:
         dir: "%kernel.project_dir%/src/Core/Components/Feedback/Entity"
         prefix: App\Core\Components\Feedback\Entity
         alias: PersonalFeedback
+      ProfessionalDevelopmentGoal:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/ProfessionalDevelopment/Entity"
+        prefix: App\Core\Components\ProfessionalDevelopmentGoal\Entity
+        alias: ProfessionalDevelopmentGoal
+      ProfessionalDevelopmentSubGoal:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/ProfessionalDevelopment/Entity"
+        prefix: App\Core\Components\ProfessionalDevelopmentSubGoal\Entity
+        alias: ProfessionalDevelopmentSubGoal
 
 when@test:
   doctrine:
