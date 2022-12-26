@@ -92,12 +92,12 @@ doctrine:
       ProfessionalDevelopmentGoal:
         is_bundle: false
         dir: "%kernel.project_dir%/src/Core/Components/ProfessionalDevelopment/Entity"
-        prefix: App\Core\Components\ProfessionalDevelopmentGoal\Entity
+        prefix: App\Core\Components\ProfessionalDevelopment\Entity
         alias: ProfessionalDevelopmentGoal
       ProfessionalDevelopmentSubGoal:
         is_bundle: false
         dir: "%kernel.project_dir%/src/Core/Components/ProfessionalDevelopment/Entity"
-        prefix: App\Core\Components\ProfessionalDevelopmentSubGoal\Entity
+        prefix: App\Core\Components\ProfessionalDevelopment\Entity
         alias: ProfessionalDevelopmentSubGoal
 
 when@test:
