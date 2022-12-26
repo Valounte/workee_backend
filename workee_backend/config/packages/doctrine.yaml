@@ -1,111 +1,116 @@
 doctrine:
-    dbal:
-        url: '%env(resolve:DATABASE_URL)%'
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '13'
-    orm:
-        auto_generate_proxy_classes: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
-        mappings:
-            Company:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Company/Entity'
-                prefix: App\Core\Components\Company\Entity
-                alias: Company
-            User:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/User/Entity'
-                prefix: App\Core\Components\User\Entity
-                alias: User
-            Team:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Team/Entity'
-                prefix: App\Core\Components\Team\Entity
-                alias: Team
-            Job:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Job/Entity'
-                prefix: App\Core\Components\Job\Entity
-                alias: Job
-            HumidityMetric:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
-                prefix: App\Core\Components\EnvironmentMetrics\Entity
-                alias: HumidityMetric
-            TemperatureMetric:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
-                prefix: App\Core\Components\EnvironmentMetrics\Entity
-                alias: TemperatureMetric
-            LuminosityMetric:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
-                prefix: App\Core\Components\EnvironmentMetrics\Entity
-                alias: LuminosityMetric
-            SoundMetric:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
-                prefix: App\Core\Components\EnvironmentMetrics\Entity
-                alias: SoundMetric
-            Notification:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Notification/Entity'
-                prefix: App\Core\Components\Notification\Entity
-                alias: Notification
-            NotificationPreferences:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Notification/Entity'
-                prefix: App\Core\Components\Notification\Entity
-                alias: NotificationPreferences
-            DailyFeedback:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Feedback/Entity'
-                prefix: App\Core\Components\Feedback\Entity
-                alias: DailyFeedback
-            EnvironmentMetricsPreferences:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity'
-                prefix: App\Core\Components\EnvironmentMetrics\Entity
-                alias: EnvironmentMetricsPreferences   
-            TeaOrCoffeeMeeting:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity'
-                prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
-                alias: TeaOrCoffeeMeeting
-            TeaOrCoffeeMeetingUser:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity'
-                prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
-                alias: TeaOrCoffeeMeetingUser
-            Logs:
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Core/Components/Logs/Entity'
-                prefix: App\Core\Components\Logs\Entity
-                alias: Logs
+  dbal:
+    url: "%env(resolve:DATABASE_URL)%"
+    # IMPORTANT: You MUST configure your server version,
+    # either here or in the DATABASE_URL env var (see .env file)
+    #server_version: '13'
+  orm:
+    auto_generate_proxy_classes: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    auto_mapping: true
+    mappings:
+      Company:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Company/Entity"
+        prefix: App\Core\Components\Company\Entity
+        alias: Company
+      User:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/User/Entity"
+        prefix: App\Core\Components\User\Entity
+        alias: User
+      Team:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Team/Entity"
+        prefix: App\Core\Components\Team\Entity
+        alias: Team
+      Job:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Job/Entity"
+        prefix: App\Core\Components\Job\Entity
+        alias: Job
+      HumidityMetric:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity"
+        prefix: App\Core\Components\EnvironmentMetrics\Entity
+        alias: HumidityMetric
+      TemperatureMetric:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity"
+        prefix: App\Core\Components\EnvironmentMetrics\Entity
+        alias: TemperatureMetric
+      LuminosityMetric:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity"
+        prefix: App\Core\Components\EnvironmentMetrics\Entity
+        alias: LuminosityMetric
+      SoundMetric:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity"
+        prefix: App\Core\Components\EnvironmentMetrics\Entity
+        alias: SoundMetric
+      Notification:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Notification/Entity"
+        prefix: App\Core\Components\Notification\Entity
+        alias: Notification
+      NotificationPreferences:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Notification/Entity"
+        prefix: App\Core\Components\Notification\Entity
+        alias: NotificationPreferences
+      DailyFeedback:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Feedback/Entity"
+        prefix: App\Core\Components\Feedback\Entity
+        alias: DailyFeedback
+      EnvironmentMetricsPreferences:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/EnvironmentMetrics/Entity"
+        prefix: App\Core\Components\EnvironmentMetrics\Entity
+        alias: EnvironmentMetricsPreferences
+      TeaOrCoffeeMeeting:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity"
+        prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
+        alias: TeaOrCoffeeMeeting
+      TeaOrCoffeeMeetingUser:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/TeaOrCoffeeMeeting/Entity"
+        prefix: App\Core\Components\TeaOrCoffeeMeeting\Entity
+        alias: TeaOrCoffeeMeetingUser
+      Logs:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Logs/Entity"
+        prefix: App\Core\Components\Logs\Entity
+        alias: Logs
+      PersonalFeedback:
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Core/Components/Feedback/Entity"
+        prefix: App\Core\Components\Feedback\Entity
+        alias: PersonalFeedback
 
 when@test:
-    doctrine:
-        dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+  doctrine:
+    dbal:
+      # "TEST_TOKEN" is typically set by ParaTest
+      dbname_suffix: "_test%env(default::TEST_TOKEN)%"
 
 when@prod:
-    doctrine:
-        orm:
-            auto_generate_proxy_classes: false
-            query_cache_driver:
-                type: pool
-                pool: doctrine.system_cache_pool
-            result_cache_driver:
-                type: pool
-                pool: doctrine.result_cache_pool
+  doctrine:
+    orm:
+      auto_generate_proxy_classes: false
+      query_cache_driver:
+        type: pool
+        pool: doctrine.system_cache_pool
+      result_cache_driver:
+        type: pool
+        pool: doctrine.result_cache_pool
 
-    framework:
-        cache:
-            pools:
-                doctrine.result_cache_pool:
-                    adapter: cache.app
-                doctrine.system_cache_pool:
-                    adapter: cache.system
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system
