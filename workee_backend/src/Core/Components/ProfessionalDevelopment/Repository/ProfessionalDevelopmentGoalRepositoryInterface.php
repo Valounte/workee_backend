@@ -8,4 +8,5 @@ interface ProfessionalDevelopmentGoalRepositoryInterface
 {
     public function add(ProfessionalDevelopmentGoal $entity, bool $flush = true): void;
     public function remove(ProfessionalDevelopmentGoal $entity, bool $flush = true): void;
+    public function get(int $id): ProfessionalDevelopmentGoal;
 }

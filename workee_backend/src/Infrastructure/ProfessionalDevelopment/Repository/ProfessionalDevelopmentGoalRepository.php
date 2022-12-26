@@ -45,4 +45,9 @@ class ProfessionalDevelopmentGoalRepository extends ServiceEntityRepository impl
             $this->_em->flush();
         }
     }
+
+    public function get(int $id): ProfessionalDevelopmentGoal
+    {
+        return $this->find($id);
+    }
 }
