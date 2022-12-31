@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.6.0
+    - name: Install MySQL
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client 
+    - name: Set environment variable
+      run: |
+        echo ::set-env name=DB_HOST::${{ secrets.DB_HOST }} >> $GITHUB_ENV  
+        echo ::set-env name=DB_USER::${{ secrets.DB_USER }} >> $GITHUB_ENV  
+        echo ::set-env name=DB_PASSWORD::${{ secrets.DB_PASSWORD }} >> $GITHUB_ENV  
+    - name: Backup MySQL database
+      run: mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASSWORD workee.db > backup.sql
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: database-backup
+        path: backup.sql
