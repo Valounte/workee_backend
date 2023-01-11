@@ -25,7 +25,6 @@ class TeamController extends AbstractController
         private TeamRepositoryInterface $teamRepository,
         private JsonResponseService $jsonResponseService,
         private CompanyRepositoryInterface $companyRepository,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private LogsServiceInterface $logsService,
     ) {
     }
@@ -35,11 +34,7 @@ class TeamController extends AbstractController
      */
     public function createTeam(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teamData = json_decode($request->getContent(), true);
 
@@ -67,15 +62,11 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/teams", name="listTeams", methods={"GET"})
-    */
+     * @Route("/api/teams", name="listTeams", methods={"GET"})
+     */
     public function listTeams(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teams = $this->teamRepository->findTeamsByCompany($user->getCompany());
 
@@ -98,8 +89,8 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/team/{id}", name="removeTeam", methods={"DELETE"})
-    */
+     * @Route("/api/team/{id}", name="removeTeam", methods={"DELETE"})
+     */
     public function removeTeam(Request $request, $id): Response
     {
         $team = $this->teamRepository->findOneById($id);
@@ -120,15 +111,11 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/team", name="editTeam", methods={"PUT"})
-    */
+     * @Route("/api/team", name="editTeam", methods={"PUT"})
+     */
     public function editTeam(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teamData = json_decode($request->getContent(), true);
         $team = $this->teamRepository->findOneById($teamData["id"]);
@@ -159,8 +146,8 @@ class TeamController extends AbstractController
     }
 
     /**
-    * @Route("/api/team/{id}", name="getTeamById", methods={"get"})
-    */
+     * @Route("/api/team/{id}", name="getTeamById", methods={"get"})
+     */
     public function getTeam(Request $request, $id): Response
     {
         $team = $this->teamRepository->findOneById($id);

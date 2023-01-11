@@ -40,7 +40,6 @@ use App\Core\Components\Feedback\Repository\DailyFeedbackTeamPreferencesReposito
 final class DailyFeedbackController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private UserTeamRepositoryInterface $userTeamRepository,
         private JsonResponseService $jsonResponseService,
         private DailyFeedbackRepositoryInterface $dailyFeedbackRepository,
@@ -58,11 +57,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function submitDailyFeedback(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
 
@@ -99,11 +94,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function getLastWeekDailyFeedback(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $team = $this->teamRepository->findOneById($request->query->get('teamId'));
 
@@ -136,11 +127,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function getDailyFeedbackPreferences(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teams = $this->userTeamRepository->findTeamsByUser($user);
 
@@ -180,11 +167,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function registerDailyFeedbackPreferences(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
 
@@ -214,11 +197,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function isDailyFeedbackSubmitted(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $feedback = $this->dailyFeedbackRepository->findLastDailyFeedbackByUser($user);
         $teamPreferences = $this->dailyFeedbackTeamPreferencesRepository->findByTeam(
@@ -251,11 +230,7 @@ final class DailyFeedbackController extends AbstractController
      */
     public function teamsDailyFeedback(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teams = $this->userTeamRepository->findTeamsByUser($user);
 

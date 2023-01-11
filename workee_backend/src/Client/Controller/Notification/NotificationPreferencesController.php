@@ -21,7 +21,6 @@ use App\Core\Components\Notification\Repository\NotificationPreferencesRepositor
 final class NotificationPreferencesController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private NotificationPreferencesRepositoryInterface $notificationPreferencesRepository,
         private JsonResponseService $jsonResponseService,
         private LogsServiceInterface $logsService,
@@ -33,11 +32,7 @@ final class NotificationPreferencesController extends AbstractController
      */
     public function getNotificationPreferences(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $notificationPreferences = $this->notificationPreferencesRepository->getAllNotificationsPreferences($user);
 
@@ -49,11 +44,7 @@ final class NotificationPreferencesController extends AbstractController
      */
     public function updateNotificationPreference(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
         $isMute = $input['isMute'];

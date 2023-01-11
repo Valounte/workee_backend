@@ -21,7 +21,6 @@ class UserTeamController extends AbstractController
     public function __construct(
         private GetUserService $getUserService,
         private JsonResponseService $jsonResponseService,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private UserTeamRepositoryInterface $userTeamRepository,
         private LogsServiceInterface $logsService,
     ) {
@@ -33,11 +32,7 @@ class UserTeamController extends AbstractController
      */
     public function getUsersInTeam(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teamId = $request->query->get('teamId');
 

@@ -2,8 +2,8 @@
 
 namespace App\Client\ViewModel\Feedback;
 
-use App\Client\ViewModel\User\PersonalFeedbackSenderViewModel;
 use DateTime;
+use App\Client\ViewModel\Feedback\PersonalFeedbackSenderViewModel;
 
 final class PersonalFeedbackViewModel
 {

@@ -30,7 +30,6 @@ final class TeaOrCoffeeMeetingController extends AbstractController
     public function __construct(
         private TeaOrCoffeeMeetingRepositoryInterface $teaOrCoffeeMeetingRepository,
         private JsonResponseService $jsonResponseService,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private MessageBusInterface $messageBus,
         private TeamRepositoryInterface $teamRepository,
         private TeaOrCoffeeMeetingUserRepositoryInterface $teaOrCoffeeMeetingUserRepository,
@@ -43,11 +42,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
      */
     public function createTeaOrCoffeeMeeting(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $teaOrCoffeeMeetingInput = json_decode($request->getContent(), true);
 
@@ -62,11 +57,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
      */
     public function changeTeaOrCoffeeInvitationStatus(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
         $meeting = $this->teaOrCoffeeMeetingUserRepository->findById($input['invitationId']);
@@ -95,11 +86,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
      */
     public function getTeaOrCoffeeMettingsWhereIAmInitiator(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByInitiator($user);
 
@@ -117,11 +104,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
      */
     public function getTeaOrCoffeeMettings(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $invitationStatus = $request->query->get('invitationStatus');
 

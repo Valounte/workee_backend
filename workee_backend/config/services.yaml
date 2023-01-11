@@ -10,6 +10,7 @@ parameters:
     encrypt_key: "a8MHdKzY7DOi3U+IjrGScwE+Qh7Nv9kYpSxiKJ5NT38="
     rgpd_document: '%kernel.project_dir%/public/LegalDocuments/rgpd.html'
     cgu_document: '%kernel.project_dir%/public/LegalDocuments/CGU.pdf'
+    unprotected_routes: [ '/api/login', '/api/register' ]
 
 services:
 
@@ -28,7 +29,6 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Kernel.php'
 
     App\Infrastructure\FileUploader\Services\FileUploader:
         arguments:
@@ -54,6 +54,10 @@ services:
     App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackListener:
         arguments:
             $mercureHubUrl: '%mercure_hub_url%'
+    
+    App\Infrastructure\Security\CheckSecurityHttpKernelListener:
+        arguments:
+            $unprotectedRoutes: '%unprotected_routes%'
 
 
     # add more service definitions when explicit configuration is needed

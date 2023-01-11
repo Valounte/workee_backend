@@ -43,7 +43,6 @@ class UserController extends AbstractController
         private CheckUserInformationService $checkUserInformationService,
         private MessageBusInterface $messageBus,
         private GetUserService $getUserService,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private LogsServiceInterface $logsService,
     ) {
     }
@@ -54,11 +53,8 @@ class UserController extends AbstractController
      */
     public function setPicture(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
+
         $data = json_decode($request->getContent(), true);
 
         $user->setPicture($data['picture']);
@@ -74,11 +70,7 @@ class UserController extends AbstractController
      */
     public function getUserById(int $id, Request $request): JsonResponse
     {
-        try {
-            $jwt = $this->tokenService->decode($request);
-        } catch (Exception $e) {
-            return $this->jsonResponseService->errorJsonResponse('Unautorized', 401);
-        }
+        $user = $request->attributes->get('user');
 
         $wantedUser = $this->userRepository->findUserById($id);
 
@@ -123,11 +115,7 @@ class UserController extends AbstractController
      */
     public function addToTeam(Request $request): Response
     {
-        try {
-            $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserById($data["userId"]);
@@ -149,11 +137,7 @@ class UserController extends AbstractController
      */
     public function getUsers(Request $request): JsonResponse
     {
-        try {
-            $me = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $me = $request->attributes->get('user');
 
         $users = $this->userRepository->findByCompany($me->getCompany());
         $usersViewModels = [];

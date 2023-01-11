@@ -47,7 +47,6 @@ class AuthController extends AbstractController
         private MailerInterface $mailer,
         private CompanyRepositoryInterface $companyRepository,
         private MessageBusInterface $messageBus,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private LogsServiceInterface $logsService,
     ) {
     }
@@ -82,11 +81,7 @@ class AuthController extends AbstractController
      */
     public function registrationEditPassword(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $userData = json_decode($request->getContent(), true);
 
@@ -113,11 +108,7 @@ class AuthController extends AbstractController
      */
     public function inviteUser(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $userData = json_decode($request->getContent(), true);
         $company = $this->companyRepository->findOneById($user->getCompany()->getId());
@@ -152,11 +143,7 @@ class AuthController extends AbstractController
      */
     public function inviteUserByCsv(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_USER);
-        } catch (UserPermissionsException | UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $command = new InviteUsersByCsvCommand(
             $request->files->get('file'),

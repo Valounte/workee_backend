@@ -26,7 +26,6 @@ use App\Core\Components\Job\Repository\JobPermissionRepositoryInterface;
 final class JobController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private JobRepositoryInterface $jobRepository,
         private JsonResponseService $jsonResponseService,
         private JobPermissionRepositoryInterface $jobPermissionRepository,
@@ -40,11 +39,7 @@ final class JobController extends AbstractController
      */
     public function getAllJobs(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $jobs = $this->jobRepository->findByCompany($user->getCompany());
 
@@ -80,11 +75,7 @@ final class JobController extends AbstractController
      */
     public function createJob(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_JOB);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
         $job = $this->jobRepository->findByNameAndCompany($data["name"], $user->getCompany());
@@ -126,11 +117,7 @@ final class JobController extends AbstractController
      */
     public function modifyJob(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request, PermissionNameEnum::CREATE_JOB);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
 

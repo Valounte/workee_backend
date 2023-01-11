@@ -18,7 +18,6 @@ use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 final class EnvironmentMetricsPreferencesController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private EnvironmentMetricsPreferencesRepositoryInterface $environmentMetricsPreferencesRepository,
         private JsonResponseService $jsonResponseService,
         private LogsServiceInterface $logsService,
@@ -30,11 +29,7 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
      */
     public function getEnvironmentMetricsPreferences(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $environmentMetricsPreferences = $this->environmentMetricsPreferencesRepository->getAllEnvironmentMetricsPreferences($user);
 
@@ -46,11 +41,7 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
      */
     public function updateEnvironmentMetricsPreference(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
         $isDesactivated = $input['isDesactivated'];
