@@ -22,7 +22,6 @@ class MeController extends AbstractController
         private JsonResponseService $jsonResponseService,
         private TokenService $tokenService,
         private GetUserService $getUserService,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private LogsServiceInterface $logsService,
     ) {
     }
@@ -33,12 +32,7 @@ class MeController extends AbstractController
      */
     public function me(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            $this->logsService->add(404, LogsContextEnum::USER, LogsAlertEnum::WARNING, "UserNotFoundException");
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $user = $this->getUserService->createUserViewModel($user);
 

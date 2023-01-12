@@ -25,7 +25,6 @@ final class SoundController extends AbstractController
     public function __construct(
         private SoundMetricRepositoryInterface $soundMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private SoundMetricsAlertService $soundMetricsAlertService,
         private LogsServiceInterface $logsService,
@@ -37,11 +36,7 @@ final class SoundController extends AbstractController
      */
     public function postSound(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
 
@@ -65,11 +60,7 @@ final class SoundController extends AbstractController
      */
     public function getCurrentSound(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $lastSoundValue = $this->soundMetricRepository->findLastSoundMetricByUser($user);
 
@@ -95,11 +86,7 @@ final class SoundController extends AbstractController
      */
     public function getSoundHistoric(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $historicValues = $this->soundMetricRepository->findSoundHistoric($user);
 

@@ -2,15 +2,14 @@
 
 namespace App\Client\Controller\Feedback;
 
-use Symfony\Component\Routing\Annotation\Route;
-use App\Client\ViewModel\User\PersonalFeedbackSenderViewModel;
-use App\Core\Components\Feedback\Entity\PersonalFeedback;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Core\Components\User\Service\GetUserService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Feedback\Entity\PersonalFeedback;
 use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Client\ViewModel\Feedback\PersonalFeedbackViewModel;
@@ -19,6 +18,7 @@ use App\Core\Components\User\Repository\UserRepositoryInterface;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Client\ViewModel\Feedback\PersonalFeedbackSenderViewModel;
 use App\Core\Components\Feedback\Repository\PersonalFeedbackRepositoryInterface;
 
 final class PersonalFeedbackController extends AbstractController
@@ -26,7 +26,6 @@ final class PersonalFeedbackController extends AbstractController
     public function __construct(
         private JsonResponseService $jsonResponseService,
         private PersonalFeedbackRepositoryInterface $personalFeedbackRepository,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private UserRepositoryInterface $userRepository,
         private LogsServiceInterface $logsService,
     ) {
@@ -36,11 +35,7 @@ final class PersonalFeedbackController extends AbstractController
      */
     public function sendFeedback(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
 
@@ -66,11 +61,7 @@ final class PersonalFeedbackController extends AbstractController
      */
     public function getUserPersonalFeedback(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $limit = json_decode($request->query->get("limit"), true);
 

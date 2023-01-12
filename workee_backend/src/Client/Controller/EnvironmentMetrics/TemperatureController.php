@@ -24,7 +24,6 @@ final class TemperatureController extends AbstractController
     public function __construct(
         private TemperatureMetricRepositoryInterface $temperatureMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private TemperatureMetricsAlertService $temperatureMetricsAlertService,
         private LogsServiceInterface $logsService,
@@ -36,11 +35,7 @@ final class TemperatureController extends AbstractController
      */
     public function postTemperature(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
 
@@ -64,11 +59,7 @@ final class TemperatureController extends AbstractController
      */
     public function getCurrentTemperature(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $lastTemperatureValue = $this->temperatureMetricRepository->findLastTemperatureMetricByUser($user);
 
@@ -94,11 +85,7 @@ final class TemperatureController extends AbstractController
      */
     public function getTemperatureHistoric(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $historicValues = $this->temperatureMetricRepository->findTemperatureHistoric($user);
 

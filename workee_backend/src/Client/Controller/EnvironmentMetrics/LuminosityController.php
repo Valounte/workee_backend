@@ -28,7 +28,6 @@ final class LuminosityController extends AbstractController
     public function __construct(
         private LuminosityMetricRepositoryInterface $luminosityMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private LuminosityMetricsAlertService $luminosityMetricsAlertService,
         private LogsServiceInterface $logsService,
@@ -40,11 +39,7 @@ final class LuminosityController extends AbstractController
      */
     public function postLuminosity(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
 
@@ -68,11 +63,7 @@ final class LuminosityController extends AbstractController
      */
     public function getCurrentLuminosity(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $lastLuminosityValue = $this->luminosityMetricRepository->findLastLuminosityMetricByUser($user);
 
@@ -98,11 +89,7 @@ final class LuminosityController extends AbstractController
      */
     public function getLuminosityHistoric(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $historicValues = $this->luminosityMetricRepository->findLuminosityHistoric($user);
 

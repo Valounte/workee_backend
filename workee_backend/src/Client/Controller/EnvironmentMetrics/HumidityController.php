@@ -27,7 +27,6 @@ final class HumidityController extends AbstractController
     public function __construct(
         private HumidityMetricRepositoryInterface $humidityMetricRepository,
         private UserRepositoryInterface $userRepositoryInterface,
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private JsonResponseService $jsonResponseService,
         private HumidityMetricsAlertService $humidityMetricsAlertService,
         private LogsServiceInterface $logsService,
@@ -39,11 +38,7 @@ final class HumidityController extends AbstractController
      */
     public function postHumidity(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $data = json_decode($request->getContent(), true);
 
@@ -67,11 +62,7 @@ final class HumidityController extends AbstractController
      */
     public function getCurrentHumidity(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $lastHumidityValue = $this->humidityMetricRepository->findLastHumidityMetricByUser($user);
 
@@ -97,11 +88,7 @@ final class HumidityController extends AbstractController
      */
     public function getHumidityHistoric(Request $request): JsonResponse
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException|UserNotFoundException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $historicValues = $this->humidityMetricRepository->findHumidityHistoric($user);
 

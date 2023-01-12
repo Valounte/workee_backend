@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\ViewModel\User;
+namespace App\Client\ViewModel\Feedback;
 
 final class PersonalFeedbackSenderViewModel
 {

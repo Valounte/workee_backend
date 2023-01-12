@@ -31,7 +31,6 @@ use App\Core\Components\Notification\Repository\NotificationRepositoryInterface;
 final class NotificationController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private MessageBusInterface $messageBus,
         private UserRepositoryInterface $userRepository,
         private NotificationRepositoryInterface $notificationRepository,
@@ -47,11 +46,8 @@ final class NotificationController extends AbstractController
      */
     public function publish(Request $request): Response
     {
-        try {
-            $sender = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $sender = $request->attributes->get('user');
+
 
         $input = json_decode($request->getContent(), true);
 
@@ -102,11 +98,7 @@ final class NotificationController extends AbstractController
      */
     public function getNotifications(Request $request): Response
     {
-        try {
-            $receiver = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $receiver = $request->attributes->get('user');
 
         $limit = $request->query->get('limit');
 
