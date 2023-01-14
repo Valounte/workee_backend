@@ -12,8 +12,6 @@ use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Core\Components\ProfessionalDevelopment\Entity\Enum\GoalStatusEnum;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
-use App\Infrastructure\User\Exceptions\UserPermissionsException;
-use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\ProfessionalDevelopment\Entity\ProfessionalDevelopmentGoal;
@@ -23,7 +21,6 @@ use InvalidArgumentException;
 final class ProfessionalDevelopmentGoalController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private UserRepositoryInterface $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserTeamRepositoryInterface $userTeamRepository,
@@ -37,16 +34,11 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
      */
     public function create(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
         try {
             $this->checkInputValidity($input);
-            $status = $this->mapGoalStatus($input['status']);
         } catch (InvalidArgumentException $e) {
             $this->logsService->add(400, LogsContextEnum::PROFESSIONAL_DEVELOPMENT, LogsAlertEnum::WARNING, "InvalidInputException");
             return new JsonResponse('Invalid Input', 400);
@@ -59,7 +51,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         $goal = new ProfessionalDevelopmentGoal(
             $user,
             $input['goal'],
-            $status,
+            GoalStatusEnum::TO_DO,
             new \DateTime($input['startDate']),
             new \DateTime($input['endDate'])
         );
@@ -80,7 +72,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
 
     private function checkInputValidity(array $input): void
     {
-        if (!isset($input['goal']) || !isset($input['startDate']) || !isset($input['endDate']) || !isset($input['status'])) {
+        if (!isset($input['goal']) || !isset($input['startDate']) || !isset($input['endDate'])) {
             throw new InvalidArgumentException('Invalid input');
         }
     }

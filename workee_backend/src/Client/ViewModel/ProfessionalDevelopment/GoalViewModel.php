@@ -3,6 +3,7 @@
 namespace App\Client\ViewModel\ProfessionalDevelopment;
 
 use App\Client\ViewModel\ProfessionalDevelopment\ProfessionalDevelopmentUserViewModel;
+use DateTime;
 
 final class GoalViewModel
 {
@@ -10,6 +11,8 @@ final class GoalViewModel
         private int $id,
         private string $goal,
         private int $progression,
+        private DateTime $startDate,
+        private DateTime $endDate,
         private ProfessionalDevelopmentUserViewModel $user,
         private ?array $subGoals = null,
     ) {

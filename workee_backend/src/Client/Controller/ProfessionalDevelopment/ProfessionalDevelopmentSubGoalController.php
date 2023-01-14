@@ -25,7 +25,6 @@ use App\Core\Components\ProfessionalDevelopment\Repository\ProfessionalDevelopme
 final class ProfessionalDevelopmentSubGoalController extends AbstractController
 {
     public function __construct(
-        private CheckUserPermissionsService $checkUserPermissionsService,
         private UserRepositoryInterface $userRepository,
         private JsonResponseService $jsonResponseService,
         private UserTeamRepositoryInterface $userTeamRepository,
@@ -40,16 +39,11 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
      */
     public function create(Request $request): Response
     {
-        try {
-            $user = $this->checkUserPermissionsService->checkUserPermissionsByJwt($request);
-        } catch (UserPermissionsException $e) {
-            return new JsonResponse($e->getMessage(), $e->getCode());
-        }
+        $user = $request->attributes->get('user');
 
         $input = json_decode($request->getContent(), true);
         try {
             $this->checkInputValidity($input);
-            $status = $this->mapGoalStatus($input['status']);
         } catch (InvalidArgumentException $e) {
             $this->logsService->add(400, LogsContextEnum::PROFESSIONAL_DEVELOPMENT, LogsAlertEnum::WARNING, "InvalidInputException");
             return new JsonResponse('Invalid Input', 400);
@@ -57,7 +51,7 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
 
         $subGoal = new ProfessionalDevelopmentSubGoal(
             $input['subGoal'],
-            $status,
+            GoalStatusEnum::TO_DO,
             $this->professionalDevelopmentGoalRepository->get($input['goalId'])
         );
         $this->professionalDevelopmentSubGoalRepository->add($subGoal);
@@ -77,7 +71,7 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
 
     private function checkInputValidity(array $input): void
     {
-        if (!isset($input['subGoal']) || !isset($input['goalId']) || !isset($input['status'])) {
+        if (!isset($input['subGoal']) || !isset($input['goalId'])) {
             throw new InvalidArgumentException('Invalid input');
         }
     }
