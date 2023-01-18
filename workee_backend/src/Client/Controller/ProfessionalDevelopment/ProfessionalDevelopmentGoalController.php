@@ -51,7 +51,6 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         $goal = new ProfessionalDevelopmentGoal(
             $user,
             $input['goal'],
-            GoalStatusEnum::TO_DO,
             new \DateTime($input['startDate']),
             new \DateTime($input['endDate'])
         );
@@ -60,14 +59,12 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         return $this->jsonResponseService->successJsonResponse('Goal created successfully', 201);
     }
 
-    private function mapGoalStatus(string $status): GoalStatusEnum
+    /**
+     * @Route("/api/professional-development-goal", name="get-professional-development-goals", methods={"POST"})
+     */
+    public function getProfessionalDevelopmentGoals(Request $request): Response
     {
-        return match ($status) {
-            'TO_DO' => GoalStatusEnum::TO_DO,
-            'IN_PROGRESS' => GoalStatusEnum::IN_PROGRESS,
-            'DONE' => GoalStatusEnum::DONE,
-            default => throw new InvalidArgumentException('Invalid status')
-        };
+        $user = $request->attributes->get('user');
     }
 
     private function checkInputValidity(array $input): void

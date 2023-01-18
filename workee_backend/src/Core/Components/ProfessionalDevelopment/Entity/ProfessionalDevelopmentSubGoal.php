@@ -62,4 +62,21 @@ class ProfessionalDevelopmentSubGoal
     {
         return $this->goal;
     }
+
+    public function isDone(): bool
+    {
+        return $this->subGoalStatus === GoalStatusEnum::DONE;
+    }
+
+    /**
+     * Set the value of subGoalStatus
+     *
+     * @return  self
+     */
+    public function setSubGoalStatus($subGoalStatus)
+    {
+        $this->subGoalStatus = $subGoalStatus;
+
+        return $this;
+    }
 }

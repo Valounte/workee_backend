@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\ProfessionalDevelopment\Repository;
 
+use App\Core\Components\ProfessionalDevelopment\Entity\ProfessionalDevelopmentGoal;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -44,5 +45,19 @@ class ProfessionalDevelopmentSubGoalRepository extends ServiceEntityRepository i
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function getSubGoalsByGoal(ProfessionalDevelopmentGoal $goal): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.goal = :goal')
+            ->setParameter('goal', $goal)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function get(int $id): ProfessionalDevelopmentSubGoal
+    {
+        return $this->find($id);
     }
 }
