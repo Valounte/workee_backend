@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Core\Components\ProfessionalDevelopment\Entity\ProfessionalDevelopmentGoal;
 use App\Core\Components\ProfessionalDevelopment\Repository\ProfessionalDevelopmentGoalRepositoryInterface;
+use App\Core\Components\User\Entity\User;
 
 /**
  * @method ProfessionalDevelopmentGoal|null find($id, $lockMode = null, $lockVersion = null)
@@ -49,5 +50,14 @@ class ProfessionalDevelopmentGoalRepository extends ServiceEntityRepository impl
     public function get(int $id): ProfessionalDevelopmentGoal
     {
         return $this->find($id);
+    }
+
+    public function getByUser(User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
     }
 }

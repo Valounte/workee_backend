@@ -2,6 +2,7 @@
 
 namespace App\Client\Controller\ProfessionalDevelopment;
 
+use App\Client\ViewModel\ProfessionalDevelopment\GoalViewModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\ProfessionalDevelopment\Entity\ProfessionalDevelopmentGoal;
 use App\Core\Components\ProfessionalDevelopment\Repository\ProfessionalDevelopmentGoalRepositoryInterface;
+use App\Core\Components\ProfessionalDevelopment\Repository\ProfessionalDevelopmentSubGoalRepositoryInterface;
 use InvalidArgumentException;
 
 final class ProfessionalDevelopmentGoalController extends AbstractController
@@ -26,6 +28,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         private UserTeamRepositoryInterface $userTeamRepository,
         private LogsServiceInterface $logsService,
         private ProfessionalDevelopmentGoalRepositoryInterface $professionalDevelopmentGoalRepository,
+        private ProfessionalDevelopmentSubGoalRepositoryInterface $professionalDevelopmentSubGoalRepository,
     ) {
     }
 
@@ -60,11 +63,42 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
     }
 
     /**
-     * @Route("/api/professional-development-goal", name="get-professional-development-goals", methods={"POST"})
+     * @Route("/api/professional-development-goal", name="get-professional-development-goals", methods={"GET"})
      */
     public function getProfessionalDevelopmentGoals(Request $request): Response
     {
-        $user = $request->attributes->get('user');
+        $user = $request->query->get('user') ?? $request->attributes->get('user');
+
+        if (is_string($user)) {
+            $user = $this->userRepository->findUserById((int) $user);
+        }
+
+        if ($user === null) {
+            return $this->jsonResponseService->errorJsonResponse('User not found', 404);
+        }
+
+        $goals = $this->professionalDevelopmentGoalRepository->getByUser($user);
+
+        if (empty($goals)) {
+            return $this->jsonResponseService->successJsonResponse('No goals found', 200);
+        }
+
+        $goalsViewModel = [];
+
+        foreach ($goals as $goal) {
+            $subGoals = $this->professionalDevelopmentSubGoalRepository->getSubGoalsViewModelsByGoal($goal);
+
+            $goalsViewModel[] = new GoalViewModel(
+                $goal->getId(),
+                $goal->getGoal(),
+                $goal->getProgression(),
+                $goal->getStartDate(),
+                $goal->getEndDate(),
+                $subGoals,
+            );
+        }
+
+        return $this->jsonResponseService->create($goalsViewModel);
     }
 
     private function checkInputValidity(array $input): void

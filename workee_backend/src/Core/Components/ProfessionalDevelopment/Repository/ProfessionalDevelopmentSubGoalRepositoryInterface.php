@@ -11,4 +11,5 @@ interface ProfessionalDevelopmentSubGoalRepositoryInterface
     public function remove(ProfessionalDevelopmentSubGoal $entity, bool $flush = true): void;
     public function getSubGoalsByGoal(ProfessionalDevelopmentGoal $goal): array;
     public function get(int $id): ProfessionalDevelopmentSubGoal;
+    public function getSubGoalsViewModelsByGoal(ProfessionalDevelopmentGoal $goal): array;
 }

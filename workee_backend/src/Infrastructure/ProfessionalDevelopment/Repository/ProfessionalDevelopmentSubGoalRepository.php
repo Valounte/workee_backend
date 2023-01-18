@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\ProfessionalDevelopment\Repository;
 
+use App\Client\ViewModel\ProfessionalDevelopment\SubGoalViewModel;
 use App\Core\Components\ProfessionalDevelopment\Entity\ProfessionalDevelopmentGoal;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -54,6 +55,26 @@ class ProfessionalDevelopmentSubGoalRepository extends ServiceEntityRepository i
             ->setParameter('goal', $goal)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getSubGoalsViewModelsByGoal(ProfessionalDevelopmentGoal $goal): array
+    {
+        $rawSubGoals = $this->createQueryBuilder('c')
+            ->andWhere('c.goal = :goal')
+            ->setParameter('goal', $goal)
+            ->getQuery()
+            ->getResult();
+
+        $subGoalViewModels = [];
+        foreach ($rawSubGoals as $rawSubGoal) {
+            $subGoalViewModels[] = new SubGoalViewModel(
+                $rawSubGoal->getId(),
+                $rawSubGoal->getSubGoal(),
+                $rawSubGoal->getSubGoalStatus(),
+            );
+        }
+
+        return $subGoalViewModels;
     }
 
     public function get(int $id): ProfessionalDevelopmentSubGoal

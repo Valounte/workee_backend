@@ -13,7 +13,6 @@ final class GoalViewModel
         private int $progression,
         private DateTime $startDate,
         private DateTime $endDate,
-        private ProfessionalDevelopmentUserViewModel $user,
         private ?array $subGoals = null,
     ) {
     }
@@ -48,5 +47,21 @@ final class GoalViewModel
     public function getProgression()
     {
         return $this->progression;
+    }
+
+    /**
+     * Get the value of startDate
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Get the value of endDate
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 }
