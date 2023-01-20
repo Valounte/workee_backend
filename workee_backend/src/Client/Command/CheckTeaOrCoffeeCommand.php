@@ -34,6 +34,7 @@ class CheckTeaOrCoffee extends Command{
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return Command::SUCCESS;
+        $teaOrCoffeeInTenMinutes = $this->TeaOrCoffeeMeetingRepositoryInterface->getAllTeaOrCoffeeMeetingsInTenMinutes();
+        $this->messageBus->dispatch();
     }
 }

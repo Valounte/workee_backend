@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\TeaOrCoffeeMeeting\Repository;
 
+use DateTime;
+use DateInterval;
 use Doctrine\ORM\ORMException;
 use App\Core\Components\User\Entity\User;
 use Doctrine\ORM\OptimisticLockException;
@@ -12,8 +14,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeetingUser;
 use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingUserViewModel;
-use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingInvitedUserViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\InvitationStatusEnum;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingInvitedUserViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
 
 /**
@@ -63,7 +65,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
     public function getAllTeaOrCoffeeMeetingByInitiator(User $user): ?array
     {
-        $actualDate = new \DateTime();
+        $actualDate = new DateTime();
 
         $rawResult = $this->createQueryBuilder('t')
             ->leftJoin(
@@ -102,7 +104,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
     public function getAllTeaOrCoffeeMeetingByUser(User $user, InvitationStatusEnum $status): ?array
     {
-        $actualDate = new \DateTime();
+        $actualDate = new DateTime();
         $declinedStatus = InvitationStatusEnum::DECLINED;
 
         $rawResult = $this->createQueryBuilder('t')
@@ -189,4 +191,77 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         ;
     }
     */
+
+    private function getAllTeaOrCoffeeMeetingsInTenMinutes(User $user, InvitationStatusEnum $status): ?array
+    {
+        $actualDate = new DateTime();
+        $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
+        $result = [];
+
+        //request for Initiator
+        $initiatorResult = $this->createQueryBuilder('t')
+            ->leftJoin(
+                'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                't.meeting = u.id'
+            )
+            ->select('u')
+            ->andWhere('u.initiator = :user')
+            ->andWhere('u.date > :actualDate')
+            ->andWhere('u.date < :dateInTenMinutes')
+            ->setParameter('actualDate', $actualDate)
+            ->setParameter('dateInTenMinutes', $dateInTenMinutes)
+            ->setParameter('user', $user)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+        
+        foreach ($initiatorResult as $item) {
+            $user = $this->userRepository->findUserById($item->getInitiator()->getId());
+            $result[] = new TeaOrCoffeeMeetingViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $user->getId(),
+                    $user->getFirstName(),
+                    $user->getLastName(),
+                ),
+                $this->getInvitedUsersByMeetingId($item->getId()),
+                $item->getMeetingType(),
+                $item->getDate(),
+            );
+        }
+
+        //request for invited user
+        $invitedResult = $this->createQueryBuilder('t')
+            ->leftJoin(
+                'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
+                'u',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                't.meeting = u.id'
+            )
+            ->select('u')
+            ->andWhere('t.invitedUser = :user')
+            ->andWhere('t.invitationStatus = :status')
+            ->setParameter('status', $status)
+            ->andWhere('u.date > :actualDate')
+            ->andWhere('u.date < :dateInTenMinutes')
+            ->setParameter('actualDate', $actualDate)
+            ->setParameter('dateInTenMinutes', $dateInTenMinutes)
+            ->setParameter('user', $user)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        foreach ($invitedResult as $item) {
+            $result[] = new TeaOrCoffeeMeetingViewModel(
+                    $item->getInitiator(),
+                    $this->getInvitedUsersByMeetingId($item->getId()),
+                    $item->getMeetingType(),
+                    $item->getDate(),
+            );
+        }
+        return $result;
+    }
 }
