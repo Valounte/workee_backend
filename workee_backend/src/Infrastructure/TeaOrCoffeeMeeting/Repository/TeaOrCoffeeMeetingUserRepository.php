@@ -81,8 +81,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
             ->setParameter('user', $user)
             ->orderBy('t.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $result = [];
         foreach ($rawResult as $item) {
@@ -102,10 +101,9 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         return $result;
     }
 
-    public function getAllTeaOrCoffeeMeetingByUser(User $user, InvitationStatusEnum $status): ?array
+    public function getAllTeaOrCoffeeMeetingByUser(User $user): ?array
     {
         $actualDate = new DateTime();
-        $declinedStatus = InvitationStatusEnum::DECLINED;
 
         $rawResult = $this->createQueryBuilder('t')
             ->leftJoin(
@@ -115,16 +113,13 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
                 't.meeting = u.id'
             )
             ->select('u')
-            ->andWhere('t.invitedUser = :user')
-            ->andWhere('t.invitationStatus = :status')
-            ->setParameter('status', $status)
+            ->andWhere('t.invitedUser = :user OR u.initiator = :user')
             ->andWhere('u.date > :actualDate')
             ->setParameter('actualDate', $actualDate)
             ->setParameter('user', $user)
             ->orderBy('t.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $result = [];
         foreach ($rawResult as $item) {
@@ -157,8 +152,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
             ->setParameter('meetingId', $meetingId)
             ->orderBy('t.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $result = [];
         foreach ($rawResult as $item) {
