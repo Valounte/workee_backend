@@ -11,6 +11,6 @@ interface TeaOrCoffeeMeetingUserRepositoryInterface
     public function add(TeaOrCoffeeMeetingUser $entity, bool $flush = true): void;
     public function remove(TeaOrCoffeeMeetingUser $entity, bool $flush = true): void;
     public function findById(int $id): ?TeaOrCoffeeMeetingUser;
-    public function getAllTeaOrCoffeeMeetingByUser(User $user, InvitationStatusEnum $status): ?array;
+    public function getAllTeaOrCoffeeMeetingByUser(User $user): ?array;
     public function getAllTeaOrCoffeeMeetingByInitiator(User $user): ?array;
 }
