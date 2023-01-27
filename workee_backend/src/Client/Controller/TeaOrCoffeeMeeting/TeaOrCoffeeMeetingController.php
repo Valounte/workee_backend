@@ -106,7 +106,6 @@ final class TeaOrCoffeeMeetingController extends AbstractController
     public function getTeaOrCoffeeMettings(Request $request): Response
     {
         $user = $request->attributes->get('user');
-
         $invitationStatus = $request->query->get('invitationStatus');
 
         $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByUser($user);
