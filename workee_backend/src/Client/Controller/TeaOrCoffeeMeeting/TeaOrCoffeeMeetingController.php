@@ -43,7 +43,6 @@ final class TeaOrCoffeeMeetingController extends AbstractController
     public function createTeaOrCoffeeMeeting(Request $request): Response
     {
         $user = $request->attributes->get('user');
-
         $teaOrCoffeeMeetingInput = json_decode($request->getContent(), true);
 
         $this->dispatchAppropriateCommand($user, $teaOrCoffeeMeetingInput);
