@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Core\Components\Feedback\UseCase;
+namespace App\Core\Components\TeaOrCoffeeMeeting\UseCase;
 
-use App\Core\Components\User\Repository\UserRepositoryInterface;
-use App\Infrastructure\Token\Services\TokenService;
-use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Mercure\HubInterface;
+use App\Infrastructure\Token\Services\TokenService;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use App\Core\Components\TeaOrCoffeeMeeting\UseCase\UserHasMeetingInTenMinutesEvent;
 
 final class UserHasMeetingInTenMinutesListener implements MessageHandlerInterface
 {
@@ -20,7 +21,6 @@ final class UserHasMeetingInTenMinutesListener implements MessageHandlerInterfac
 
     public function __invoke(UserHasMeetingInTenMinutesEvent $event): void
     {
-        var_dump($event);
         $user = $this->userRepository->findUserById($event->getUserId());
 
         $jwt = $this->tokenService->createLoginToken($user);
