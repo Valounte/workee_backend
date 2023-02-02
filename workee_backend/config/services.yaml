@@ -54,6 +54,10 @@ services:
     App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackListener:
         arguments:
             $mercureHubUrl: '%mercure_hub_url%'
+
+    App\Core\Components\TeaOrCoffeeMeeting\UseCase\UserHasMeetingInTenMinutesListener:
+        arguments:
+            $mercureHubUrl: '%mercure_hub_url%'
     
     App\Infrastructure\Security\CheckSecurityHttpKernelListener:
         arguments:
