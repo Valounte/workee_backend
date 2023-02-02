@@ -2,10 +2,9 @@
 
 namespace App\Client\Command;
 
-use App\Core\Components\Feedback\UseCase\UserHasMeetingInTenMinutesEvent as UseCaseUserHasMeetingInTenMinutesEvent;
+use App\Core\Components\Feedback\UseCase\UserHasMeetingInTenMinutesEvent;
 use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
 use App\Core\Components\User\Repository\UserRepositoryInterface;
-use App\Core\Components\TeaOrCoffeeMeeting\UseCase\UserHasMeetingInTenMinutesEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -39,14 +38,14 @@ class CheckTeaOrCoffeeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $usersToNotify = $this->teaOrCoffeeUserRepository->getAllTeaOrCoffeeMeetingsInTenMinutes();
+        $usersToNotify = $this->teaOrCoffeeUserRepository->getAllTeaOrCoffeeMeetingUserIdsInTenMinutes();
 
         if ($usersToNotify === []) {
             return Command::SUCCESS;
         }
 
-        foreach ($usersToNotify as $user) {
-            $event = new UseCaseUserHasMeetingInTenMinutesEvent($user->getUserId());
+        foreach ($usersToNotify[0] as $user) {
+            $event = new UserHasMeetingInTenMinutesEvent($user);
             $this->messageBus->dispatch($event);
         }
 

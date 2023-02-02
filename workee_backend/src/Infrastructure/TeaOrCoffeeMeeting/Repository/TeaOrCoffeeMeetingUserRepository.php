@@ -184,14 +184,12 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
     }
     */
 
-    public function getAllTeaOrCoffeeMeetingsInTenMinutes(): ?array
+    public function getAllTeaOrCoffeeMeetingUserIdsInTenMinutes(): ?array
     {
         $actualDate = new DateTime();
         $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
-        //$dateInTenMinutes = $dateInTenMinutes->format('Y-m-d H:i:00');
 
         $dateInTenMinutes = "2023-01-27 15:46:00";
-        dump($dateInTenMinutes);
 
         $result = [];
 
@@ -211,11 +209,9 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
             ->getQuery()
             ->getResult();
 
-        dd($rawRequest);
-
         $result = [];
-        foreach ($rawRequest as $item) {
-            $result[] = $item;
+        foreach ($rawRequest as $userId) {
+            $result[] = $userId;
         }
 
         return $result;
