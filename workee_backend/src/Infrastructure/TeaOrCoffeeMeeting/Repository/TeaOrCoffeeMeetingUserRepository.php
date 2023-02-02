@@ -162,13 +162,11 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
         $result = [];
         foreach ($rawResult as $item) {
-            $result[] = new TeaOrCoffeeMeetingInvitedUserViewModel(
-                new TeaOrCoffeeMeetingUserViewModel(
-                    $item->getInvitedUser()->getId(),
-                    $item->getInvitedUser()->getFirstname(),
-                    $item->getInvitedUser()->getLastname(),
-                ),
-                $item->getInvitationStatus(),
+            $result[] = new TeaOrCoffeeMeetingViewModel(
+                $item->getInitiator(),
+                $item->getInvitedUsersByMeetingId($item->getId()),
+                $item->getMeetingType(),
+                $item->getDate(),
             );
         }
 
@@ -192,76 +190,40 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
     }
     */
 
-    private function getAllTeaOrCoffeeMeetingsInTenMinutes(User $user, InvitationStatusEnum $status): ?array
+    public function getAllTeaOrCoffeeMeetingsInTenMinutes(): ?array
     {
         $actualDate = new DateTime();
         $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
+        //$dateInTenMinutes = $dateInTenMinutes->format('Y-m-d H:i:00');
+
+        $dateInTenMinutes = "2023-01-27 15:46:00";
+        dump($dateInTenMinutes);
+
         $result = [];
 
-        //request for Initiator
-        $initiatorResult = $this->createQueryBuilder('t')
+        $rawRequest = $this->createQueryBuilder('t')
             ->leftJoin(
                 'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
                 'u',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
                 't.meeting = u.id'
             )
-            ->select('u')
-            ->andWhere('u.initiator = :user')
-            ->andWhere('u.date > :actualDate')
-            ->andWhere('u.date < :dateInTenMinutes')
-            ->setParameter('actualDate', $actualDate)
+            ->select("IDENTITY(u.initiator), IDENTITY(t.invitedUser)")
+            ->andWhere("u.date = :dateInTenMinutes")
+            ->andWhere('t.invitationStatus = :invitationStatus')
+            ->setParameter('invitationStatus', InvitationStatusEnum::ACCEPTED)
             ->setParameter('dateInTenMinutes', $dateInTenMinutes)
-            ->setParameter('user', $user)
             ->orderBy('t.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
+
+        dd($rawRequest);
         
-        foreach ($initiatorResult as $item) {
-            $user = $this->userRepository->findUserById($item->getInitiator()->getId());
-            $result[] = new TeaOrCoffeeMeetingViewModel(
-                new TeaOrCoffeeMeetingUserViewModel(
-                    $user->getId(),
-                    $user->getFirstName(),
-                    $user->getLastName(),
-                ),
-                $this->getInvitedUsersByMeetingId($item->getId()),
-                $item->getMeetingType(),
-                $item->getDate(),
-            );
+        $result = [];
+        foreach ($rawRequest as $item) {
+            $result[] = $item;
         }
-
-        //request for invited user
-        $invitedResult = $this->createQueryBuilder('t')
-            ->leftJoin(
-                'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
-                'u',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
-                't.meeting = u.id'
-            )
-            ->select('u')
-            ->andWhere('t.invitedUser = :user')
-            ->andWhere('t.invitationStatus = :status')
-            ->setParameter('status', $status)
-            ->andWhere('u.date > :actualDate')
-            ->andWhere('u.date < :dateInTenMinutes')
-            ->setParameter('actualDate', $actualDate)
-            ->setParameter('dateInTenMinutes', $dateInTenMinutes)
-            ->setParameter('user', $user)
-            ->orderBy('t.id', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
-
-        foreach ($invitedResult as $item) {
-            $result[] = new TeaOrCoffeeMeetingViewModel(
-                    $item->getInitiator(),
-                    $this->getInvitedUsersByMeetingId($item->getId()),
-                    $item->getMeetingType(),
-                    $item->getDate(),
-            );
-        }
+        
         return $result;
     }
 }

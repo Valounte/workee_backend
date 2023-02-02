@@ -2,7 +2,10 @@
 
 namespace App\Client\Command;
 
-use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingRepositoryInterface;
+use App\Core\Components\Feedback\UseCase\UserHasMeetingInTenMinutesEvent as UseCaseUserHasMeetingInTenMinutesEvent;
+use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Core\Components\TeaOrCoffeeMeeting\UseCase\UserHasMeetingInTenMinutesEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -14,11 +17,13 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Checks if there is a TeaOrCoffee meeting in the next 10 minutes in order to dispatch a notification',
     hidden: false,
 )]
-class CheckTeaOrCoffee extends Command{
+class CheckTeaOrCoffeeCommand extends Command
+{
     protected static $defaultDescription = 'Checks if there is a TeaOrCoffee meeting in the next 10 minutes in order to dispatch a notification';
 
     public function __construct(
-        private TeaOrCoffeeMeetingRepositoryInterface $dailyFeedbackTeamPreferencesRepository,
+        private TeaOrCoffeeMeetingUserRepositoryInterface $teaOrCoffeeUserRepository,
+        private UserRepositoryInterface $userInterface,
         private MessageBusInterface $messageBus,
     ) {
         parent::__construct();
@@ -34,7 +39,17 @@ class CheckTeaOrCoffee extends Command{
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $teaOrCoffeeInTenMinutes = $this->TeaOrCoffeeMeetingRepositoryInterface->getAllTeaOrCoffeeMeetingsInTenMinutes();
-        $this->messageBus->dispatch();
+        $usersToNotify = $this->teaOrCoffeeUserRepository->getAllTeaOrCoffeeMeetingsInTenMinutes();
+
+        if ($usersToNotify === []) {
+            return Command::SUCCESS;
+        }
+
+        foreach ($usersToNotify as $user) {
+            $event = new UseCaseUserHasMeetingInTenMinutesEvent($user->getUserId());
+            $this->messageBus->dispatch($event);
+        }
+        
+        return Command::SUCCESS;
     }
 }
