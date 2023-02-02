@@ -13,5 +13,5 @@ interface TeaOrCoffeeMeetingUserRepositoryInterface
     public function findById(int $id): ?TeaOrCoffeeMeetingUser;
     public function getAllTeaOrCoffeeMeetingByUser(User $user, InvitationStatusEnum $status): ?array;
     public function getAllTeaOrCoffeeMeetingByInitiator(User $user): ?array;
-    public function getAllTeaOrCoffeeMeetingsInTenMinutes(User $user, InvitationStatusEnum $status): ?array;
+    public function getAllTeaOrCoffeeMeetingsInTenMinutes(): ?array;
 }
