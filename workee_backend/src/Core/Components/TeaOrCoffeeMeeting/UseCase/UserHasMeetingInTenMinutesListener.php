@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Core\Components\Feedback\UseCase;
+
 use App\Infrastructure\Token\Services\TokenService;
 use App\Infrastructure\User\Repository\UserRepository;
 use Symfony\Component\Mercure\HubInterface;
@@ -32,7 +33,7 @@ final class UserHasMeetingInTenMinutesListener implements MessageHandlerInterfac
                     'userId' => $user->getId(),
                     ])
             );
-            
+
             $this->hub->publish($update);
         }
     }
