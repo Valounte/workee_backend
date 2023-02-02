@@ -49,7 +49,7 @@ class CheckTeaOrCoffeeCommand extends Command
             $event = new UseCaseUserHasMeetingInTenMinutesEvent($user->getUserId());
             $this->messageBus->dispatch($event);
         }
-        
+
         return Command::SUCCESS;
     }
 }

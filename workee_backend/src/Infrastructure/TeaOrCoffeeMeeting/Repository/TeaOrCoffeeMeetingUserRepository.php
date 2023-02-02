@@ -205,7 +205,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
             ->leftJoin(
                 'App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting',
                 'u',
-                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                \Doctrine\ORM\Query\Expr\Join::WITH,
                 't.meeting = u.id'
             )
             ->select("IDENTITY(u.initiator), IDENTITY(t.invitedUser)")
@@ -218,12 +218,12 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
             ->getResult();
 
         dd($rawRequest);
-        
+
         $result = [];
         foreach ($rawRequest as $item) {
             $result[] = $item;
         }
-        
+
         return $result;
     }
 }
