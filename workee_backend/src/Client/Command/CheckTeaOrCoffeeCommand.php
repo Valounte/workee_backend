@@ -2,14 +2,14 @@
 
 namespace App\Client\Command;
 
-use App\Core\Components\Feedback\UseCase\UserHasMeetingInTenMinutesEvent;
-use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
-use App\Core\Components\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Core\Components\User\Repository\UserRepositoryInterface;
+use App\Core\Components\TeaOrCoffeeMeeting\UseCase\UserHasMeetingInTenMinutesEvent;
+use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
 
 #[AsCommand(
     name: 'app:checkTeaOrCoffee',

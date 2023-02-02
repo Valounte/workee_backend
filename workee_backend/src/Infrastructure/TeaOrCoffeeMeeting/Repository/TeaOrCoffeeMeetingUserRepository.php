@@ -189,8 +189,6 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         $actualDate = new DateTime();
         $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
 
-        $dateInTenMinutes = "2023-01-27 15:46:00";
-
         $result = [];
 
         $rawRequest = $this->createQueryBuilder('t')

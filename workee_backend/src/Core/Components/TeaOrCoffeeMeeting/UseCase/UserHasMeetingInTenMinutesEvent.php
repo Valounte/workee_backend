@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Core\Components\Feedback\UseCase;
-
-use App\Core\Components\Team\Entity\Team;
+namespace App\Core\Components\TeaOrCoffeeMeeting\UseCase;
 
 final class UserHasMeetingInTenMinutesEvent
 {
