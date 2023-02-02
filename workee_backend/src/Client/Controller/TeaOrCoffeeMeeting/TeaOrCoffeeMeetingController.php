@@ -43,7 +43,6 @@ final class TeaOrCoffeeMeetingController extends AbstractController
     public function createTeaOrCoffeeMeeting(Request $request): Response
     {
         $user = $request->attributes->get('user');
-
         $teaOrCoffeeMeetingInput = json_decode($request->getContent(), true);
 
         $this->dispatchAppropriateCommand($user, $teaOrCoffeeMeetingInput);
@@ -99,23 +98,16 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         return $this->jsonResponseService->create($meetings, 200);
     }
 
+
     /**
      * @Route("/api/tea-or-coffee-meeting", name="getTeaOrCoffeeMettings", methods={"GET"})
      */
     public function getTeaOrCoffeeMettings(Request $request): Response
     {
         $user = $request->attributes->get('user');
-
         $invitationStatus = $request->query->get('invitationStatus');
 
-        $invitationstatus = match ($invitationStatus) {
-            'ACCEPTED' => InvitationStatusEnum::ACCEPTED,
-            'DECLINED' => InvitationStatusEnum::DECLINED,
-            'PENDING' => InvitationStatusEnum::PENDING,
-            default => throw new \InvalidArgumentException('Invalid invitation status'),
-        };
-
-        $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByUser($user, $invitationstatus);
+        $meetings = $this->teaOrCoffeeMeetingUserRepository->getAllTeaOrCoffeeMeetingByUser($user);
 
         if (empty($meetings)) {
             $this->logsService->add(404, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO, "NoMeetingsFoundException");
