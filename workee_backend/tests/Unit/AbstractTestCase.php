@@ -13,11 +13,6 @@ abstract class AbstractTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->userRepository = static::getContainer()->get(UserRepository::class);
         parent::setUp();
-    }
-
-    protected function getUser(): User
-    {
     }
 }

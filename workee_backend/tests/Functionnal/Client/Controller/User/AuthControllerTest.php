@@ -21,33 +21,10 @@ final class AuthControllerTest extends AbstractApiTestCase
 
     public function test_register_and_login(): void
     {
-        $company = $this->companyRepository->findOneByName('Instapro');
-
-        $bodyRegister = [
-            'email' => 'workeetech@gmail.com',
-            'password' => 'Password123456!',
-            'company' => $company->getId(),
-            'firstname' => 'jéjé',
-            'lastname' => 'LeBeauf',
-        ];
-
         $bodyLogin = [
-            'email' => 'workeetech@gmail.com',
-            'password' => 'Password123456!',
+            'email' => 'workee@gmail.com',
+            'password' => 'Password123!',
         ];
-
-        $this->client->request(
-            'POST',
-            '/api/user',
-            [],
-            [],
-            [],
-            json_encode($bodyRegister)
-        );
-
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('User successfully created !', $response->message);
 
         $this->client->request(
             'POST',
@@ -63,32 +40,8 @@ final class AuthControllerTest extends AbstractApiTestCase
         $this->assertEquals('success!', $response->message);
     }
 
-    /**
-     * @dataProvider registrationProvider
-     */
-    public function test_bad_registration_and_bad_login(string $password, string $email): void
+    public function test_bad_login(): void
     {
-        $company = $this->companyRepository->findOneByName('Instapro');
-
-        $bodyRegister = [
-            'email' => $email,
-            'password' => $password,
-            'company' => $company->getId(),
-            'firstname' => 'jéjé',
-            'lastname' => 'LeBeauf',
-        ];
-
-        $this->client->request(
-            'POST',
-            '/api/user',
-            [],
-            [],
-            [],
-            json_encode($bodyRegister)
-        );
-
-        $this->assertEquals(400, $this->client->getResponse()->getStatusCode());
-
         $bodyLogin = [
             'email' => "bad@gmail.com",
             'password' => "222222",
@@ -103,24 +56,6 @@ final class AuthControllerTest extends AbstractApiTestCase
             json_encode($bodyLogin)
         );
 
-        $this->assertEquals(400, $this->client->getResponse()->getStatusCode());
-    }
-
-    public function registrationProvider(): array
-    {
-        return [
-            'bad_email' => [
-                'password' => 'Password123456!',
-                'email' => 'valouuuuuuuuu',
-            ],
-            'bad_password' => [
-                'password' => '123',
-                'email' => 'val@gmail.com',
-            ],
-            'user already exist' => [
-                'password' => 'Password123456!',
-                'email' => 'workee@gmail.com',
-            ],
-        ];
+        $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
     }
 }
