@@ -9,4 +9,4 @@ jobs:
     - name: Install dependencies
       run: cd workee_backend && composer install
     - name: Run PhpUnit
-      run: cd workee_backend && vendor/bin/phpunit
+      run: cd workee_backend && export SYMFONY_DEPRECATIONS_HELPER=weak && vendor/bin/phpunit
