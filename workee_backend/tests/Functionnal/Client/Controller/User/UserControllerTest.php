@@ -45,6 +45,7 @@ final class UserControllerTest extends AbstractApiTestCase
             "userId" => $users[0]->getId(),
             "teamId" => $teams[0]->getId(),
         ];
+
         $this->client->request(
             'POST',
             'api/add-to-team',
