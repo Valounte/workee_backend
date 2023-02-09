@@ -156,11 +156,13 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
         $result = [];
         foreach ($rawResult as $item) {
-            $result[] = new TeaOrCoffeeMeetingViewModel(
-                $item->getInitiator(),
-                $item->getInvitedUsersByMeetingId($item->getId()),
-                $item->getMeetingType(),
-                $item->getDate(),
+            $result[] = new TeaOrCoffeeMeetingInvitedUserViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $item->getInvitedUser()->getId(),
+                    $item->getInvitedUser()->getFirstname(),
+                    $item->getInvitedUser()->getLastname(),
+                ),
+                $item->getInvitationStatus(),
             );
         }
 
