@@ -2,11 +2,11 @@ name: Test coverage
 on: [pull_request]
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies
-        run: cd workee_backend || composer install
-
-      - name: PHPUnit
-        run: cd workee_backend || vendor/bin/phpunit
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: cd workee_backend && composer install
+    - name: Run PhpStan
+      run: cd workee_backend && vendor/bin/phpunit
