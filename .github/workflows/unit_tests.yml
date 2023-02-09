@@ -8,5 +8,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: cd workee_backend && composer install
-    - name: Run PhpStan
+    - name: Run PhpUnit
       run: cd workee_backend && vendor/bin/phpunit
