@@ -15,6 +15,7 @@ final class AuthControllerTest extends AbstractApiTestCase
         $this->client = static::createClient();
         $this->companyRepository = static::getContainer()->get(CompanyRepository::class);
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+
         parent::setUp();
     }
 
