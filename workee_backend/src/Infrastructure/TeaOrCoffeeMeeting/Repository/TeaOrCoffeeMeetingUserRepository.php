@@ -87,6 +87,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         foreach ($rawResult as $item) {
             $user = $this->userRepository->findUserById($item->getInitiator()->getId());
             $result[] = new TeaOrCoffeeMeetingViewModel(
+                $item->getId(),
                 new TeaOrCoffeeMeetingUserViewModel(
                     $user->getId(),
                     $user->getFirstName(),
@@ -125,6 +126,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         foreach ($rawResult as $item) {
             $user = $this->userRepository->findUserById($item->getInitiator()->getId());
             $result[] = new TeaOrCoffeeMeetingViewModel(
+                $item->getId(),
                 new TeaOrCoffeeMeetingUserViewModel(
                     $user->getId(),
                     $user->getFirstName(),
