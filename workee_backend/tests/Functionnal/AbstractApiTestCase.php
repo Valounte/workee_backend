@@ -13,6 +13,7 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use App\Infrastructure\Doctrine\DataFixtures\JobFixture;
 use App\Infrastructure\Doctrine\DataFixtures\UserFixture;
 use App\Infrastructure\Doctrine\DataFixtures\CompanyFixture;
+use App\Infrastructure\Doctrine\DataFixtures\GoalFixture;
 use App\Infrastructure\Doctrine\DataFixtures\JobPermissionFixture;
 use App\Infrastructure\Doctrine\DataFixtures\NotificationFixture;
 use App\Infrastructure\Doctrine\DataFixtures\PermissionFixture;

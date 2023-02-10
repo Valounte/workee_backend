@@ -58,6 +58,7 @@ class AuthController extends AbstractController
     {
         $userData = json_decode($request->getContent(), true);
         $user = $this->userRepository->findUserByEmail($userData['email']);
+
         if (!$user || !$this->encoder->isPasswordValid($user, $userData['password'])) {
             $this->logsService->add(401, LogsContextEnum::LOGIN, LogsAlertEnum::INFO, 'BadCredentialsException');
             return $this->json(

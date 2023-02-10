@@ -1,0 +1,12 @@
+name: Test coverage 
+on: [pull_request]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: cd workee_backend && composer install
+    - name: Run PhpUnit
+      run: cd workee_backend && export SYMFONY_DEPRECATIONS_HELPER=weak && vendor/bin/phpunit
