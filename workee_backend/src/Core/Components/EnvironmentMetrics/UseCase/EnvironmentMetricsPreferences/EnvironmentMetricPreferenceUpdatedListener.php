@@ -23,7 +23,6 @@ final class EnvironmentMetricPreferenceUpdatedListener implements MessageHandler
     {
         $user = $this->userRepository->findUserById($event->getUserId());
         $jwt = $this->tokenService->createLoginToken($user);
-
         $update = new Update(
             $this->mercureHubUrl . '/metrics-preferences' . '/' . $jwt,
             json_encode([
