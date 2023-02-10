@@ -6,14 +6,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
+use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
 use App\Core\Components\Logs\Services\LogsServiceInterface;
 use App\Infrastructure\Response\Services\JsonResponseService;
 use App\Infrastructure\User\Exceptions\UserPermissionsException;
 use App\Infrastructure\User\Services\CheckUserPermissionsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Core\Components\EnvironmentMetrics\Repository\EnvironmentMetricsPreferencesRepositoryInterface;
-use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
-use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
+use App\Core\Components\EnvironmentMetrics\UseCase\EnvironmentMetricsPreferences\EnvironmentMetricPreferenceUpdatedEvent;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final class EnvironmentMetricsPreferencesController extends AbstractController
 {
@@ -21,6 +23,7 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
         private EnvironmentMetricsPreferencesRepositoryInterface $environmentMetricsPreferencesRepository,
         private JsonResponseService $jsonResponseService,
         private LogsServiceInterface $logsService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -47,6 +50,7 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
         $isDesactivated = $input['isDesactivated'];
         $metricType = $input['metricType'];
 
+
         $environmentMetricsPreference = $this->environmentMetricsPreferencesRepository->getOneByUserAndMetricType($user, $metricType);
 
         if ($environmentMetricsPreference === null) {
@@ -56,6 +60,13 @@ final class EnvironmentMetricsPreferencesController extends AbstractController
 
         $environmentMetricsPreference->setIsDesactivated($isDesactivated);
         $this->environmentMetricsPreferencesRepository->add($environmentMetricsPreference);
+
+        $preferenceUpdatedEvent = new EnvironmentMetricPreferenceUpdatedEvent(
+            $user->getId(),
+            $metricType,
+            $isDesactivated,
+        );
+        $this->messageBus->dispatch($preferenceUpdatedEvent);
 
         $this->logsService->add(200, LogsContextEnum::ENVIRONMENT_METRICS_SETTINGS, null, null, $user);
 
