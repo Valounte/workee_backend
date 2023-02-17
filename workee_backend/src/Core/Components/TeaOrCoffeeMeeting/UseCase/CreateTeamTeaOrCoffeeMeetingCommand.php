@@ -12,6 +12,7 @@ final class CreateTeamTeaOrCoffeeMeetingCommand
         private User $initiator,
         private Team $team,
         private DateTime $date,
+        private string $name,
     ) {
     }
 
@@ -28,5 +29,13 @@ final class CreateTeamTeaOrCoffeeMeetingCommand
     public function getTeam(): Team
     {
         return $this->team;
+    }
+
+    /**
+     * Get the value of name
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

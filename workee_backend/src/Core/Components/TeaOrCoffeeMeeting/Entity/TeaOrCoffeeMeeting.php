@@ -23,6 +23,9 @@ class TeaOrCoffeeMeeting
     #[ORM\Column(type: 'tea_or_coffee_meeting_type', length: 255)]
     private $meetingType;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $name;
+
     #[ORM\Column(type: 'datetime')]
     private $date;
 
@@ -30,10 +33,12 @@ class TeaOrCoffeeMeeting
         User $initiator,
         DateTime $date,
         TeaOrCoffeeMeetingTypeEnum $meetingType,
+        string $name,
     ) {
         $this->initiator = $initiator;
         $this->meetingType = $meetingType;
         $this->date = $date;
+        $this->name = $name;
     }
 
     /**
@@ -66,5 +71,13 @@ class TeaOrCoffeeMeeting
     public function getMeetingType()
     {
         return $this->meetingType;
+    }
+
+    /**
+     * Get the value of name
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

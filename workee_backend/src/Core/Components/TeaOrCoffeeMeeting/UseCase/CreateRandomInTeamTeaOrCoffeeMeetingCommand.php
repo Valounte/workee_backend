@@ -12,6 +12,7 @@ final class CreateRandomInTeamTeaOrCoffeeMeetingCommand
         private User $initiator,
         private Team $team,
         private DateTime $date,
+        private string $name,
     ) {
     }
 
@@ -28,5 +29,10 @@ final class CreateRandomInTeamTeaOrCoffeeMeetingCommand
     public function getTeam(): Team
     {
         return $this->team;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
