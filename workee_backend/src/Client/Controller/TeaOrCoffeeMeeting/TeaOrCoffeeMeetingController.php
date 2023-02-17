@@ -125,6 +125,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 $user,
                 $teaOrCoffeeMeetingInput["invitedUsersIds"],
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
+                $teaOrCoffeeMeetingInput["name"],
             );
             $this->messageBus->dispatch($command);
             return;
@@ -137,6 +138,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 $user,
                 $team,
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
+                $teaOrCoffeeMeetingInput["name"],
             );
             $this->messageBus->dispatch($command);
             return;
@@ -147,6 +149,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 $user,
                 $team,
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
+                $teaOrCoffeeMeetingInput["name"],
             );
             $this->messageBus->dispatch($command);
 

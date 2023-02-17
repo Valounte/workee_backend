@@ -28,6 +28,7 @@ final class CreateTeamTeaOrCoffeeMeetingHandler implements MessageHandlerInterfa
             $command->getInitiator(),
             $command->getDate(),
             TeaOrCoffeeMeetingTypeEnum::TEAM,
+            $command->getName(),
         );
         $this->teaOrCoffeeMeetingRepository->add($teaOrCoffeeMeeting);
 

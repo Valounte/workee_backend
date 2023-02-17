@@ -34,6 +34,7 @@ final class CreateRandomInTeamTeaOrCoffeeMeetingHandler implements MessageHandle
             $command->getInitiator(),
             $command->getDate(),
             TeaOrCoffeeMeetingTypeEnum::RANDOM_IN_TEAM,
+            $command->getName(),
         );
         $this->teaOrCoffeeMeetingRepository->add($teaOrCoffeeMeeting);
 

@@ -11,6 +11,7 @@ final class CreateTeaOrCoffeeMeetingCommand
         private User $initiator,
         private array $invitedUsersIds,
         private DateTime $date,
+        private string $name,
     ) {
     }
 
@@ -27,5 +28,10 @@ final class CreateTeaOrCoffeeMeetingCommand
     public function getInvitedUsersIds(): array
     {
         return $this->invitedUsersIds;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
