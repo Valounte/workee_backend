@@ -96,6 +96,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
                 $this->getInvitedUsersByMeetingId($item->getId()),
                 $item->getMeetingType(),
                 $item->getDate(),
+                $item->getName(),
             );
         }
 
@@ -135,6 +136,7 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
                 $this->getInvitedUsersByMeetingId($item->getId()),
                 $item->getMeetingType(),
                 $item->getDate(),
+                $item->getName(),
             );
         }
 
