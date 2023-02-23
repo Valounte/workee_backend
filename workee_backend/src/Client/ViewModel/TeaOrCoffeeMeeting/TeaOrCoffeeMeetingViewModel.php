@@ -16,6 +16,7 @@ final class TeaOrCoffeeMeetingViewModel
         private array $invitedUsersStatus,
         private TeaOrCoffeeMeetingTypeEnum $meetingType,
         private DateTime $date,
+        private string $name,
     ) {
     }
 
@@ -57,5 +58,13 @@ final class TeaOrCoffeeMeetingViewModel
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the value of name
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }
