@@ -27,6 +27,7 @@ final class UserHasMeetingInTenMinutesListener implements MessageHandlerInterfac
         $update = new Update(
             $this->mercureHubUrl . '/teaOrCoffee' . '/' . $jwt,
             json_encode([
+                'type' => "TeaOrCoffee",
                 'message' => "has a teaOrCoffee meeting in 10 minutes",
             ])
         );
