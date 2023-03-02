@@ -6,11 +6,6 @@ pipeline {
         }
     }
     stages {
-        stage('Git clone') {
-            steps {
-                git branch: 'master', credentialsId: 'test', url: 'git@github.com:Valounte/workee_backend.git'
-            }
-        }
         stage('Install dependencies') {
             steps {
                 dir("workee_backend") {
