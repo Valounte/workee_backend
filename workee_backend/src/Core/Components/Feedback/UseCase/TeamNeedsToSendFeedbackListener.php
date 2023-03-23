@@ -33,7 +33,8 @@ final class TeamNeedsToSendFeedbackListener implements MessageHandlerInterface
                 json_encode([
                     'message' => "needs to send feedback",
                     'teamId' => $team->getId(),
-                    ])
+                    'type' => 'feedback',
+                ])
             );
 
             $this->hub->publish($update);
