@@ -61,12 +61,10 @@ final class DailyFeedbackController extends AbstractController
 
         $input = json_decode($request->getContent(), true);
 
-        if (!isset($input['message']) || !isset($input['satisfactionDegree']) || !isset($input['isAnonymous'])) {
+        if (!isset($input['satisfactionDegree']) || !isset($input['isAnonymous'])) {
             $this->logsService->add(400, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::WARNING, 'InvalidInputException');
             return new JsonResponse('Team id is required', 400);
         }
-
-        $userTeams = $this->userTeamRepository->findTeamsByUser($user);
         $isAnonymous = $input["isAnonymous"] ?? false;
 
         $message = null;
@@ -74,6 +72,22 @@ final class DailyFeedbackController extends AbstractController
             $message = $input["message"];
         }
 
+        if (isset($input['teamId'])) {
+            $team = $this->teamRepository->findOneById($input['teamId']);
+
+            $dailyFeedback = new DailyFeedback(
+                $input["satisfactionDegree"],
+                $team,
+                $message,
+                $isAnonymous == true ? null : $user,
+            );
+
+            $this->dailyFeedbackRepository->add($dailyFeedback, true);
+            $this->logsService->add(200, LogsContextEnum::DAILY_FEEDBACK, LogsAlertEnum::INFO);
+            return $this->jsonResponseService->successJsonResponse('Feedback stored', 200);
+        }
+
+        $userTeams = $this->userTeamRepository->findTeamsByUser($user);
         foreach ($userTeams as $userTeam) {
             $dailyFeedback = new DailyFeedback(
                 $input["satisfactionDegree"],
