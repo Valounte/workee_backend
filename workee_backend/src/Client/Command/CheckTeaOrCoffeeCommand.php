@@ -19,7 +19,6 @@ use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepo
 class CheckTeaOrCoffeeCommand extends Command
 {
     protected static $defaultDescription = 'Checks if there is a TeaOrCoffee meeting in the next 10 minutes in order to dispatch a notification';
-
     public function __construct(
         private TeaOrCoffeeMeetingUserRepositoryInterface $teaOrCoffeeUserRepository,
         private UserRepositoryInterface $userInterface,
@@ -27,25 +26,27 @@ class CheckTeaOrCoffeeCommand extends Command
     ) {
         parent::__construct();
     }
-
     protected function configure(): void
     {
         $this
             // the command help shown when running the command with the "--help" option
-            ->setHelp('This command allows you to Checks if there is a TeaOrCoffee meeting in the next 10 minute in order to send an asynchronous mercure notification...')
-        ;
+            ->setHelp('This command allows you to Checks if there is a TeaOrCoffee meeting in the next 10 minute in order to send an asynchronous mercure notification...');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $usersToNotify = $this->teaOrCoffeeUserRepository->getAllTeaOrCoffeeMeetingUserIdsInTenMinutes();
+        $teaOrCoffeeToNotify = $this->teaOrCoffeeUserRepository->getAllTeaOrCoffeeMeetingUserIdsInTenMinutes();
 
-        if ($usersToNotify === []) {
+        if ($teaOrCoffeeToNotify === []) {
             return Command::SUCCESS;
         }
 
-        foreach ($usersToNotify[0] as $user) {
-            $event = new UserHasMeetingInTenMinutesEvent($user);
+        foreach ($teaOrCoffeeToNotify as $teaOrCoffee) {
+            $event = new UserHasMeetingInTenMinutesEvent(
+                (int) $teaOrCoffee['initiator'],
+                $teaOrCoffee['invitedUsers'],
+                $teaOrCoffee['name']
+            );
             $this->messageBus->dispatch($event);
         }
 

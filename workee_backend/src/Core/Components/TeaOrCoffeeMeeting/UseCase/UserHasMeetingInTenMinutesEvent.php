@@ -5,12 +5,9 @@ namespace App\Core\Components\TeaOrCoffeeMeeting\UseCase;
 final class UserHasMeetingInTenMinutesEvent
 {
     public function __construct(
-        private int $userId,
+        public readonly int $initiatorId,
+        public readonly array $invitedUsersIds,
+        public readonly string $meetingName,
     ) {
-    }
-
-    public function getUserId(): int
-    {
-        return $this->userId;
     }
 }

@@ -193,10 +193,10 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
     public function getAllTeaOrCoffeeMeetingUserIdsInTenMinutes(): ?array
     {
-        $actualDate = new DateTime();
+        $actualDate = new DateTime(timezone: new DateTimeZone('Europe/Paris'));
         $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
-
-        $result = [];
+        $dateInTenMinutes = $dateInTenMinutes->format('Y-m-d H:i:s');
+        $dateInTenMinutes = substr($dateInTenMinutes, 0, -2) . '00';
 
         $rawRequest = $this->createQueryBuilder('t')
             ->leftJoin(
@@ -205,20 +205,29 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 't.meeting = u.id'
             )
-            ->select("IDENTITY(u.initiator), IDENTITY(t.invitedUser)")
+            ->select("IDENTITY(u.initiator) as initiator, IDENTITY(t.invitedUser) as invitedUser, u.name as name")
             ->andWhere("u.date = :dateInTenMinutes")
             ->andWhere('t.invitationStatus = :invitationStatus')
             ->setParameter('invitationStatus', InvitationStatusEnum::ACCEPTED)
             ->setParameter('dateInTenMinutes', $dateInTenMinutes)
-            ->orderBy('t.id', 'ASC')
             ->getQuery()
             ->getResult();
 
         $result = [];
-        foreach ($rawRequest as $userId) {
-            $result[] = $userId;
-        }
+        $result = array_reduce($rawRequest, function ($acc, $item) {
+            $key = $item['initiator'] . ':' . $item['name'];
+            if (!isset($acc[$key])) {
+                $acc[$key] = [
+                    'initiator' => $item['initiator'],
+                    'name' => $item['name'],
+                    'invitedUsers' => []
+                ];
+            }
+            $acc[$key]['invitedUsers'][] = $item['invitedUser'];
+            return $acc;
+        }, []);
 
+        $result = array_values($result);
         return $result;
     }
 }
