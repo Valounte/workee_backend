@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Feedback\Repository;
 
+use DateTime;
+use DateTimeZone;
 use Doctrine\ORM\ORMException;
 use App\Core\Components\Team\Entity\Team;
 use Doctrine\ORM\OptimisticLockException;
@@ -92,20 +94,19 @@ class DailyFeedbackTeamPreferencesRepository extends ServiceEntityRepository imp
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
 
     public function findPreferencesInNextMinute(): array
     {
-        $now = date("H:i");
+        date_default_timezone_set('Europe/Paris');
+        $now = date('H:i');
 
         return $this->createQueryBuilder('c')
             ->andWhere('c.sendingTime = :now')
             ->setParameter('now', $now)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 }

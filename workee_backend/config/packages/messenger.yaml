@@ -17,8 +17,7 @@ framework:
             # Route your messages to the transports
             'App\Core\Components\Notification\UseCase\TestCommand': async
             'App\Core\Components\Feedback\UseCase\SelectDailyFeedbackTeamPreferencesCommand': async
-            'App\Core\Components\Feedback\UseCase\TeamNeedsToSendFeedbackEvent': async
-
+            
 # when@test:
 #    framework:
 #        messenger:
