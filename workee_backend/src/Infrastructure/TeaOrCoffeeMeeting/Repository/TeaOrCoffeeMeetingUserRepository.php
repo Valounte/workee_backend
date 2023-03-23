@@ -4,6 +4,7 @@ namespace App\Infrastructure\TeaOrCoffeeMeeting\Repository;
 
 use DateTime;
 use DateInterval;
+use DateTimeZone;
 use Doctrine\ORM\ORMException;
 use App\Core\Components\User\Entity\User;
 use Doctrine\ORM\OptimisticLockException;
@@ -192,8 +193,10 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
 
     public function getAllTeaOrCoffeeMeetingUserIdsInTenMinutes(): ?array
     {
-        $actualDate = new DateTime();
+        $actualDate = new DateTime(timezone: new DateTimeZone('Europe/Paris'));
         $dateInTenMinutes = $actualDate->add(new DateInterval('PT' . 10 . 'M'));
+        $dateInTenMinutes = $dateInTenMinutes->format('Y-m-d H:i:s');
+        $dateInTenMinutes = substr($dateInTenMinutes, 0, -2) . '00';
 
         $result = [];
 
@@ -217,6 +220,8 @@ class TeaOrCoffeeMeetingUserRepository extends ServiceEntityRepository implement
         foreach ($rawRequest as $userId) {
             $result[] = $userId;
         }
+
+        dump($result);
 
         return $result;
     }

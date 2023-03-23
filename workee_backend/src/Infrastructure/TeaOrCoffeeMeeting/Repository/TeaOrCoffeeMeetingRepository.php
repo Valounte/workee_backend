@@ -2,9 +2,7 @@
 
 namespace App\Infrastructure\TeaOrCoffeeMeeting\Repository;
 
-use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingViewModel;
 use Doctrine\ORM\ORMException;
-use App\Core\Components\User\Entity\User;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting;
@@ -76,8 +74,7 @@ class TeaOrCoffeeMeetingRepository extends ServiceEntityRepository implements Te
             ->setParameter('val', $user)
             ->orderBy('t.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     // public function findMeetingsWhereUserIsInitiation(User $user): ?array
