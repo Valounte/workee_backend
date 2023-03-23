@@ -21,16 +21,23 @@ final class UserHasMeetingInTenMinutesListener implements MessageHandlerInterfac
 
     public function __invoke(UserHasMeetingInTenMinutesEvent $event): void
     {
-        $user = $this->userRepository->findUserById($event->getUserId());
+        $name = $event->meetingName;
+        $usersIds = $event->invitedUsersIds;
+        $usersIds[] = $event->initiatorId;
 
-        $jwt = $this->tokenService->createLoginToken($user);
-        $update = new Update(
-            $this->mercureHubUrl . '/teaOrCoffee' . '/' . $jwt,
-            json_encode([
-                'type' => "TeaOrCoffee",
-                'message' => "has a teaOrCoffee meeting in 10 minutes",
-            ])
-        );
-        $this->hub->publish($update);
+        foreach ($usersIds as $userId) {
+            $user = $this->userRepository->findUserById($userId);
+            $jwt = $this->tokenService->createLoginToken($user);
+
+            $update = new Update(
+                $this->mercureHubUrl . '/teaOrCoffee' . '/' . $jwt,
+                json_encode([
+                    'type' => "TeaOrCoffee",
+                    'message' => "has a teaOrCoffee meeting in 10 minutes",
+                    'name' => $name,
+                ])
+            );
+            $this->hub->publish($update);
+        }
     }
 }
