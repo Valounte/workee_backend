@@ -5,8 +5,11 @@ namespace App\Core\Components\TeaOrCoffeeMeeting\UseCase;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Core\Components\User\Repository\UserTeamRepositoryInterface;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeeting;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\TeaOrCoffeeMeetingUser;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingUserViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\TeaOrCoffeeMeetingTypeEnum;
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingInvitedUserViewModel;
 use App\Core\Components\TeaOrCoffeeMeeting\UseCase\CreateTeamTeaOrCoffeeMeetingCommand;
 use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingRepositoryInterface;
 use App\Core\Components\TeaOrCoffeeMeeting\Repository\TeaOrCoffeeMeetingUserRepositoryInterface;
@@ -20,7 +23,7 @@ final class CreateTeamTeaOrCoffeeMeetingHandler implements MessageHandlerInterfa
     ) {
     }
 
-    public function __invoke(CreateTeamTeaOrCoffeeMeetingCommand $command): void
+    public function __invoke(CreateTeamTeaOrCoffeeMeetingCommand $command): TeaOrCoffeeMeetingViewModel
     {
         $usersInTeam = $this->userTeamRepository->findUsersByTeamId($command->getTeam()->getId());
 
@@ -32,9 +35,32 @@ final class CreateTeamTeaOrCoffeeMeetingHandler implements MessageHandlerInterfa
         );
         $this->teaOrCoffeeMeetingRepository->add($teaOrCoffeeMeeting);
 
+        $invitedUsersViewModels = [];
         foreach ($usersInTeam as $userInTeam) {
             $teaOrCoffeeMeetingUser = new TeaOrCoffeeMeetingUser($teaOrCoffeeMeeting, $userInTeam);
             $this->teaOrCoffeeMeetingUserRepository->add($teaOrCoffeeMeetingUser);
+
+            $invitedUsersViewModels[] = new TeaOrCoffeeMeetingInvitedUserViewModel(
+                new TeaOrCoffeeMeetingUserViewModel(
+                    $teaOrCoffeeMeetingUser->getInvitedUser()->getId(),
+                    $teaOrCoffeeMeetingUser->getInvitedUser()->getFirstName(),
+                    $teaOrCoffeeMeetingUser->getInvitedUser()->getLastName(),
+                ),
+                $teaOrCoffeeMeetingUser->getInvitationStatus(),
+            );
         }
+
+        return new TeaOrCoffeeMeetingViewModel(
+            $teaOrCoffeeMeeting->getId(),
+            new TeaOrCoffeeMeetingUserViewModel(
+                $teaOrCoffeeMeeting->getInitiator()->getId(),
+                $teaOrCoffeeMeeting->getInitiator()->getFirstName(),
+                $teaOrCoffeeMeeting->getInitiator()->getLastName(),
+            ),
+            $invitedUsersViewModels,
+            $teaOrCoffeeMeeting->getMeetingType(),
+            $teaOrCoffeeMeeting->getDate(),
+            $teaOrCoffeeMeeting->getName(),
+        );
     }
 }
