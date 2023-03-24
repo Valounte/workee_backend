@@ -2,11 +2,13 @@
 
 namespace App\Client\Controller\TeaOrCoffeeMeeting;
 
+use App\Client\ViewModel\TeaOrCoffeeMeeting\TeaOrCoffeeMeetingViewModel;
 use App\Core\Components\User\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Core\Components\Logs\Entity\Enum\LogsAlertEnum;
 use App\Core\Components\Logs\Entity\Enum\LogsContextEnum;
@@ -45,10 +47,10 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         $user = $request->attributes->get('user');
         $teaOrCoffeeMeetingInput = json_decode($request->getContent(), true);
 
-        $this->dispatchAppropriateCommand($user, $teaOrCoffeeMeetingInput);
+        $teaOrCoffee = $this->dispatchAppropriateCommand($user, $teaOrCoffeeMeetingInput);
 
         $this->logsService->add(200, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::INFO);
-        return $this->jsonResponseService->successJsonResponse('Tea or coffee meeting created', 201);
+        return $this->jsonResponseService->create($teaOrCoffee, 201);
     }
 
     /**
@@ -118,7 +120,7 @@ final class TeaOrCoffeeMeetingController extends AbstractController
         return $this->jsonResponseService->create($meetings, 200);
     }
 
-    private function dispatchAppropriateCommand(User $user, array $teaOrCoffeeMeetingInput): void
+    private function dispatchAppropriateCommand(User $user, array $teaOrCoffeeMeetingInput): TeaOrCoffeeMeetingViewModel|null
     {
         if ($teaOrCoffeeMeetingInput["meetingType"] === "CLASSIC") {
             $command = new CreateTeaOrCoffeeMeetingCommand(
@@ -127,8 +129,8 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
                 $teaOrCoffeeMeetingInput["name"],
             );
-            $this->messageBus->dispatch($command);
-            return;
+            $envelope = $this->messageBus->dispatch($command);
+            return $envelope->last(HandledStamp::class)->getResult();
         }
 
         $team = $this->teamRepository->findOneById($teaOrCoffeeMeetingInput["teamId"]);
@@ -140,8 +142,8 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
                 $teaOrCoffeeMeetingInput["name"],
             );
-            $this->messageBus->dispatch($command);
-            return;
+            $envelope = $this->messageBus->dispatch($command);
+            return $envelope->last(HandledStamp::class)->getResult();
         }
 
         if ($teaOrCoffeeMeetingInput["meetingType"] === "TEAM") {
@@ -151,10 +153,12 @@ final class TeaOrCoffeeMeetingController extends AbstractController
                 new \DateTime($teaOrCoffeeMeetingInput["date"]),
                 $teaOrCoffeeMeetingInput["name"],
             );
-            $this->messageBus->dispatch($command);
+            $envelope = $this->messageBus->dispatch($command);
 
             $this->logsService->add(400, LogsContextEnum::TEA_OR_COFFEE_MEETING, LogsAlertEnum::CRITIC, "InvalidInputException");
-            return;
+            return $envelope->last(HandledStamp::class)->getResult();
         }
+
+        return null;
     }
 }
