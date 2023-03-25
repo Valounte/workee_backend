@@ -60,7 +60,7 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
         $event = new SubGoalHasBeenUpdatedEvent($subGoal->getId(), $subGoal->getGoal()->getId());
         $this->messageBus->dispatch($event);
 
-        return $this->jsonResponseService->successJsonResponse('subGoal created successfully', 201);
+        return $this->jsonResponseService->create($subGoal, 201);
     }
 
     /**
