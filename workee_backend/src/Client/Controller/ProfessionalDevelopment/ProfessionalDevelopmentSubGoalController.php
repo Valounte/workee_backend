@@ -79,6 +79,7 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
 
         try {
             $subGoal->setSubGoalStatus($this->mapGoalStatus($input['status']));
+            $subGoal->setSubGoal($input['subGoal']);
         } catch (InvalidArgumentException) {
             return $this->jsonResponseService->errorJsonResponse('Invalid Status', 401);
         }
@@ -88,7 +89,11 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
         $event = new SubGoalHasBeenUpdatedEvent($subGoal->getId(), $subGoal->getGoal()->getId());
         $this->messageBus->dispatch($event);
 
-        return $this->jsonResponseService->successJsonResponse('SubGoal updated', 201);
+        return $this->jsonResponseService->create(new SubGoalViewModel(
+            $subGoal->getId(),
+            $subGoal->getSubGoal(),
+            $subGoal->getSubGoalStatus()
+        ), 201);
     }
 
     private function mapGoalStatus(string $status): GoalStatusEnum

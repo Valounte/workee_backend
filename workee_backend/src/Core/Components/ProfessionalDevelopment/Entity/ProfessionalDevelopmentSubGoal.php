@@ -79,4 +79,16 @@ class ProfessionalDevelopmentSubGoal
 
         return $this;
     }
+
+    /**
+     * Set the value of subGoal
+     *
+     * @return  self
+     */
+    public function setSubGoal($subGoal)
+    {
+        $this->subGoal = $subGoal;
+
+        return $this;
+    }
 }
