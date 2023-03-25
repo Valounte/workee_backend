@@ -2,6 +2,7 @@
 
 namespace App\Client\Controller\ProfessionalDevelopment;
 
+use App\Client\ViewModel\ProfessionalDevelopment\SubGoalViewModel;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +61,11 @@ final class ProfessionalDevelopmentSubGoalController extends AbstractController
         $event = new SubGoalHasBeenUpdatedEvent($subGoal->getId(), $subGoal->getGoal()->getId());
         $this->messageBus->dispatch($event);
 
-        return $this->jsonResponseService->create($subGoal, 201);
+        return $this->jsonResponseService->create(new SubGoalViewModel(
+            $subGoal->getId(),
+            $subGoal->getSubGoal(),
+            $subGoal->getSubGoalStatus()
+        ), 201);
     }
 
     /**
