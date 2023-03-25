@@ -98,16 +98,6 @@ final class JobController extends AbstractController
 
         $this->jobRepository->add($job);
 
-        foreach ($data["permissionsId"] as $permission) {
-            $permission = $this->permissionRepository->findOneById($permission);
-            $jobPermission = new JobPermission(
-                $job,
-                $permission,
-            );
-
-            $this->jobPermissionRepository->add($jobPermission);
-        }
-
         $this->logsService->add(201, LogsContextEnum::JOB, LogsAlertEnum::INFO);
         return $this->jsonResponseService->successJsonResponse('Job created', 200);
     }
