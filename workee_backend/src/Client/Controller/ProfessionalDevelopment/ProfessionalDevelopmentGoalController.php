@@ -59,7 +59,14 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         );
         $this->professionalDevelopmentGoalRepository->add($goal);
 
-        return $this->jsonResponseService->successJsonResponse('Goal created successfully', 201);
+        return $this->jsonResponseService->create(new GoalViewModel(
+            $goal->getId(),
+            $goal->getGoal(),
+            $goal->getProgression(),
+            $goal->getStartDate(),
+            $goal->getEndDate(),
+            [],
+        ), 201);
     }
 
     /**
