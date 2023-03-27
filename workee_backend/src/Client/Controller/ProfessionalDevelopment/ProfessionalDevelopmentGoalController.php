@@ -74,13 +74,45 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
      */
     public function getProfessionalDevelopmentGoals(Request $request): Response
     {
-        $me = $request->attributes->get('user');
+        $user = $request->attributes->get('user');
+
+        if ($user === null) {
+            return $this->jsonResponseService->errorJsonResponse('User not found', 404);
+        }
+
+        $goals = $this->professionalDevelopmentGoalRepository->getByUser($user);
+
+        if (empty($goals)) {
+            return $this->jsonResponseService->create([], 200);
+        }
+
+        $goalsViewModel = [];
+
+        foreach ($goals as $goal) {
+            $subGoals = $this->professionalDevelopmentSubGoalRepository->getSubGoalsViewModelsByGoal($goal);
+
+            $goalsViewModel[] = new GoalViewModel(
+                $goal->getId(),
+                $goal->getGoal(),
+                $goal->getProgression(),
+                $goal->getStartDate(),
+                $goal->getEndDate(),
+                $subGoals,
+            );
+        }
+
+        return $this->jsonResponseService->create($goalsViewModel);
+    }
+
+    /**
+     * @Route("/api/professional-development-goal-user", name="get-professional-development-goals-user", methods={"GET"})
+     */
+    public function getProfessionalDevelopmentGoalsByUser(Request $request): Response
+    {
         $userId = $request->query->get('userId');
 
         if (isset($userId)) {
             $user = $this->userRepository->findUserById((int) $userId);
-        } else {
-            $user = $me;
         }
 
         if ($user === null) {
