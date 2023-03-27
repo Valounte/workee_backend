@@ -48,7 +48,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         }
 
         if (isset($input['userId'])) {
-            $user = $this->userRepository->findUserById($user->getId());
+            $user = $this->userRepository->findUserById($input['userId']);
         }
 
         $goal = new ProfessionalDevelopmentGoal(
