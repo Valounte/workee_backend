@@ -74,10 +74,13 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
      */
     public function getProfessionalDevelopmentGoals(Request $request): Response
     {
-        $user = $request->query->get('user') ?? $request->attributes->get('user');
+        $me = $request->attributes->get('user');
+        $userId = $request->query->get('userId');
 
-        if (is_string($user)) {
-            $user = $this->userRepository->findUserById((int) $user);
+        if (isset($userId)) {
+            $user = $this->userRepository->findUserById((int) $userId);
+        } else {
+            $user = $me;
         }
 
         if ($user === null) {
