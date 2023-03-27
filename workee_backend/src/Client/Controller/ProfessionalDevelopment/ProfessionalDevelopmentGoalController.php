@@ -47,7 +47,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
             return new JsonResponse('Invalid Input', 400);
         }
 
-        if (!isset($input['userId'])) {
+        if (isset($input['userId'])) {
             $user = $this->userRepository->findUserById($user->getId());
         }
 
