@@ -90,7 +90,7 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
         $goals = $this->professionalDevelopmentGoalRepository->getByUser($user);
 
         if (empty($goals)) {
-            return $this->jsonResponseService->successJsonResponse('No goals found', 200);
+            return $this->jsonResponseService->create([], 200);
         }
 
         $goalsViewModel = [];
