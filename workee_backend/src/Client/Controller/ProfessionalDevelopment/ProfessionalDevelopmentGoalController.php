@@ -129,7 +129,6 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
 
         foreach ($goals as $goal) {
             $subGoals = $this->professionalDevelopmentSubGoalRepository->getSubGoalsViewModelsByGoal($goal);
-
             $goalsViewModel[] = new GoalViewModel(
                 $goal->getId(),
                 $goal->getGoal(),
