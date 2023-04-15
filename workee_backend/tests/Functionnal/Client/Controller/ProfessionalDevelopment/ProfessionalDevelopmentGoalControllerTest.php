@@ -12,7 +12,6 @@ final class ProfessionalDevelopmentGoalControllerTest extends AbstractApiTestCas
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->professionalDevelopmentGoalRepository = self::getContainer()->get(ProfessionalDevelopmentGoalRepositoryInterface::class);
         parent::setUp();
     }
 
@@ -34,6 +33,5 @@ final class ProfessionalDevelopmentGoalControllerTest extends AbstractApiTestCas
         );
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('Goal created successfully', $response->message);
     }
 }

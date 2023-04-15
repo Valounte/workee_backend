@@ -31,6 +31,7 @@ final class CreateTeaOrCoffeeMeetingHandler implements MessageHandlerInterface
         foreach ($invitedUsersIds as $invitedUserId) {
             $invitedUsers[] = $this->userRepository->findUserById($invitedUserId);
         }
+
         $teaOrCoffeeMeeting = new TeaOrCoffeeMeeting(
             $command->getInitiator(),
             $command->getDate(),
