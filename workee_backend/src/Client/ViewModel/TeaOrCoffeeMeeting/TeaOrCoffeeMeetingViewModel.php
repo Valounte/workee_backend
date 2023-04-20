@@ -10,7 +10,7 @@ use App\Core\Components\TeaOrCoffeeMeeting\Entity\Enum\TeaOrCoffeeMeetingTypeEnu
 final class TeaOrCoffeeMeetingViewModel
 {
     public function __construct(
-        private int $id,
+        private ?int $id,
         private TeaOrCoffeeMeetingUserViewModel $initiator,
         /** @var TeaOrCoffeeMeetingInvitedUserViewModel[] */
         private array $invitedUsersStatus,
@@ -55,7 +55,7 @@ final class TeaOrCoffeeMeetingViewModel
     /**
      * Get the value of id
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

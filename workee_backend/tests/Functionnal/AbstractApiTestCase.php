@@ -68,7 +68,7 @@ abstract class AbstractApiTestCase extends WebTestCase
 
         $executor = new ORMExecutor($this->em, $purger);
 
-        self::ensureKernelShutdown();
         $executor->execute($loader->getFixtures());
+        self::ensureKernelShutdown();
     }
 }

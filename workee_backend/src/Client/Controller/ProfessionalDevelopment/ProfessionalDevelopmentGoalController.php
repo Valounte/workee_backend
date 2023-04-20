@@ -111,6 +111,8 @@ final class ProfessionalDevelopmentGoalController extends AbstractController
     {
         $userId = $request->query->get('userId');
 
+        $user = null;
+
         if (isset($userId)) {
             $user = $this->userRepository->findUserById((int) $userId);
         }
